@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Be_Vietnam_Pro } from 'next/font/google';
+import { Cormorant_Garamond, Be_Vietnam_Pro } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { getMessages } from 'next-intl/server';
@@ -9,10 +9,11 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/sonner';
 import '../globals.css';
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin', 'vietnamese'],
   variable: '--font-heading',
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
 });
 
 const beVietnam = Be_Vietnam_Pro({
@@ -48,7 +49,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${beVietnam.variable} ${playfair.variable}`}>
+    <html lang={locale} className={`${beVietnam.variable} ${cormorant.variable}`}>
       <body className="bg-background text-foreground antialiased min-h-screen relative font-sans">
         
         {/* Subtle background organic grain layer */}
