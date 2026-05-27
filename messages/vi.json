@@ -21,7 +21,9 @@
     "total": "Tổng cộng",
     "cancel": "Hủy",
     "confirm": "Xác nhận",
-    "tenantText": "Nền tảng của bạn được phân tách theo chi nhánh tenant"
+    "tenantText": "Nền tảng của bạn được phân tách theo chi nhánh tenant",
+    "quickView": "Xem nhanh",
+    "outOfStock": "Hết hàng"
   },
   "auth": {
     "loginTitle": "Đăng nhập hệ thống",
@@ -35,30 +37,55 @@
     "errorAuth": "Thông tin tài khoản hoặc mật khẩu không chính xác"
   },
   "hero": {
-    "title": "Hành trình di sản làng nghề Việt Nam",
-    "subtitle": "Khám phá vẻ đẹp mộc mạc, tinh hoa văn hóa truyền thống được truyền giữ qua ngàn đời từ các làng nghề Việt Nam.",
-    "ctaExplore": "Bắt đầu khám phá",
-    "ctaItinerary": "Lên lịch trình AI"
+    "discover": "Khám Phá Việt Nam / Discover Vietnam",
+    "title": "Chạm vào tinh hoa",
+    "subtitle": "Hành trình qua những làng nghề truyền thống — nơi bàn tay người nghệ nhân còn lưu giữ hồn cốt của đất nước nghìn năm văn hiến.",
+    "ctaExplore": "Khám phá bản đồ",
+    "ctaVillages": "Xem làng nghề",
+    "statVillages": "120+ Làng nghề",
+    "statProvinces": "40+ Tỉnh thành",
+    "statRegions": "8 Vùng văn hoá",
+    "scroll": "Scroll"
   },
   "featured": {
-    "title": "Làng nghề tiêu biểu",
-    "subtitle": "Những làng nghề gìn giữ hồn cốt dân tộc với lịch sử lâu đời và nghệ thuật đỉnh cao"
+    "label": "Làng Nghề Nổi Bật",
+    "title": "Làng Nghề Tiêu Biểu",
+    "viewAll": "Xem tất cả làng nghề"
   },
   "howItWorks": {
-    "title": "Trải nghiệm HoaLang như thế nào",
-    "subtitle": "Bốn bước đơn giản để hòa mình vào không gian văn hóa di sản",
-    "step1Title": "Khám phá bản đồ",
-    "step1Desc": "Tìm kiếm các làng nghề truyền thống trên bản đồ tương tác trực quan.",
-    "step2Title": "Thiết kế lịch trình",
-    "step2Desc": "Sử dụng trí tuệ nhân tạo để tối ưu hóa lộ trình di chuyển và trải nghiệm.",
-    "step3Title": "Tham gia workshop",
-    "step3Desc": "Đăng ký các buổi học trực tiếp làm gốm, dệt lụa cùng nghệ nhân.",
-    "step4Title": "Mua sắm thủ công",
-    "step4Desc": "Ủng hộ sản phẩm thủ công mỹ nghệ tinh xảo, chính gốc từ người làm."
+    "label": "Cách Hoạt Động",
+    "title": "Ba bước để bắt đầu hành trình",
+    "step1Title": "Khám phá bản đồ tương tác",
+    "step1Desc": "Duyệt qua hơn 120 làng nghề truyền thống trải dài khắp 8 vùng văn hoá Việt Nam trên bản đồ trực quan.",
+    "step2Title": "AI gợi ý hành trình cá nhân",
+    "step2Desc": "Trí tuệ nhân tạo phân tích sở thích và thời gian của bạn, tạo ra lịch trình độc đáo cho từng chuyến đi.",
+    "step3Title": "Đặt trải nghiệm & mua sản phẩm",
+    "step3Desc": "Tham gia workshop với nghệ nhân địa phương và mang về những món quà thủ công chính hãng, ý nghĩa."
+  },
+  "stats": {
+    "villages": "Làng nghề",
+    "artisans": "Nghệ nhân",
+    "products": "Sản phẩm",
+    "provinces": "Tỉnh thành"
+  },
+  "crafts": {
+    "label": "Sản Phẩm Nổi Bật",
+    "title": "Tinh hoa từ đôi bàn tay",
+    "viewAll": "Vào cửa hàng"
+  },
+  "quote": {
+    "text": "Mỗi chiếc bình gốm là một bài thơ về đất — người thợ lặng im nhưng tay thoăn thoắt, tạo ra điều vĩnh cửu từ những gì vốn chỉ là bùn đất.",
+    "author": "Nguyễn Văn Bình",
+    "title": "Nghệ nhân ưu tú — Làng Gốm Bát Tràng"
   },
   "cta": {
-    "title": "Sẵn sàng cho chuyến đi của bạn?",
-    "subtitle": "Hãy để HoaLang đồng hành cùng bạn trên nẻo đường di sản Việt Nam.",
-    "button": "Lập kế hoạch ngay"
+    "label": "Hành Trình Cá Nhân Hoá",
+    "title": "Để AI lên lịch trình cho bạn",
+    "desc": "Nhập địa chỉ email — nhận ngay một hành trình khám phá làng nghề được cá nhân hoá, thiết kế riêng cho bạn bởi AI của HoaLang.",
+    "placeholder": "email@cuaban.vn",
+    "button": "Bắt đầu miễn phí",
+    "successTitle": "Cảm ơn bạn!",
+    "successDesc": "Hành trình của bạn đang được chuẩn bị — hãy kiểm tra email.",
+    "footer": "Không cần tài khoản  •  Miễn phí  •  Hỗ trợ 4 ngôn ngữ"
   }
 }

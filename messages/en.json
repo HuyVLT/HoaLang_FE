@@ -21,7 +21,9 @@
     "total": "Total",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "tenantText": "Your platform is isolated under tenant workspace"
+    "tenantText": "Your platform is isolated under tenant workspace",
+    "quickView": "Quick View",
+    "outOfStock": "Out of Stock"
   },
   "auth": {
     "loginTitle": "Sign In",
@@ -35,30 +37,55 @@
     "errorAuth": "Incorrect email or password"
   },
   "hero": {
-    "title": "Journey Through Vietnamese Craft Heritage",
-    "subtitle": "Discover the rustic beauty and cultural essence preserved for thousands of generations across Vietnamese craft villages.",
-    "ctaExplore": "Start Exploring",
-    "ctaItinerary": "AI Planner"
+    "discover": "Discover Vietnam",
+    "title": "Touch the Essence",
+    "subtitle": "A journey through traditional craft villages — where the hands of artisans preserve the soul of a thousand-year-old culture.",
+    "ctaExplore": "Explore Map",
+    "ctaVillages": "View Villages",
+    "statVillages": "120+ Villages",
+    "statProvinces": "40+ Provinces",
+    "statRegions": "8 Cultural Regions",
+    "scroll": "Scroll"
   },
   "featured": {
-    "title": "Featured Craft Villages",
-    "subtitle": "Historic villages preserving national cultural identity through exquisite traditional artistry"
+    "label": "Featured Villages",
+    "title": "Celebrated Craft Villages",
+    "viewAll": "View all craft villages"
   },
   "howItWorks": {
-    "title": "How to Experience HoaLang",
-    "subtitle": "Four simple steps to immerse yourself in Vietnamese cultural heritage",
-    "step1Title": "Explore the Map",
-    "step1Desc": "Search and discover traditional craft villages on our interactive map.",
-    "step2Title": "Plan with AI",
-    "step2Desc": "Utilize artificial intelligence to optimize your route and customized travel plans.",
-    "step3Title": "Join Workshops",
-    "step3Desc": "Book hands-on workshops to craft ceramics or weave silk alongside local artisans.",
-    "step4Title": "Shop Artisanal",
-    "step4Desc": "Support and purchase exquisite, authentic handicrafts directly from makers."
+    "label": "How It Works",
+    "title": "Three steps to start your journey",
+    "step1Title": "Explore Interactive Map",
+    "step1Desc": "Browse over 120 traditional craft villages across 8 cultural regions of Vietnam on an intuitive map.",
+    "step2Title": "AI Customized Itinerary",
+    "step2Desc": "Artificial intelligence analyzes your preferences and timing, generating a unique itinerary for each journey.",
+    "step3Title": "Book Experience & Shop Crafts",
+    "step3Desc": "Join hands-on workshops with local artisans and bring home authentic, meaningful handcrafted items."
+  },
+  "stats": {
+    "villages": "Craft Villages",
+    "artisans": "Artisans",
+    "products": "Artisanal Products",
+    "provinces": "Provinces"
+  },
+  "crafts": {
+    "label": "Featured Crafts",
+    "title": "Essence from Artisan Hands",
+    "viewAll": "Enter Shop"
+  },
+  "quote": {
+    "text": "Each pottery vase is a poem about clay — the artisan works in silence yet with nimble hands, creating eternity from what was once merely earth.",
+    "author": "Nguyen Van Binh",
+    "title": "Meritorious Artisan — Bat Trang Pottery Village"
   },
   "cta": {
-    "title": "Ready for Your Cultural Quest?",
-    "subtitle": "Let HoaLang accompany you on the breathtaking paths of Vietnamese heritage.",
-    "button": "Plan Your Trip"
+    "label": "Personalized Journey",
+    "title": "Let AI Craft Your Itinerary",
+    "desc": "Enter your email to receive a personalized craft village exploration itinerary, custom-tailored for you by HoaLang AI.",
+    "placeholder": "your.email@domain.com",
+    "button": "Start Free",
+    "successTitle": "Thank you!",
+    "successDesc": "Your itinerary is being prepared — please check your email.",
+    "footer": "No account required  •  100% Free  •  4 languages supported"
   }
 }

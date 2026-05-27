@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -54,6 +54,7 @@ export default function CraftCard({
   className,
 }: CraftCardProps) {
   const locale = useLocale();
+  const t = useTranslations('common');
   const [isHovered, setIsHovered] = useState(false);
 
   // Resolve item name based on current locale
@@ -101,7 +102,7 @@ export default function CraftCard({
                 className="inline-flex items-center gap-2 bg-cream text-ink border border-stone px-4 py-2 text-[12px] font-semibold uppercase tracking-wider rounded-sm hover:border-bronze hover:text-lacquer transition-colors shadow-sm active:scale-[0.98]"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Xem nhanh</span>
+                <span>{t('quickView')}</span>
               </motion.button>
             </motion.div>
           )}
@@ -110,7 +111,7 @@ export default function CraftCard({
         {/* Out of Stock Label */}
         {stock === 0 && (
           <div className="absolute top-3 right-3 bg-lacquer/90 backdrop-blur-xs text-cream text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-xs select-none">
-            Hết hàng
+            {t('outOfStock')}
           </div>
         )}
       </div>
