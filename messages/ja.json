@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "map": "マップ",
+    "villages": "工芸村",
+    "itinerary": "AI旅行プラン",
+    "shop": "ショップ",
+    "experience": "体験ワークショップ",
+    "login": "ログイン",
+    "register": "会員登録",
+    "logout": "ログアウト"
+  },
+  "common": {
+    "search": "工芸村を検索...",
+    "exploreNow": "今すぐ探索",
+    "viewDetail": "詳細を見る",
+    "addToCart": "カートに追加",
+    "loading": "読み込み中...",
+    "cart": "カート",
+    "emptyCart": "カートは空です",
+    "total": "合計金額",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "tenantText": "プラットフォームはテナントワークスペースに独立しています"
+  },
+  "auth": {
+    "loginTitle": "ログイン",
+    "registerTitle": "新規会員登録",
+    "emailLabel": "メールアドレス",
+    "passwordLabel": "パスワード",
+    "submitLogin": "ログインする",
+    "submitRegister": "登録する",
+    "noAccount": "アカウントをお持ちでないですか？",
+    "hasAccount": "既にアカウントをお持ちですか？",
+    "errorAuth": "メールアドレスまたはパスワードが正しくありません"
+  },
+  "hero": {
+    "title": "ベトナム伝統工芸村への旅路",
+    "subtitle": "何千世代にもわたり守り続けられてきた、ベトナム伝統工芸の素朴な美しさと文化的本質を探求しましょう。",
+    "ctaExplore": "探索を始める",
+    "ctaItinerary": "AIプラン作成"
+  },
+  "featured": {
+    "title": "注目の伝統工芸村",
+    "subtitle": "卓越した技術で伝統を受け継ぐ、歴史ある工芸村の数々"
+  },
+  "howItWorks": {
+    "title": "HoaLangの体験方法",
+    "subtitle": "ベトナム伝統文化に浸るためのシンプルな4つのステップ",
+    "step1Title": "マップを見る",
+    "step1Desc": "インタラクティブな地図上で伝統的な工芸村を検索し探索します。",
+    "step2Title": "AIでプラン構築",
+    "step2Desc": "人工知能を活用してルートを最適化し、あなただけの旅程を提案します。",
+    "step3Title": "体験に参加する",
+    "step3Desc": "地元の職人と一緒に陶芸やシルク織りを体験できるワークショップを予約します。",
+    "step4Title": "手作りを購入",
+    "step4Desc": "職人から直接届けられる、洗練された本物の伝統工芸品を購入して応援しましょう。"
+  },
+  "cta": {
+    "title": "伝統を巡る旅に出かけませんか？",
+    "subtitle": "HoaLangがあなたのベトナム伝統遺産を巡る旅に寄り添います。",
+    "button": "旅程を作成する"
+  }
+}

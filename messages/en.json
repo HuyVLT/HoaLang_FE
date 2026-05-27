@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "villages": "Villages",
+    "itinerary": "AI Itinerary",
+    "shop": "Shop",
+    "experience": "Experience",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "common": {
+    "search": "Search craft villages...",
+    "exploreNow": "Explore Now",
+    "viewDetail": "View details",
+    "addToCart": "Add to Cart",
+    "loading": "Loading...",
+    "cart": "Cart",
+    "emptyCart": "Your cart is empty",
+    "total": "Total",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "tenantText": "Your platform is isolated under tenant workspace"
+  },
+  "auth": {
+    "loginTitle": "Sign In",
+    "registerTitle": "Create an Account",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "submitLogin": "Login",
+    "submitRegister": "Register",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "errorAuth": "Incorrect email or password"
+  },
+  "hero": {
+    "title": "Journey Through Vietnamese Craft Heritage",
+    "subtitle": "Discover the rustic beauty and cultural essence preserved for thousands of generations across Vietnamese craft villages.",
+    "ctaExplore": "Start Exploring",
+    "ctaItinerary": "AI Planner"
+  },
+  "featured": {
+    "title": "Featured Craft Villages",
+    "subtitle": "Historic villages preserving national cultural identity through exquisite traditional artistry"
+  },
+  "howItWorks": {
+    "title": "How to Experience HoaLang",
+    "subtitle": "Four simple steps to immerse yourself in Vietnamese cultural heritage",
+    "step1Title": "Explore the Map",
+    "step1Desc": "Search and discover traditional craft villages on our interactive map.",
+    "step2Title": "Plan with AI",
+    "step2Desc": "Utilize artificial intelligence to optimize your route and customized travel plans.",
+    "step3Title": "Join Workshops",
+    "step3Desc": "Book hands-on workshops to craft ceramics or weave silk alongside local artisans.",
+    "step4Title": "Shop Artisanal",
+    "step4Desc": "Support and purchase exquisite, authentic handicrafts directly from makers."
+  },
+  "cta": {
+    "title": "Ready for Your Cultural Quest?",
+    "subtitle": "Let HoaLang accompany you on the breathtaking paths of Vietnamese heritage.",
+    "button": "Plan Your Trip"
+  }
+}

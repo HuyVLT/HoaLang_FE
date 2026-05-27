@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "首页",
+    "map": "手绘地图",
+    "villages": "传统手艺村",
+    "itinerary": "AI智能行程",
+    "shop": "工艺品商城",
+    "experience": "非遗体验课",
+    "login": "登录",
+    "register": "注册",
+    "logout": "注销"
+  },
+  "common": {
+    "search": "搜索传统手艺村...",
+    "exploreNow": "立即探索",
+    "viewDetail": "查看详情",
+    "addToCart": "加入购物车",
+    "loading": "加载中...",
+    "cart": "购物车",
+    "emptyCart": "您的购物车为空",
+    "total": "总计金额",
+    "cancel": "取消",
+    "confirm": "确认",
+    "tenantText": "您的平台已在租户工作区独立隔离"
+  },
+  "auth": {
+    "loginTitle": "登录系统",
+    "registerTitle": "注册账号",
+    "emailLabel": "电子邮件",
+    "passwordLabel": "登录密码",
+    "submitLogin": "立即登录",
+    "submitRegister": "立即注册",
+    "noAccount": "还没有账号？",
+    "hasAccount": "已有账号？",
+    "errorAuth": "电子邮件或密码不正确"
+  },
+  "hero": {
+    "title": "探索越南非物质文化遗产手艺村",
+    "subtitle": "穿越时光，追溯流传千年的精湛手工技艺，领略越南传统村落的质朴之美与文化精髓。",
+    "ctaExplore": "开始探索",
+    "ctaItinerary": "AI行程规划"
+  },
+  "featured": {
+    "title": "代表性传统手艺村",
+    "subtitle": "历史悠久的文化名村，以精湛的指尖技艺传承着越南的民族之魂"
+  },
+  "howItWorks": {
+    "title": "如何体验 HoaLang",
+    "subtitle": "只需简单四个步骤，深度沉浸于越南文化遗产的空间中",
+    "step1Title": "地图探索",
+    "step1Desc": "在直观的交互式地图上，搜寻并探索各具特色的传统手工村落。",
+    "step2Title": "AI路线定制",
+    "step2Desc": "利用人工智能优化交通路线，为您量身定制最合理的出行计划。",
+    "step3Title": "参与体验课",
+    "step3Desc": "预订非遗体验课，在当地手工艺人的指导下亲手制作陶瓷或织造绸缎。",
+    "step4Title": "支持手作人",
+    "step4Desc": "购买直接来自村落原产的精美手工艺品，以实际行动支持非遗传承。"
+  },
+  "cta": {
+    "title": "准备好开启您的文化之旅了吗？",
+    "subtitle": "让 HoaLang 伴您同行，踏上追寻越南手艺与非遗文化的旅程。",
+    "button": "立即定制行程"
+  }
+}

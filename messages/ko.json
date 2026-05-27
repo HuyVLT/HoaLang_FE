@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "홈",
+    "map": "지도",
+    "villages": "전통마을",
+    "itinerary": "AI 일정추천",
+    "shop": "상점",
+    "experience": "체험하기",
+    "login": "로그인",
+    "register": "회원가입",
+    "logout": "로그아웃"
+  },
+  "common": {
+    "search": "전통 공예 마을 검색...",
+    "exploreNow": "지금 둘러보기",
+    "viewDetail": "상세 보기",
+    "addToCart": "장바구니 담기",
+    "loading": "불러오는 중...",
+    "cart": "장바구니",
+    "emptyCart": "장바구니가 비어 있습니다",
+    "total": "합계",
+    "cancel": "취소",
+    "confirm": "확인",
+    "tenantText": "플랫폼은 테넌트 작업 공간에서 격리되어 있습니다"
+  },
+  "auth": {
+    "loginTitle": "로그인",
+    "registerTitle": "회원가입",
+    "emailLabel": "이메일 주소",
+    "passwordLabel": "비밀번호",
+    "submitLogin": "로그인하기",
+    "submitRegister": "가입하기",
+    "noAccount": "계정이 없으신가요?",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "errorAuth": "이메일 또는 비밀번호가 올바르지 않습니다"
+  },
+  "hero": {
+    "title": "베트남 공예 유산으로 떠나는 여정",
+    "subtitle": "수천 세대 동안 베트남 공예 마을에서 지켜온 소박한 아름다움과 문화적 정수를 발견해 보세요.",
+    "ctaExplore": "탐험 시작하기",
+    "ctaItinerary": "AI 일정 만들기"
+  },
+  "featured": {
+    "title": "대표 전통 공예 마을",
+    "subtitle": "장인의 정교한 솜씨로 민족의 숨결과 역사를 간직해 온 대표 마을들을 소개합니다"
+  },
+  "howItWorks": {
+    "title": "HoaLang 이용 방법",
+    "subtitle": "베트남 전통 문화에 몰입하기 위한 간단한 4단계",
+    "step1Title": "지도 둘러보기",
+    "step1Desc": "직관적인 대화형 지도 위에서 전통 공예 마을을 찾고 탐험합니다.",
+    "step2Title": "AI 일정 짜기",
+    "step2Desc": "인공지능을 통해 최적화된 동선과 맞춤형 여행 계획을 제공받습니다.",
+    "step3Title": "체험 참여하기",
+    "step3Desc": "현지 장인과 함께 도자기 빚기, 실크 직조 등 오프라인 워크숍을 예약합니다.",
+    "step4Title": "수공예품 쇼핑",
+    "step4Desc": "장인들이 정성껏 만든 고품격 수공예품을 직접 구매하고 지원합니다."
+  },
+  "cta": {
+    "title": "베트남의 숨결을 느낄 준비가 되셨나요?",
+    "subtitle": "HoaLang이 베트남의 아름다운 유산 투어에 동행하겠습니다.",
+    "button": "지금 계획 세우기"
+  }
+}

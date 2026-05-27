@@ -1,27 +1,143 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Subtle organic grain texture simulation */
+  .bg-grain {
+    background-image: radial-gradient(rgba(139, 69, 19, 0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  
+  .bg-grain-subtle {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 0);
+    background-size: 16px 16px;
+  }
+}
+
+@layer base {
+  .theme {
+    --font-heading: 'Playfair Display', serif;
+    --font-sans: 'Be Vietnam Pro', sans-serif;
+  }
+  
+  :root {
+    /* Primary organic color: Moss green #4A7C59 */
+    --primary: oklch(0.485 0.114 144.5);
+    --primary-foreground: oklch(0.985 0.005 70);
+    
+    /* Secondary organic color: Earthy warm brown #8B4513 */
+    --secondary: oklch(0.428 0.177 44.5);
+    --secondary-foreground: oklch(0.985 0.005 70);
+    
+    /* Accent organic color: Turmeric gold #D4A017 */
+    --accent: oklch(0.707 0.187 81.3);
+    --accent-foreground: oklch(0.18 0.02 45);
+    
+    /* Warm Sand Background #FAF6F0 */
+    --background: oklch(0.98 0.01 70);
+    --foreground: oklch(0.18 0.02 45);
+    
+    --card: oklch(0.99 0.005 70);
+    --card-foreground: oklch(0.18 0.02 45);
+    
+    --popover: oklch(0.99 0.005 70);
+    --popover-foreground: oklch(0.18 0.02 45);
+    
+    --muted: oklch(0.94 0.01 70);
+    --muted-foreground: oklch(0.45 0.02 45);
+    
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.985 0.005 70);
+    
+    --border: oklch(0.88 0.01 70);
+    --input: oklch(0.88 0.01 70);
+    --ring: oklch(0.485 0.114 144.5);
+    
+    --radius: 0.75rem;
+    
+    --sidebar: oklch(0.99 0.005 70);
+    --sidebar-foreground: oklch(0.18 0.02 45);
+    --sidebar-primary: oklch(0.485 0.114 144.5);
+    --sidebar-primary-foreground: oklch(0.985 0.005 70);
+    --sidebar-accent: oklch(0.707 0.187 81.3);
+    --sidebar-accent-foreground: oklch(0.18 0.02 45);
+    --sidebar-border: oklch(0.88 0.01 70);
+    --sidebar-ring: oklch(0.485 0.114 144.5);
+  }
+
+  .dark {
+    --background: oklch(0.15 0.01 70); /* Dark forest charcoal */
+    --foreground: oklch(0.96 0.01 70);
+    
+    --card: oklch(0.18 0.01 70);
+    --card-foreground: oklch(0.96 0.01 70);
+    
+    --popover: oklch(0.18 0.01 70);
+    --popover-foreground: oklch(0.96 0.01 70);
+    
+    --primary: oklch(0.52 0.11 144.5); /* Lighter moss green */
+    --primary-foreground: oklch(0.15 0.01 70);
+    
+    --secondary: oklch(0.48 0.15 44.5); /* Earthy brown */
+    --secondary-foreground: oklch(0.96 0.01 70);
+    
+    --muted: oklch(0.22 0.01 70);
+    --muted-foreground: oklch(0.70 0.01 70);
+    
+    --accent: oklch(0.75 0.16 81.3); /* Soft turmeric gold */
+    --accent-foreground: oklch(0.15 0.01 70);
+    
+    --destructive: oklch(0.704 0.191 22.216);
+    --destructive-foreground: oklch(0.96 0.01 70);
+    
+    --border: oklch(0.28 0.01 70);
+    --input: oklch(0.28 0.01 70);
+    --ring: oklch(0.52 0.11 144.5);
+    
+    --sidebar: oklch(0.18 0.01 70);
+    --sidebar-foreground: oklch(0.96 0.01 70);
+    --sidebar-primary: oklch(0.52 0.11 144.5);
+    --sidebar-primary-foreground: oklch(0.15 0.01 70);
+    --sidebar-accent: oklch(0.75 0.16 81.3);
+    --sidebar-accent-foreground: oklch(0.15 0.01 70);
+    --sidebar-border: oklch(0.28 0.01 70);
+    --sidebar-ring: oklch(0.52 0.11 144.5);
+  }
+
+  /* Multi-tenant specific customization classes */
+  /* Tenant Demo 1: Ceramics focal points (Bat Trang) */
+  .tenant-ceramic {
+    --primary: oklch(0.428 0.177 44.5); /* Earthy clay brown as primary */
+    --secondary: oklch(0.485 0.114 144.5); /* Moss green as secondary */
+    --accent: oklch(0.707 0.187 81.3); /* Gold accent */
+  }
+
+  /* Tenant Demo 2: Silk focal points (Van Phuc) */
+  .tenant-silk {
+    --primary: oklch(0.40 0.18 20.0); /* Red silk primary */
+    --secondary: oklch(0.707 0.187 81.3); /* Turmeric gold secondary */
+    --accent: oklch(0.485 0.114 144.5); /* Moss green accent */
+  }
+
+  /* Tenant Demo 3: Lacquerware focal points (Dong Ho / Ha Thai) */
+  .tenant-lacquer {
+    --primary: oklch(0.25 0.05 30.0); /* Deep lacquer black/brown */
+    --secondary: oklch(0.40 0.18 20.0); /* Bright cinnabar red */
+    --accent: oklch(0.707 0.187 81.3); /* Turmeric gold */
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased min-h-screen relative font-sans;
   }
 }
