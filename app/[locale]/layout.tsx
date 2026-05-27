@@ -37,8 +37,10 @@ export default async function LocaleLayout({
   children,
   params: { locale },
 }: LocaleLayoutProps) {
+  console.log('>>> LocaleLayout received locale:', locale);
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as (typeof locales)[number])) {
+    console.warn('>>> LocaleLayout INVALID locale, calling notFound():', locale);
     notFound();
   }
 
