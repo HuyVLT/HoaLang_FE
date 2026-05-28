@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Map, Sparkles, Package, ArrowRight, ArrowUpRight, ChevronRight } from 'lucide-react';
+import { Map, Sparkles, Package, ArrowRight, ArrowUpRight, ChevronRight, Compass, Database } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 
 import SectionLabel from '@/components/shared/SectionLabel';
@@ -273,10 +273,67 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 2 — FEATURED VILLAGES
+          SECTION 2 — INTERACTIVE MAP MODULE (Bản Đồ)
       ════════════════════════════════════════════ */}
       <section
-        id="featured-villages"
+        id="map"
+        className="bg-cream border-b border-stone/30"
+        style={{
+          paddingBlock: 'clamp(80px, 10vw, 140px)',
+          paddingInline: 'clamp(20px, 5vw, 80px)',
+        }}
+      >
+        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+          {/* Left: Text showcase */}
+          <div className="lg:col-span-5 space-y-6">
+            <SectionLabel label="Hệ thống Bản đồ số / Interactive Map Module" />
+            <h2 className="font-heading text-charcoal italic" style={{ fontSize: 'clamp(32px, 4vw, 48px)', lineHeight: 1.15 }}>
+              Bản Đồ Di Sản Số Làng Nghề Việt Nam
+            </h2>
+            <p className="font-sans text-xs text-ash leading-relaxed font-light">
+              Mở rộng khả năng tiếp cận du khách quốc tế thông qua bản đồ di sản 3D trực quan. Làng nghề của bạn sẽ được hiển thị với vị trí địa lý chính xác, tích hợp thẻ chỉ đường thông minh và trang giới thiệu bề dày lịch sử đặc trưng.
+            </p>
+            <div className="h-px bg-stone/50 w-full" />
+            <div className="flex gap-6">
+              <div>
+                <span className="font-heading text-lg font-bold italic text-lacquer">3D View</span>
+                <span className="text-[10px] text-ash font-medium uppercase tracking-wider block">Giao diện thực địa</span>
+              </div>
+              <div>
+                <span className="font-heading text-lg font-bold italic text-lacquer">SEO Friendly</span>
+                <span className="text-[10px] text-ash font-medium uppercase tracking-wider block">Tối ưu tìm kiếm</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Mockup image/graphic representation */}
+          <div className="lg:col-span-7 bg-parchment border border-stone p-6 rounded-sm relative shadow-xs overflow-hidden h-[340px] flex items-center justify-center">
+            <div className="absolute inset-0 bg-grain pointer-events-none opacity-40" />
+            <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-gold/40" />
+            <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-gold/40" />
+            <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-gold/40" />
+            <div className="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-gold/40" />
+            
+            <div className="text-center space-y-4 max-w-xs relative z-10">
+              <div className="w-12 h-12 rounded-full bg-lacquer/10 flex items-center justify-center mx-auto">
+                <Compass className="w-6 h-6 text-lacquer animate-spin duration-5000" />
+              </div>
+              <h4 className="font-heading text-lg italic text-charcoal font-semibold">
+                Giao diện Bản đồ Vệ tinh & 3D
+              </h4>
+              <p className="font-sans text-[11px] text-ash font-light leading-relaxed">
+                Tự động định vị và giới thiệu các địa điểm lò nung gốm, xưởng dệt lụa và gian hàng trực quan quanh khu vực làng nghề của bạn.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          SECTION 3 — ACTIVE TENANT PARTNERS (Làng Nghề)
+      ════════════════════════════════════════════ */}
+      <section
+        id="villages"
         className="bg-parchment"
         style={{
           paddingBlock: 'clamp(64px, 8vw, 120px)',
@@ -315,52 +372,40 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          {/* Asymmetric grid: large left (2fr) + 2 stacked right (1fr) */}
+          {/* 3-column equal grid with beautiful editorial stagger to prevent blurry image stretching */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
             variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-5"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
-            {/* Featured large card — takes 2 cols */}
-            <motion.div variants={fadeUp} className="md:col-span-2">
-              <VillageCard
-                slug={featuredVillages[0].slug}
-                name={featuredVillages[0].name}
-                province={featuredVillages[0].province[locale as 'vi' | 'en'] || featuredVillages[0].province.vi}
-                categories={featuredVillages[0].categories[locale as 'vi' | 'en'] || featuredVillages[0].categories.vi}
-                coverImage={featuredVillages[0].coverImage}
-                isVerified={featuredVillages[0].isVerified}
-              />
-            </motion.div>
-
-            {/* Two smaller cards stacked */}
-            <div className="flex flex-col gap-5">
-              {featuredVillages.slice(1).map((v, i) => (
-                <motion.div key={v.slug} variants={fadeUp} style={{ transitionDelay: `${(i + 1) * 0.1}s` }}>
-                  <VillageCard
-                    slug={v.slug}
-                    name={v.name}
-                    province={v.province[locale as 'vi' | 'en'] || v.province.vi}
-                    categories={v.categories[locale as 'vi' | 'en'] || v.categories.vi}
-                    coverImage={v.coverImage}
-                    isVerified={v.isVerified}
-                  />
-                </motion.div>
-              ))}
-            </div>
+            {featuredVillages.map((v, i) => (
+              <motion.div
+                key={v.slug}
+                variants={fadeUp}
+                className={i === 1 ? "md:translate-y-6" : ""}
+                style={{ transitionDelay: `${i * 0.15}s` }}
+              >
+                <VillageCard
+                  slug={v.slug}
+                  name={v.name}
+                  province={v.province[locale as 'vi' | 'en'] || v.province.vi}
+                  categories={v.categories[locale as 'vi' | 'en'] || v.categories.vi}
+                  coverImage={v.coverImage}
+                  isVerified={v.isVerified}
+                />
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      <OrnamentDivider className="max-w-content mx-auto text-stone px-8" />
-
       {/* ═══════════════════════════════════════════
-          SECTION 3 — HOW IT WORKS
+          SECTION 4 — AI ITINERARY MODULE (AI Lịch Trình)
       ════════════════════════════════════════════ */}
       <section
-        id="how-it-works"
+        id="itinerary"
         className="bg-charcoal"
         style={{
           paddingBlock: 'clamp(64px, 8vw, 120px)',
@@ -378,14 +423,14 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <motion.div variants={fadeUp} className="flex justify-center mb-4">
-              <SectionLabel label={tHow('label')} className="text-gold" />
+              <SectionLabel label="Hành Trình Thông Minh / AI Itinerary Module" className="text-gold" />
             </motion.div>
             <motion.h2
               variants={fadeUp}
               className="font-heading text-cream italic"
               style={{ fontSize: 'clamp(28px, 3.5vw, 48px)', lineHeight: 1.15 }}
             >
-              {tHow('title')}
+              Cá Nhân Hóa Trải Nghiệm Bằng Trí Tuệ Nhân Tạo
             </motion.h2>
           </motion.div>
 
@@ -436,7 +481,7 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 4 — STATS BANNER
+          SECTION 5 — STATS BANNER
       ════════════════════════════════════════════ */}
       <section
         id="stats"
@@ -485,73 +530,145 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          SECTION 5 — FEATURED CRAFTS
+          SECTION 6 — E-COMMERCE HUB (Cửa Hàng)
       ════════════════════════════════════════════ */}
       <section
-        id="featured-crafts"
-        className="bg-cream"
+        id="shop"
+        className="bg-cream border-y border-stone/30"
         style={{
-          paddingBlock: 'clamp(64px, 8vw, 120px)',
+          paddingBlock: 'clamp(80px, 10vw, 140px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
         }}
       >
-        <div className="max-w-content mx-auto">
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
-            variants={stagger}
-            className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12"
-          >
-            <div>
-              <motion.div variants={fadeUp}>
-                <SectionLabel label={tCrafts('label')} className="mb-4" />
-              </motion.div>
-              <motion.h2
-                variants={fadeUp}
-                className="font-heading text-charcoal italic"
-                style={{ fontSize: 'clamp(28px, 3.5vw, 48px)', lineHeight: 1.15 }}
-              >
-                {tCrafts('title')}
-              </motion.h2>
+        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+          {/* Left Column: Graphic Mockup */}
+          <div className="lg:col-span-7 bg-parchment border border-stone p-8 rounded-sm relative shadow-xs h-[340px] flex flex-col justify-between overflow-hidden">
+            <div className="absolute inset-0 bg-grain pointer-events-none opacity-40" />
+            <div className="flex items-center justify-between border-b border-stone/30 pb-4">
+              <span className="font-heading text-[15px] font-bold italic text-charcoal">
+                Cửa hàng Làng Gốm Bát Tràng
+              </span>
+              <span className="font-sans text-[9px] uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200 font-semibold rounded-xs">
+                Giao Dịch Live
+              </span>
             </div>
-            <motion.div variants={fadeUp}>
-              <Link href="/shop">
-                <span className="inline-flex items-center gap-1.5 font-sans text-[12px] font-semibold uppercase tracking-widest text-bronze hover:text-lacquer transition-colors group">
-                  {tCrafts('viewAll')}
-                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </span>
-              </Link>
-            </motion.div>
-          </motion.div>
+            
+            <div className="my-auto space-y-3 max-w-sm">
+              <div className="font-heading text-xl italic text-charcoal font-semibold">
+                Bình Gốm Men Ngọc Bát Tràng
+              </div>
+              <p className="font-sans text-[11px] text-ash font-light leading-relaxed">
+                Đất sét sông Hồng được tạo tác tỉ mỉ qua bàn tay nghệ nhân và nung trong lò củi truyền thống 1300°C.
+              </p>
+              <div className="font-heading text-lg text-lacquer font-bold">480.000đ</div>
+            </div>
 
-          {/* Horizontal scroll on mobile, 4-col on desktop */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-40px' }}
-            variants={stagger}
-            className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 md:grid md:grid-cols-4 md:overflow-visible md:pb-0 scrollbar-none"
-          >
-            {featuredCrafts.map((craft, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="shrink-0 w-64 snap-start md:w-auto"
-              >
-                <CraftCard
-                  name={craft.name}
-                  price={craft.price}
-                  coverImage={craft.coverImage}
-                  villageName={craft.villageName[locale as 'vi' | 'en'] || craft.villageName.vi}
-                  stock={craft.stock}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+            <div className="flex gap-2">
+              <span className="px-3 py-1.5 bg-lacquer text-cream text-[9px] font-semibold uppercase tracking-wider rounded-xs">
+                Thêm vào giỏ
+              </span>
+              <span className="px-3 py-1.5 border border-stone text-ash text-[9px] font-semibold uppercase tracking-wider rounded-xs">
+                Xem nhanh
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column: Text Information */}
+          <div className="lg:col-span-5 space-y-6">
+            <SectionLabel label="Gian hàng độc lập / E-commerce Module" />
+            <h2 className="font-heading text-charcoal italic" style={{ fontSize: 'clamp(32px, 4vw, 48px)', lineHeight: 1.15 }}>
+              Hệ Thống Cửa Hàng Trực Tuyến Độc Bản
+            </h2>
+            <p className="font-sans text-xs text-ash leading-relaxed font-light">
+              Cung cấp cho mỗi làng nghề thành viên một gian hàng trực tuyến hoàn chỉnh. Trưng bày tác phẩm thủ công mỹ nghệ tinh xảo, quản lý giỏ hàng trực quan, theo dõi đơn vận và cổng giao dịch an toàn giúp nghệ nhân bán hàng trực tiếp tới khách hàng toàn cầu.
+            </p>
+            <div className="h-px bg-stone/50 w-full" />
+            <div className="flex gap-6">
+              <div>
+                <span className="font-heading text-lg font-bold italic text-lacquer">Direct Sales</span>
+                <span className="text-[10px] text-ash font-medium uppercase tracking-wider block">Giao thương trực tiếp</span>
+              </div>
+              <div>
+                <span className="font-heading text-lg font-bold italic text-lacquer">Inventory</span>
+                <span className="text-[10px] text-ash font-medium uppercase tracking-wider block">Quản lý kho mộc</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════
+          SECTION 7 — EXPERIENCE BOOKING ENGINE (Trải Nghiệm)
+      ════════════════════════════════════════════ */}
+      <section
+        id="experience"
+        className="bg-parchment"
+        style={{
+          paddingBlock: 'clamp(80px, 10vw, 140px)',
+          paddingInline: 'clamp(20px, 5vw, 80px)',
+        }}
+      >
+        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+          {/* Left Column: Text Information */}
+          <div className="lg:col-span-5 space-y-6">
+            <SectionLabel label="Đặt lịch trải nghiệm / Booking Engine" />
+            <h2 className="font-heading text-charcoal italic" style={{ fontSize: 'clamp(32px, 4vw, 48px)', lineHeight: 1.15 }}>
+              Công Cụ Đặt Lịch Workshop Nghệ Thuật
+            </h2>
+            <p className="font-sans text-xs text-ash leading-relaxed font-light">
+              Hệ thống quản lý đặt lịch học làm gốm, se tơ dệt lụa, vẽ tranh dân gian trực quan. Tự động hóa việc phân bổ lịch trình làm việc của nghệ nhân, kiểm soát số lượng du khách tham gia thực địa tối đa để mang lại trải nghiệm văn hóa trọn vẹn nhất.
+            </p>
+            <div className="h-px bg-stone/50 w-full" />
+            <div className="flex gap-6">
+              <div>
+                <span className="font-heading text-lg font-bold italic text-lacquer">Calendar Sync</span>
+                <span className="text-[10px] text-ash font-medium uppercase tracking-wider block">Đồng bộ lịch biểu</span>
+              </div>
+              <div>
+                <span className="font-heading text-lg font-bold italic text-lacquer">Auto Ledger</span>
+                <span className="text-[10px] text-ash font-medium uppercase tracking-wider block">Danh sách khách hàng</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Graphic Mockup */}
+          <div className="lg:col-span-7 bg-cream border border-stone p-8 rounded-sm relative shadow-xs h-[340px] flex flex-col justify-between overflow-hidden">
+            <div className="absolute inset-0 bg-grain pointer-events-none opacity-40" />
+            <div className="flex items-center justify-between border-b border-stone/30 pb-4">
+              <span className="font-heading text-[15px] font-bold italic text-charcoal">
+                Workshop Trải Nghiệm Xoay Gốm
+              </span>
+              <span className="font-sans text-[9px] uppercase tracking-widest text-amber-700 bg-amber-50 px-2 py-0.5 border border-amber-200 font-semibold rounded-xs">
+                Chờ Duyệt
+              </span>
+            </div>
+
+            <div className="my-auto space-y-4">
+              <div className="flex items-center gap-4 text-xs font-sans text-ash">
+                <span className="bg-stone/20 px-3 py-1 font-semibold rounded-xs text-charcoal">29 Tháng 5</span>
+                <span>Khung giờ: 14:00 - 16:00</span>
+              </div>
+              <div className="font-heading text-xl italic text-charcoal font-semibold">
+                Khách đặt: Sophia Lorenz (2 Khách)
+              </div>
+              <div className="text-[10px] text-ash leading-relaxed">
+                *Hệ thống tự động đồng bộ hóa lịch biểu lên bảng quản trị Làng nghề.
+              </div>
+            </div>
+
+            <div className="flex gap-2 border-t border-stone/30 pt-4">
+              <span className="px-3 py-1.5 bg-emerald-700 text-cream text-[9px] font-semibold uppercase tracking-wider rounded-xs">
+                Xác Nhận Đơn đặt
+              </span>
+              <span className="px-3 py-1.5 border border-stone text-ash text-[9px] font-semibold uppercase tracking-wider rounded-xs">
+                Từ chối
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
 
       {/* ═══════════════════════════════════════════
           SECTION 6 — EDITORIAL QUOTE
@@ -695,6 +812,74 @@ export default function LandingPage() {
             className="font-sans text-ash/60 text-[12px] uppercase tracking-[0.1em] mt-5"
           >
             {tCta('footer')}
+          </motion.p>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          SECTION 8 — ARTISAN / TENANT REGISTRATION BANNER
+      ════════════════════════════════════════════ */}
+      <section
+        id="artisan-registration"
+        className="bg-charcoal text-cream relative overflow-hidden"
+        style={{
+          paddingBlock: 'clamp(80px, 8vw, 120px)',
+          paddingInline: 'clamp(20px, 5vw, 80px)',
+          borderTop: '1px solid rgba(196, 149, 42, 0.2)',
+        }}
+      >
+        {/* Subtle decorative gold corner frames */}
+        <div className="absolute top-6 left-6 w-8 h-8 border-t border-l border-gold/30" />
+        <div className="absolute top-6 right-6 w-8 h-8 border-t border-r border-gold/30" />
+        <div className="absolute bottom-6 left-6 w-8 h-8 border-b border-l border-gold/30" />
+        <div className="absolute bottom-6 right-6 w-8 h-8 border-b border-r border-gold/30" />
+        
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={stagger}
+          className="max-w-3xl mx-auto text-center space-y-6 relative z-10"
+        >
+          <motion.div variants={fadeUp} className="flex justify-center">
+            <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.15em] text-gold flex items-center gap-2">
+              <span className="w-8 h-px bg-gold/50 block" />
+              <span>Đối tác Làng nghề / Merchant Platform</span>
+              <span className="w-8 h-px bg-gold/50 block" />
+            </span>
+          </motion.div>
+
+          <motion.h2
+            variants={fadeUp}
+            className="font-heading text-cream italic"
+            style={{ fontSize: 'clamp(32px, 3.5vw, 48px)', lineHeight: 1.15 }}
+          >
+            Đưa Làng Nghề Của Bạn<br />Lên Bản Đồ Số Di Sản
+          </motion.h2>
+
+          <motion.p
+            variants={fadeUp}
+            className="font-sans text-cream/70 leading-[1.8] max-w-xl mx-auto"
+            style={{ fontSize: 'clamp(14px, 1.2vw, 15px)' }}
+          >
+            Bạn là nghệ nhân, chủ lò gốm, xưởng dệt lụa hay làng tranh dân gian? Hãy sở hữu ngay một website trưng bày nghệ thuật độc bản, số hóa workshop trải nghiệm văn hóa và vận hành shop bán hàng thủ công tinh xảo chỉ trong 3 bước cùng HoaLang.
+          </motion.p>
+
+          <motion.div variants={fadeUp} className="pt-4">
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-2.5 bg-lacquer text-cream font-sans font-semibold uppercase tracking-[0.12em] text-[12px] px-8 py-4 rounded-sm hover:bg-[#7a1616] transition-all hover:scale-[1.02] shadow-md border border-lacquer/50"
+            >
+              <span>Đăng Ký Mở Gian Hàng Làng Nghề</span>
+              <ArrowUpRight className="w-4 h-4 text-accent" />
+            </Link>
+          </motion.div>
+
+          <motion.p
+            variants={fadeUp}
+            className="font-sans text-cream/40 text-[10px] uppercase tracking-wider"
+          >
+            Khởi tạo tức thì  •  Không phí ẩn  •  Công nghệ phân tách Multi-Tenant độc lập
           </motion.p>
         </motion.div>
       </section>

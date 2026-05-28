@@ -1,11 +1,22 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Link } from '@/navigation';
+import { Link, usePathname } from '@/navigation';
 import { Compass, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   const t = useTranslations('nav');
+  const pathname = usePathname();
+
+  if (
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/tenant') ||
+    pathname.startsWith('/onboarding') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/auth')
+  ) {
+    return null;
+  }
 
   return (
     <footer className="w-full bg-secondary text-secondary-foreground border-t border-secondary/15 font-sans">
@@ -99,7 +110,7 @@ export default function Footer() {
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 text-accent shrink-0" />
                 <span className="text-sm text-secondary-foreground/80">
-                  contact@restx.food
+                  contact@hoalang.vn
                 </span>
               </li>
             </ul>
@@ -115,7 +126,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} HoaLang Platform. All rights reserved.
           </p>
           <div className="flex gap-4 text-xs text-secondary-foreground/60">
-            <span>Powered by restx.food multi-tenant</span>
+            <span>Hệ thống Quản trị di sản Làng nghề</span>
           </div>
         </div>
 

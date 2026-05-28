@@ -26,15 +26,24 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  if (
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/tenant') ||
+    pathname.startsWith('/onboarding') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/auth')
+  ) {
+    return null;
+  }
+
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const navLinks = [
-    { href: '/',           label: t('home') },
-    { href: '/map',        label: t('map') },
-    { href: '/villages',   label: t('villages') },
-    { href: '/itinerary',  label: t('itinerary') },
-    { href: '/shop',       label: t('shop') },
-    { href: '/experience', label: t('experience') },
+    { href: '/#map',        label: t('map') },
+    { href: '/#villages',   label: t('villages') },
+    { href: '/#itinerary',  label: t('itinerary') },
+    { href: '/#shop',       label: t('shop') },
+    { href: '/#experience', label: t('experience') },
   ];
 
   // Color tokens based on scroll state

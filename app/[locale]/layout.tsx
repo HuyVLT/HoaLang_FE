@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Be_Vietnam_Pro } from 'next/font/google';
+import { Cormorant_Garamond, Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { getMessages } from 'next-intl/server';
@@ -7,12 +7,20 @@ import { locales } from '@/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/sonner';
+import CheckoutDrawer from '@/components/shared/CheckoutDrawer';
 import '../globals.css';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin', 'vietnamese'],
   variable: '--font-heading',
   weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-playfair',
+  weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
 });
 
@@ -49,7 +57,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${beVietnam.variable} ${cormorant.variable}`}>
+    <html lang={locale} className={`${beVietnam.variable} ${cormorant.variable} ${playfair.variable}`}>
       <body className="bg-background text-foreground antialiased min-h-screen relative font-sans">
         
         {/* Subtle background organic grain layer */}
@@ -64,6 +72,7 @@ export default async function LocaleLayout({
             <Footer />
           </div>
           <Toaster richColors closeButton position="top-right" />
+          <CheckoutDrawer />
         </NextIntlClientProvider>
 
       </body>
