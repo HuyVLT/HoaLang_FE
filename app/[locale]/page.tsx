@@ -2,16 +2,19 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Link } from '@/navigation';
+import { Link, useRouter } from '@/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Sparkles, Package, ArrowRight, ArrowUpRight, ChevronRight, Compass, Database } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 
-import SectionLabel from '@/components/shared/SectionLabel';
-import VillageCard from '@/components/shared/VillageCard';
-import OrnamentDivider from '@/components/shared/OrnamentDivider';
-import AnimatedNumber from '@/components/shared/AnimatedNumber';
-import CraftCard from '@/components/shared/CraftCard';
+import {
+  SectionLabel,
+  VillageCard,
+  OrnamentDivider,
+  AnimatedNumber,
+  CraftCard,
+  MapboxMap
+} from '@/components/shared';
 
 /* ─────────────────── Framer Motion Variants ─────────────────── */
 const fadeUp: import('framer-motion').Variants = {
@@ -100,14 +103,102 @@ const featuredCrafts = [
     name: { vi: 'Nón Lá Huế Thêu Tay', en: 'Hand-Embroidered Hue Conical Hat', zh: '顺化手绣斗笠', ja: 'フエ手刺繍ノンラー', ko: '훼 손자수 논라' },
     price: 250000,
     coverImage: '/images/craft-non-la.png',
-    villageName: { vi: 'Làng Nón Tây Hồ', en: 'Tay Ho Conical Hat Village', zh: '西湖斗笠村', ja: 'タイホーノンラー村', ko: '테이호 논라 마을' },
+    villageName: { vi: 'Làng Nón Tây Hồ', en: 'Tay Ho Conical Hat Village', zh: '西湖斗笠村', ja: 'タイホーノンラー村', ko: '테i호 논라 마을' },
     stock: 8,
   },
+];
+
+const mapVillages = [
+  {
+    slug: 'bat-trang',
+    name: { vi: 'Làng Gốm Bát Tràng', en: 'Bat Trang Pottery Village' },
+    province: { vi: 'Hà Nội', en: 'Ha Noi' },
+    categories: { vi: ['Gốm sứ', 'Đất nung'], en: ['Ceramics', 'Terracotta'] },
+    description: {
+      vi: 'Làng gốm cổ nằm bên dòng sông Hồng lịch sử, nổi tiếng với kỹ thuật xoay gốm thủ công bằng tay.',
+      en: 'An ancient pottery village nested along the Red River, renowned for handcrafted wheel-turning.'
+    },
+    lng: 105.9327,
+    lat: 20.9733,
+    coverImage: '/images/village-bat-trang.png',
+    isVerified: true,
+  },
+  {
+    slug: 'van-phuc',
+    name: { vi: 'Làng Lụa Vạn Phúc', en: 'Van Phuc Silk Village' },
+    province: { vi: 'Hà Nội', en: 'Ha Noi' },
+    categories: { vi: ['Dệt lụa', 'Tơ tằm'], en: ['Silk Weaving', 'Mulberry Silk'] },
+    description: {
+      vi: 'Cái nôi của dòng lụa Vân lụa Hà Đông tơ tằm nguyên bản.',
+      en: 'The cradle of premium Ha Dong mulberry silk.'
+    },
+    lng: 105.7725,
+    lat: 20.9767,
+    coverImage: '/images/village-van-phuc.png',
+    isVerified: true,
+  },
+  {
+    slug: 'dong-ho',
+    name: { vi: 'Làng Tranh Đông Hồ', en: 'Dong Ho Folk Painting Village' },
+    province: { vi: 'Bắc Ninh', en: 'Bac Ninh' },
+    categories: { vi: ['Tranh dân gian', 'Bản khắc gỗ'], en: ['Folk Painting', 'Woodblock Print'] },
+    description: {
+      vi: 'Nơi sản sinh ra các bức tranh khắc gỗ mộc mạc in trên nền giấy điệp lấp lánh.',
+      en: 'Home of rustic folk woodblock prints pressed onto shimmering scallop-shell Diep paper.'
+    },
+    lng: 106.0744,
+    lat: 21.0967,
+    coverImage: '/images/village-dong-ho.png',
+    isVerified: false,
+  },
+  {
+    slug: 'non-nuoc',
+    name: { vi: 'Làng Đá Non Nước', en: 'Non Nuoc Stone Carving Village' },
+    province: { vi: 'Đà Nẵng', en: 'Da Nang' },
+    categories: { vi: ['Điêu khắc đá', 'Mỹ nghệ'], en: ['Stone Carving', 'Fine Crafts'] },
+    description: {
+      vi: 'Tọa lạc dưới chân núi Ngũ Hành Sơn hùng vĩ, nổi tiếng với nghệ thuật chế tác đá cẩm thạch.',
+      en: 'Nestled at the foot of the Marble Mountains, famous for grand marble sculptures.'
+    },
+    lng: 108.2619,
+    lat: 16.0125,
+    coverImage: '/images/register_silk_bg.png',
+    isVerified: false,
+  },
+  {
+    slug: 'thanh-ha',
+    name: { vi: 'Làng Gốm Thanh Hà', en: 'Thanh Ha Pottery Village' },
+    province: { vi: 'Quảng Nam', en: 'Quang Nam' },
+    categories: { vi: ['Gốm đất nung', 'Sản phẩm mộc'], en: ['Terracotta', 'Clay Crafts'] },
+    description: {
+      vi: 'Làng nghề ven dòng Thu Bồn êm đềm, nổi tiếng với các sản phẩm gốm mộc không tráng men.',
+      en: 'A peaceful terracotta village on the Thu Bon riverbanks, specializing in unglazed earthenware.'
+    },
+    lng: 108.3072,
+    lat: 15.8825,
+    coverImage: '/images/login_pottery_bg.png',
+    isVerified: true,
+  },
+  {
+    slug: 'phuoc-kieu',
+    name: { vi: 'Làng Đúc Đồng Phước Kiều', en: 'Phuoc Kieu Bronze Casting Village' },
+    province: { vi: 'Quảng Nam', en: 'Quang Nam' },
+    categories: { vi: ['Đúc đồng', 'Cồng chiêng'], en: ['Bronze Casting', 'Gongs & Bells'] },
+    description: {
+      vi: 'Vương quốc của những lò nung cồng chiêng, nhạc cụ, chuông đồng cổ xưa.',
+      en: 'A sanctuary of sacred bronze gongs, temple bells, and royal bronze items.'
+    },
+    lng: 108.2325,
+    lat: 15.8592,
+    coverImage: '/images/village-van-phuc.png',
+    isVerified: false,
+  }
 ];
 
 /* ─────────────────── Page Component ─────────────────── */
 export default function LandingPage() {
   const locale = useLocale();
+  const router = useRouter();
   const tHero = useTranslations('hero');
   const tFeatured = useTranslations('featured');
   const tHow = useTranslations('howItWorks');
@@ -118,6 +209,7 @@ export default function LandingPage() {
 
   const [email, setEmail] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [selectedVillage, setSelectedVillage] = useState<any>(null);
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -306,25 +398,15 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right: Mockup image/graphic representation */}
-          <div className="lg:col-span-7 bg-parchment border border-stone p-6 rounded-sm relative shadow-xs overflow-hidden h-[340px] flex items-center justify-center">
-            <div className="absolute inset-0 bg-grain pointer-events-none opacity-40" />
-            <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-gold/40" />
-            <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-gold/40" />
-            <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-gold/40" />
-            <div className="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-gold/40" />
-            
-            <div className="text-center space-y-4 max-w-xs relative z-10">
-              <div className="w-12 h-12 rounded-full bg-lacquer/10 flex items-center justify-center mx-auto">
-                <Compass className="w-6 h-6 text-lacquer animate-spin duration-5000" />
-              </div>
-              <h4 className="font-heading text-lg italic text-charcoal font-semibold">
-                Giao diện Bản đồ Vệ tinh & 3D
-              </h4>
-              <p className="font-sans text-[11px] text-ash font-light leading-relaxed">
-                Tự động định vị và giới thiệu các địa điểm lò nung gốm, xưởng dệt lụa và gian hàng trực quan quanh khu vực làng nghề của bạn.
-              </p>
-            </div>
+          {/* Right: Mapbox Interactive Map */}
+          <div className="lg:col-span-7 h-[400px] relative overflow-hidden rounded-sm border border-stone">
+            <MapboxMap
+              villages={mapVillages}
+              selectedVillage={selectedVillage}
+              onSelectVillage={(v) => setSelectedVillage(v)}
+              onExploreVillage={(v) => router.push(`/tenant/${v.slug}`)}
+              locale={locale as 'vi' | 'en'}
+            />
           </div>
         </div>
       </section>
