@@ -5,20 +5,7 @@ import { MapPin, Phone, Clock, Compass } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MapSection as MapSectionType } from '@/types/tenant';
 import { SectionLabel, LocaleText } from '@/components/shared';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-};
+import { fadeUp, stagger } from './motion';
 
 export default function MapSection({ section }: { section: MapSectionType }) {
   const { heading, coordinates, address, phone, hours } = section;

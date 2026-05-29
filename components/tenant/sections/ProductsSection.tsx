@@ -6,21 +6,7 @@ import { motion } from 'framer-motion';
 import { ProductsSection as ProductsSectionType } from '@/types/tenant';
 import { SectionLabel, LocaleText, CraftCard, useCheckoutStore } from '@/components/shared';
 import { useTenantTheme } from '../TenantThemeProvider';
-
-// Stagger reveals
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-};
+import { fadeUp, stagger } from './motion';
 
 // Realistic mock products for Bát Tràng, Vạn Phúc, and general craft
 const MOCK_PRODUCTS_MAP: Record<
