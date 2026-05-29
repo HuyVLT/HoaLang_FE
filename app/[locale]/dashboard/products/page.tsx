@@ -39,7 +39,7 @@ const DEFAULT_PRODUCTS: ProductItem[] = [
     price: 950000,
     stock: 5,
     category: 'Ấm chén / Tea Set',
-    image: 'https://images.unsplash.com/photo-1565192647048-f997ded879ab?w=300&h=300&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=300&h=300&fit=crop&q=80',
   },
   {
     id: 'P03',
