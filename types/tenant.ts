@@ -127,5 +127,6 @@ export interface PageConfig {
   templateId: string; // e.g. "pottery-template", "silk-template"
   theme: ThemeConfig;
   sections: Section[];
+  published?: boolean;
   updatedAt?: Date;
 }

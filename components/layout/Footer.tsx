@@ -13,7 +13,8 @@ export default function Footer() {
     pathname.startsWith('/tenant') ||
     pathname.startsWith('/onboarding') ||
     pathname.startsWith('/admin') ||
-    pathname.startsWith('/auth')
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/map')
   ) {
     return null;
   }

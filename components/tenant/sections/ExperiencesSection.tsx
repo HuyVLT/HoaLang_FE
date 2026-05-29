@@ -7,20 +7,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, Tag } from 'lucide-react';
 import { ExperiencesSection as ExperiencesSectionType } from '@/types/tenant';
 import { SectionLabel, LocaleText, useCheckoutStore } from '@/components/shared';
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-};
+import { fadeUp, stagger } from './motion';
 
 export default function ExperiencesSection({
   section,

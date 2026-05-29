@@ -2,12 +2,20 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Link } from '@/navigation';
-import { motion } from 'framer-motion';
-import { Compass, Package, Sparkles, ArrowUpRight, ArrowRight, Clock, Tag } from 'lucide-react';
+import { Link, useRouter } from '@/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Map, Sparkles, Package, ArrowRight, ArrowUpRight, ChevronRight, Compass, Database, Clock, Tag } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 
-import { SectionLabel, VillageCard, OrnamentDivider, AnimatedNumber, LocaleText } from '@/components/shared';
+import {
+  SectionLabel,
+  VillageCard,
+  OrnamentDivider,
+  AnimatedNumber,
+  CraftCard,
+  MapboxMap,
+  LocaleText
+} from '@/components/shared';
 
 /* ─────────────────── Framer Motion Variants ─────────────────── */
 const fadeUp: import('framer-motion').Variants = {
@@ -224,8 +232,97 @@ const bilingualContent = {
   },
 };
 
+const mapVillages = [
+  {
+    slug: 'bat-trang',
+    name: { vi: 'Làng Gốm Bát Tràng', en: 'Bat Trang Pottery Village' },
+    province: { vi: 'Hà Nội', en: 'Ha Noi' },
+    categories: { vi: ['Gốm sứ', 'Đất nung'], en: ['Ceramics', 'Terracotta'] },
+    description: {
+      vi: 'Làng gốm cổ nằm bên dòng sông Hồng lịch sử, nổi tiếng với kỹ thuật xoay gốm thủ công bằng tay.',
+      en: 'An ancient pottery village nested along the Red River, renowned for handcrafted wheel-turning.'
+    },
+    lng: 105.9327,
+    lat: 20.9733,
+    coverImage: '/images/village-bat-trang.png',
+    isVerified: true,
+  },
+  {
+    slug: 'van-phuc',
+    name: { vi: 'Làng Lụa Vạn Phúc', en: 'Van Phuc Silk Village' },
+    province: { vi: 'Hà Nội', en: 'Ha Noi' },
+    categories: { vi: ['Dệt lụa', 'Tơ tằm'], en: ['Silk Weaving', 'Mulberry Silk'] },
+    description: {
+      vi: 'Cái nôi của dòng lụa Vân lụa Hà Đông tơ tằm nguyên bản.',
+      en: 'The cradle of premium Ha Dong mulberry silk.'
+    },
+    lng: 105.7725,
+    lat: 20.9767,
+    coverImage: '/images/village-van-phuc.png',
+    isVerified: true,
+  },
+  {
+    slug: 'dong-ho',
+    name: { vi: 'Làng Tranh Đông Hồ', en: 'Dong Ho Folk Painting Village' },
+    province: { vi: 'Bắc Ninh', en: 'Bac Ninh' },
+    categories: { vi: ['Tranh dân gian', 'Bản khắc gỗ'], en: ['Folk Painting', 'Woodblock Print'] },
+    description: {
+      vi: 'Nơi sản sinh ra các bức tranh khắc gỗ mộc mạc in trên nền giấy điệp lấp lánh.',
+      en: 'Home of rustic folk woodblock prints pressed onto shimmering scallop-shell Diep paper.'
+    },
+    lng: 106.0744,
+    lat: 21.0967,
+    coverImage: '/images/village-dong-ho.png',
+    isVerified: false,
+  },
+  {
+    slug: 'non-nuoc',
+    name: { vi: 'Làng Đá Non Nước', en: 'Non Nuoc Stone Carving Village' },
+    province: { vi: 'Đà Nẵng', en: 'Da Nang' },
+    categories: { vi: ['Điêu khắc đá', 'Mỹ nghệ'], en: ['Stone Carving', 'Fine Crafts'] },
+    description: {
+      vi: 'Tọa lạc dưới chân núi Ngũ Hành Sơn hùng vĩ, nổi tiếng với nghệ thuật chế tác đá cẩm thạch.',
+      en: 'Nestled at the foot of the Marble Mountains, famous for grand marble sculptures.'
+    },
+    lng: 108.2619,
+    lat: 16.0125,
+    coverImage: '/images/register_silk_bg.png',
+    isVerified: false,
+  },
+  {
+    slug: 'thanh-ha',
+    name: { vi: 'Làng Gốm Thanh Hà', en: 'Thanh Ha Pottery Village' },
+    province: { vi: 'Quảng Nam', en: 'Quang Nam' },
+    categories: { vi: ['Gốm đất nung', 'Sản phẩm mộc'], en: ['Terracotta', 'Clay Crafts'] },
+    description: {
+      vi: 'Làng nghề ven dòng Thu Bồn êm đềm, nổi tiếng với các sản phẩm gốm mộc không tráng men.',
+      en: 'A peaceful terracotta village on the Thu Bon riverbanks, specializing in unglazed earthenware.'
+    },
+    lng: 108.3072,
+    lat: 15.8825,
+    coverImage: '/images/login_pottery_bg.png',
+    isVerified: true,
+  },
+  {
+    slug: 'phuoc-kieu',
+    name: { vi: 'Làng Đúc Đồng Phước Kiều', en: 'Phuoc Kieu Bronze Casting Village' },
+    province: { vi: 'Quảng Nam', en: 'Quang Nam' },
+    categories: { vi: ['Đúc đồng', 'Cồng chiêng'], en: ['Bronze Casting', 'Gongs & Bells'] },
+    description: {
+      vi: 'Vương quốc của những lò nung cồng chiêng, nhạc cụ, chuông đồng cổ xưa.',
+      en: 'A sanctuary of sacred bronze gongs, temple bells, and royal bronze items.'
+    },
+    lng: 108.2325,
+    lat: 15.8592,
+    coverImage: '/images/village-van-phuc.png',
+    isVerified: false,
+  }
+];
+
 export default function LandingPage() {
   const locale = useLocale() as 'vi' | 'en';
+  const router = useRouter();
+  const [selectedVillage, setSelectedVillage] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-parchment overflow-x-hidden selection:bg-lacquer/10 selection:text-lacquer">
@@ -397,26 +494,15 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right Column: Visual Representational Mockup */}
-          <div className="lg:col-span-7 bg-parchment border border-stone p-8 rounded-sm relative shadow-xs h-[340px] flex items-center justify-center overflow-hidden">
-            {/* Grain texture back */}
-            <div className="absolute inset-0 bg-grain pointer-events-none opacity-45" />
-            <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-gold/40" />
-            <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-gold/40" />
-            <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-gold/40" />
-            <div className="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-gold/40" />
-            
-            <div className="text-center space-y-4 max-w-xs relative z-10">
-              <div className="w-12 h-12 rounded-full border border-stone/50 bg-cream flex items-center justify-center mx-auto shadow-xs">
-                <Compass className="w-5 h-5 text-lacquer animate-spin-slow" />
-              </div>
-              <h4 className="font-heading text-[18px] italic text-charcoal font-semibold">
-                Giao Diện Vệ Tinh Số Hoá
-              </h4>
-              <p className="font-sans text-[11px] text-ash font-light leading-relaxed">
-                Tự động đồng bộ các điểm xưởng, di tích lịch sử và danh lam bao quanh không gian độc bản của làng nghề.
-              </p>
-            </div>
+          {/* Right: Mapbox Interactive Map */}
+          <div className="lg:col-span-7 h-[400px] relative overflow-hidden rounded-sm border border-stone">
+            <MapboxMap
+              villages={mapVillages}
+              selectedVillage={selectedVillage}
+              onSelectVillage={(v) => setSelectedVillage(v)}
+              onExploreVillage={(v) => router.push(`/tenant/${v.slug}`)}
+              locale={locale as 'vi' | 'en'}
+            />
           </div>
         </div>
       </section>

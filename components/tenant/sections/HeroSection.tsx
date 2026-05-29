@@ -6,21 +6,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { HeroSection as HeroSectionType } from '@/types/tenant';
 import { SectionLabel, LocaleText } from '@/components/shared';
-
-// Visual reveal variants
-const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-};
+import { fadeUp, stagger } from './motion';
 
 export default function HeroSection({ section }: { section: HeroSectionType }) {
   const { title, subtitle, backgroundImage, primaryCta, secondaryCta } = section;
