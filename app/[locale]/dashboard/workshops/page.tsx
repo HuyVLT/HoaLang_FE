@@ -30,7 +30,7 @@ const DEFAULT_WORKSHOPS: WorkshopItem[] = [
     title: 'Trải nghiệm xoay gốm cơ bản',
     duration: '2 giờ (2 hours)',
     price: 250000,
-    image: 'https://images.unsplash.com/photo-1565192647048-f997ded879ab?w=400&h=300&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=300&fit=crop&q=80',
     description: 'Học cách định hình phôi gốm tròn trên bàn xoay chân gỗ mộc mạc, làm ly chén cơ bản.',
   },
   {
@@ -61,7 +61,7 @@ export default function WorkshopsManager() {
       title,
       duration,
       price: parseInt(price),
-      image: image || 'https://images.unsplash.com/photo-1565192647048-f997ded879ab?w=400&h=300&fit=crop&q=80',
+      image: image || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=300&fit=crop&q=80',
       description,
     };
 

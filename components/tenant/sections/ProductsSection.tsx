@@ -44,7 +44,7 @@ const MOCK_PRODUCTS_MAP: Record<
     {
       name: { vi: 'Bộ Ấm Trà Men Rạn Cổ Bọc Đồng', en: 'Bronze-Accented Crackled Antique Tea Set' },
       price: 950000,
-      coverImage: 'https://images.unsplash.com/photo-1565192647048-f997ded879ab?w=600&h=600&fit=crop&q=80',
+      coverImage: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600&h=600&fit=crop&q=80',
       villageName: 'Làng Gốm Bát Tràng',
       stock: 5,
     },

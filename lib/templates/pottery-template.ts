@@ -91,7 +91,7 @@ export const potteryTemplate: PageConfig = {
             vi: 'Học cách định hình phôi gốm tròn trên bàn xoay, làm ly, chén hoặc đĩa mộc mạc.',
             en: 'Learn the core centering techniques on standard kick wheels. Make your own rustic cups or plates.',
           },
-          image: 'https://images.unsplash.com/photo-1565192647048-f997ded879ab?auto=format&fit=crop&w=600&q=80',
+          image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=600&q=80',
           price: 250000,
           duration: '2 giờ (2 hours)',
         },
@@ -131,7 +131,7 @@ export const potteryTemplate: PageConfig = {
           caption: { vi: 'Sơn trét và tỉ mỉ nặn dán đắp nổi hoa văn rồng nổi', en: 'Intricately detailing and carving 3D dragon patterns onto clay jars' },
         },
         {
-          url: 'https://images.unsplash.com/photo-1565192647048-f997ded879ab?auto=format&fit=crop&w=800&q=80',
+          url: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=800&q=80',
           caption: { vi: 'Tráng lớp nước men ngọc trong trẻo trước khi đưa vào hầm nung', en: 'Coating celadon jade glaze layer before putting in high temperature kiln' },
         },
       ],
