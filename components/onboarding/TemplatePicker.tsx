@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Check, Eye, X } from 'lucide-react';
+import { Check, Eye, X } from 'lucide-react';
 
 interface TemplateOption {
   id: string;

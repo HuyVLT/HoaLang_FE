@@ -10,8 +10,6 @@ import {
   Calendar,
   CheckCircle,
   CreditCard,
-  Truck,
-  Users,
   Compass,
   ArrowRight,
   ShieldCheck,

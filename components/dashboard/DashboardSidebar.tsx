@@ -23,7 +23,7 @@ interface SidebarItem {
   name: string;
   labelVi: string;
   labelEn: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   path: string;
 }
 

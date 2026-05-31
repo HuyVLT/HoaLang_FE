@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, ShieldCheck, Mail, Globe, Phone, Save } from 'lucide-react';
+import { Settings, Mail, Globe, Phone, Save } from 'lucide-react';
 import { toast } from 'sonner';
-import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import { SectionLabel } from '@/components/shared';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -17,7 +17,6 @@ const stagger = {
 };
 
 export default function SettingsPanel() {
-  const [tenantSlug, setTenantSlug] = useState('bat-trang');
   const [tenantName, setTenantName] = useState('Làng Gốm Bát Tràng');
   const [customDomain, setCustomDomain] = useState('');
   const [hotline, setHotline] = useState('+84 24 3874 0123');
@@ -27,7 +26,6 @@ export default function SettingsPanel() {
     const savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
     const savedName = sessionStorage.getItem('hoalang_tenant_name');
     if (savedSlug) {
-      setTenantSlug(savedSlug);
       setCustomDomain(`${savedSlug}.hoalang.vn`);
       setEmail(`contact@${savedSlug}.hoalang.vn`);
     }
@@ -144,4 +142,3 @@ export default function SettingsPanel() {
     </div>
   );
 }
-export { SettingsPanel };

@@ -13,17 +13,6 @@ import TestimonialsSection from './sections/TestimonialsSection';
 import CTASection from './sections/CTASection';
 import MapSection from './sections/MapSection';
 
-const SECTION_MAP: Record<string, React.ComponentType<any>> = {
-  hero: HeroSection,
-  story: StorySection,
-  gallery: GallerySection,
-  products: ProductsSection,
-  experiences: ExperiencesSection,
-  testimonials: TestimonialsSection,
-  cta: CTASection,
-  map: MapSection,
-};
-
 interface SectionRendererProps {
   sections: Section[];
 }
@@ -36,13 +25,27 @@ export default function SectionRenderer({ sections }: SectionRendererProps) {
   return (
     <div className="flex flex-col w-full">
       {sections.map((section) => {
-        const Component = SECTION_MAP[section.type];
-        if (!Component) {
-          console.warn(`[SectionRenderer] Unknown section type: ${section.type}`);
-          return null;
+        switch (section.type) {
+          case 'hero':
+            return <HeroSection key={section.id} section={section} />;
+          case 'story':
+            return <StorySection key={section.id} section={section} />;
+          case 'gallery':
+            return <GallerySection key={section.id} section={section} />;
+          case 'products':
+            return <ProductsSection key={section.id} section={section} />;
+          case 'experiences':
+            return <ExperiencesSection key={section.id} section={section} />;
+          case 'testimonials':
+            return <TestimonialsSection key={section.id} section={section} />;
+          case 'cta':
+            return <CTASection key={section.id} section={section} />;
+          case 'map':
+            return <MapSection key={section.id} section={section} />;
+          default:
+            console.warn(`[SectionRenderer] Unknown section type: ${(section as { type: string }).type}`);
+            return null;
         }
-
-        return <Component key={section.id} section={section} />;
       })}
     </div>
   );
