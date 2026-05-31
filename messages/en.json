@@ -34,7 +34,15 @@
     "submitRegister": "Register",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "errorAuth": "Incorrect email or password"
+    "errorAuth": "Incorrect email or password",
+    "activating": "Activating account...",
+    "activationSuccess": "Account activated successfully!",
+    "activationSuccessDesc": "Welcome to HoaLang. Your account has been successfully verified. Redirecting you shortly.",
+    "activationFailed": "Activation failed",
+    "activationFailedDesc": "Your verification link has expired or is invalid. Please register again to request a new link.",
+    "goToLogin": "Back to Login",
+    "oauthCallback": "Authenticating heritage account...",
+    "oauthRedirecting": "Redirecting to your dashboard..."
   },
   "hero": {
     "discover": "Discover Vietnam",
@@ -87,5 +95,14 @@
     "successTitle": "Thank you!",
     "successDesc": "Your itinerary is being prepared — please check your email.",
     "footer": "No account required  •  100% Free  •  4 languages supported"
+  },
+  "footer": {
+    "desc": "A platform connecting travel and preserving the heritage values of Vietnamese traditional craft villages. A journey to cherish the soul of the nation.",
+    "explore": "Explore",
+    "products": "Products & Workshops",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "address": "Hanoi, Vietnam",
+    "system": "Artisanal Heritage Management System"
   }
 }

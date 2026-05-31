@@ -8,6 +8,7 @@ import { useCartStore } from '@/lib/store/cartStore';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, ShoppingBag, LogOut } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header() {
   const t = useTranslations('nav');
@@ -16,17 +17,37 @@ export default function Header() {
   const cartItems = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isTenant, setIsTenant] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 40);
-    // Set initial state in case page loads already scrolled
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Client-side subdomain detection
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      const parts = host.split('.');
+      let subdomain = '';
+      if (host.includes('localhost')) {
+        subdomain = host.split('.localhost')[0];
+        if (subdomain === 'localhost') subdomain = '';
+      } else {
+        if (parts.length > 2) {
+          subdomain = parts[0];
+          if (subdomain === 'www') subdomain = '';
+        }
+      }
+      setIsTenant(!!subdomain);
+    }
+
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   if (
+    isTenant ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/tenant') ||
     pathname.startsWith('/onboarding') ||
@@ -49,7 +70,6 @@ export default function Header() {
   // Color tokens based on scroll state
   const textColor    = scrolled ? '#2E2318' : '#FAF7F2';
   const activeColor  = scrolled ? '#8B1A1A' : '#C4952A';
-  const subtleColor  = scrolled ? '#8C8070' : 'rgba(250,247,242,0.65)';
 
   return (
     <header
@@ -166,22 +186,101 @@ export default function Header() {
           {/* Auth — desktop only */}
           <div className="hidden md:flex items-center gap-3">
             {mounted && isAuthenticated ? (
-              <>
-                <span
-                  className="font-sans text-[12px] max-w-[120px] truncate transition-colors duration-300"
-                  style={{ color: subtleColor }}
-                >
-                  {user?.name || user?.email}
-                </span>
+              <div className="relative">
                 <button
-                  onClick={logout}
-                  className="flex items-center gap-1.5 font-sans text-[12px] font-semibold uppercase tracking-[0.10em] transition-colors duration-300"
-                  style={{ color: subtleColor }}
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 group focus:outline-none"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
-                  {t('logout')}
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-7 h-7 rounded-sm object-cover border border-stone/60 transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-sm flex items-center justify-center font-sans text-[11px] font-semibold text-cream bg-lacquer border border-stone/40 transition-transform duration-300 group-hover:scale-105">
+                      {(user?.name || user?.email || 'H').slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                  <span
+                    className="font-sans text-[12px] font-semibold uppercase tracking-[0.10em] max-w-[120px] truncate transition-colors duration-300"
+                    style={{ color: textColor }}
+                  >
+                    {user?.name || user?.email}
+                  </span>
+                  <svg
+                    width="8"
+                    height="5"
+                    viewBox="0 0 8 5"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="transition-transform duration-300"
+                    style={{
+                      transform: dropdownOpen ? 'rotate(180deg)' : 'none',
+                      stroke: textColor,
+                    }}
+                  >
+                    <path d="M1 1L4 4L7 1" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </button>
-              </>
+
+                <AnimatePresence>
+                  {dropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setDropdownOpen(false)} />
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute right-0 mt-2.5 w-48 bg-cream border border-stone/80 rounded-sm shadow-md py-1.5 z-40"
+                      >
+                        <div className="px-4 py-2 border-b border-stone/40 text-left">
+                          <p className="font-heading text-[14px] italic font-semibold text-charcoal truncate">
+                            {user?.name || 'Tài khoản'}
+                          </p>
+                          <p className="font-sans text-[10px] text-ash truncate">
+                            {user?.email}
+                          </p>
+                        </div>
+
+                        {user?.role && (
+                          <div className="border-b border-stone/40 py-1">
+                            {user.role === 'admin' ? (
+                              <Link
+                                href="/admin"
+                                onClick={() => setDropdownOpen(false)}
+                                className="flex w-full px-4 py-2 text-left font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal hover:bg-parchment hover:text-lacquer transition-colors"
+                              >
+                                Quản trị hệ thống
+                              </Link>
+                            ) : user.role === 'village_owner' ? (
+                              <Link
+                                href="/dashboard"
+                                onClick={() => setDropdownOpen(false)}
+                                className="flex w-full px-4 py-2 text-left font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal hover:bg-parchment hover:text-lacquer transition-colors"
+                              >
+                                Bảng quản trị
+                              </Link>
+                            ) : null}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            logout();
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2 text-left font-sans text-[11px] font-semibold uppercase tracking-wider text-ash hover:bg-parchment hover:text-lacquer transition-colors"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>{t('logout')}</span>
+                        </button>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
               <>
                 {/* Đăng nhập — ghost */}
@@ -257,19 +356,57 @@ export default function Header() {
                   </nav>
 
                   {/* Mobile auth */}
-                  <div className="flex flex-col gap-2 pt-6 mt-auto border-t" style={{ borderColor: '#D4C9B5' }}>
+                  <div className="flex flex-col gap-3 pt-6 mt-auto border-t" style={{ borderColor: '#D4C9B5' }}>
                     {mounted && isAuthenticated ? (
                       <>
-                        <span className="font-sans text-[11px] uppercase tracking-wider" style={{ color: '#8C8070' }}>
-                          {user?.name || user?.email}
-                        </span>
+                        <div className="flex items-center gap-3 py-1">
+                          {user?.avatar ? (
+                            <img
+                              src={user.avatar}
+                              alt={user.name}
+                              className="w-9 h-9 rounded-sm object-cover border border-stone"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-sm flex items-center justify-center font-sans text-xs font-semibold text-cream bg-lacquer border border-stone">
+                              {(user?.name || user?.email || 'H').slice(0, 1).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex flex-col text-left truncate">
+                            <span className="font-heading text-[15px] italic font-semibold text-charcoal truncate">
+                              {user?.name || 'Tài khoản'}
+                            </span>
+                            <span className="font-sans text-[10px] text-ash truncate">
+                              {user?.email}
+                            </span>
+                          </div>
+                        </div>
+
+                        {user?.role && (
+                          <div className="flex flex-col gap-1 border-y border-stone/30 py-2 my-1">
+                            {user.role === 'admin' ? (
+                              <Link
+                                href="/admin"
+                                className="font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal py-2 text-left"
+                              >
+                                Quản trị hệ thống
+                              </Link>
+                            ) : user.role === 'village_owner' ? (
+                              <Link
+                                href="/dashboard"
+                                className="font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal py-2 text-left"
+                              >
+                                Bảng quản trị
+                              </Link>
+                            ) : null}
+                          </div>
+                        )}
+
                         <button
                           onClick={logout}
-                          className="flex items-center gap-2 font-sans text-[12px] font-semibold uppercase tracking-widest py-2"
-                          style={{ color: '#8C8070' }}
+                          className="flex items-center gap-2 font-sans text-[12px] font-semibold uppercase tracking-widest py-2 text-ash hover:text-lacquer transition-colors"
                         >
                           <LogOut className="w-3.5 h-3.5" />
-                          {t('logout')}
+                          <span>{t('logout')}</span>
                         </button>
                       </>
                     ) : (

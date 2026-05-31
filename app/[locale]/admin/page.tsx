@@ -1,15 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import {
-  Compass,
-  LayoutGrid,
-  Settings,
   Users,
   Calendar,
   DollarSign,
-  TrendingUp,
   Database,
   Globe,
   Plus,
@@ -20,16 +15,6 @@ import {
 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
 
-// Dynamic stagger motion
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
 
 interface TenantItem {
   id: string;

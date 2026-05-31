@@ -1,14 +1,36 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
 import { Compass, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   const t = useTranslations('nav');
+  const tFooter = useTranslations('footer');
   const pathname = usePathname();
+  const [isTenant, setIsTenant] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      const parts = host.split('.');
+      let subdomain = '';
+      if (host.includes('localhost')) {
+        subdomain = host.split('.localhost')[0];
+        if (subdomain === 'localhost') subdomain = '';
+      } else {
+        if (parts.length > 2) {
+          subdomain = parts[0];
+          if (subdomain === 'www') subdomain = '';
+        }
+      }
+      setIsTenant(!!subdomain);
+    }
+  }, []);
 
   if (
+    isTenant ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/tenant') ||
     pathname.startsWith('/onboarding') ||
@@ -33,14 +55,14 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-secondary-foreground/80 leading-relaxed">
-              Nen tang ket noi du lich va gin giu gia tri di san lang nghe truyen thong Viet Nam. Hanh trinh gin giu hon cot dan toc Viet.
+              {tFooter('desc')}
             </p>
           </div>
 
           {/* Site Navigation Links */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold tracking-wider text-accent uppercase">
-              Kham Pha
+              {tFooter('explore')}
             </h3>
             <ul className="space-y-2.5">
               <li>
@@ -69,7 +91,7 @@ export default function Footer() {
           {/* Marketplace & Experience */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold tracking-wider text-accent uppercase">
-              San Pham & Workshop
+              {tFooter('products')}
             </h3>
             <ul className="space-y-2.5">
               <li>
@@ -84,7 +106,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#rules" className="text-sm hover:text-accent transition-colors">
-                  Dieu khoan su dung
+                  {tFooter('terms')}
                 </a>
               </li>
             </ul>
@@ -93,13 +115,13 @@ export default function Footer() {
           {/* Contact Details */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold tracking-wider text-accent uppercase">
-              Lien He
+              {tFooter('contact')}
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 mt-1 text-accent shrink-0" />
                 <span className="text-sm text-secondary-foreground/80 leading-relaxed">
-                  Ha Noi, Viet Nam
+                  {tFooter('address')}
                 </span>
               </li>
               <li className="flex items-center gap-2.5">
@@ -127,7 +149,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} HoaLang Platform. All rights reserved.
           </p>
           <div className="flex gap-4 text-xs text-secondary-foreground/60">
-            <span>Hệ thống Quản trị di sản Làng nghề</span>
+            <span>{tFooter('system')}</span>
           </div>
         </div>
 

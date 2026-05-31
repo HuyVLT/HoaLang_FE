@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { UserCheck, Clock, Calendar, ShieldCheck, Mail } from 'lucide-react';
-import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import { Mail } from 'lucide-react';
+import { SectionLabel } from '@/components/shared';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -117,4 +117,3 @@ export default function BookingsLog() {
     </div>
   );
 }
-export { BookingsLog };

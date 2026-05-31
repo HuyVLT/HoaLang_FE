@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapPin, ChevronDown } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
@@ -12,6 +10,20 @@ interface VnProvince {
 interface VnWard {
   code: number;
   name: string;
+}
+
+interface RawWard {
+  code?: number | string;
+  name?: string;
+}
+
+interface RawDistrict {
+  wards?: RawWard[];
+}
+
+interface ProvincePayload {
+  wards?: RawWard[];
+  districts?: RawDistrict[];
 }
 
 interface VnAddressSelectProps {
@@ -40,29 +52,35 @@ async function fetchJsonWithFallback<T>(urls: string[]): Promise<T | null> {
 function normalizeProvinceList(data: unknown): VnProvince[] {
   if (!Array.isArray(data)) return [];
   return data
-    .map((item: any) => ({
-      code: Number(item?.code),
-      name: String(item?.name || ''),
-    }))
+    .map((item: unknown) => {
+      const obj = item as Record<string, unknown>;
+      return {
+        code: Number(obj?.code),
+        name: String(obj?.name || ''),
+      };
+    })
     .filter((p: VnProvince) => Number.isFinite(p.code) && !!p.name);
 }
 
-function normalizeWardsFromProvincePayload(data: any): VnWard[] {
+function normalizeWardsFromProvincePayload(data: unknown): VnWard[] {
   if (!data) return [];
+  const payload = data as ProvincePayload;
 
-  if (Array.isArray(data.wards)) {
-    return data.wards
-      .map((w: any) => ({
+  if (Array.isArray(payload.wards)) {
+    return payload.wards
+      .map((w: RawWard) => ({
         code: Number(w?.code),
         name: String(w?.name || ''),
       }))
       .filter((w: VnWard) => Number.isFinite(w.code) && !!w.name);
   }
 
-  if (Array.isArray(data.districts)) {
-    const flattened = data.districts.flatMap((d: any) => (Array.isArray(d?.wards) ? d.wards : []));
+  if (Array.isArray(payload.districts)) {
+    const flattened = payload.districts.flatMap((d: RawDistrict) =>
+      Array.isArray(d?.wards) ? d.wards : []
+    );
     const mapped = flattened
-      .map((w: any) => ({
+      .map((w: RawWard) => ({
         code: Number(w?.code),
         name: String(w?.name || ''),
       }))
@@ -75,6 +93,7 @@ function normalizeWardsFromProvincePayload(data: any): VnWard[] {
 
   return [];
 }
+
 
 export default function VnAddressSelect({
   cityValue,
@@ -144,7 +163,7 @@ export default function VnAddressSelect({
       if (!nextWards.length) {
         try {
           setLoadingWards(true);
-          const data = await fetchJsonWithFallback<any>([
+          const data = await fetchJsonWithFallback<unknown>([
             `https://provinces.open-api.vn/api/v2/${matchedProvince!.code}?depth=2`,
             `https://provinces.open-api.vn/api/v2/p/${matchedProvince!.code}?depth=2`,
           ]);
@@ -186,7 +205,7 @@ export default function VnAddressSelect({
 
     try {
       setLoadingWards(true);
-      const data = await fetchJsonWithFallback<any>([
+      const data = await fetchJsonWithFallback<unknown>([
         `https://provinces.open-api.vn/api/v2/${selected.code}?depth=2`,
         `https://provinces.open-api.vn/api/v2/p/${selected.code}?depth=2`,
       ]);

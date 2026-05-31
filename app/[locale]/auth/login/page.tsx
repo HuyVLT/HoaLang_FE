@@ -7,8 +7,9 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { Link } from '@/navigation';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Compass, Mail, Lock, ShieldAlert, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Compass, Mail, Lock, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import api from '@/lib/api';
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -32,42 +33,65 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router, mounted]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Mock delay to simulate backend round-trip
-    setTimeout(() => {
-      if (email === 'admin@restx.food' && password === 'Admin@123') {
-        login(
-          {
-            id: 'admin-id-1',
-            email: 'admin@restx.food',
-            name: 'Super Admin',
-            role: 'super_admin',
-          },
-          'mock-jwt-token-123456'
-        );
-        toast.success('Đăng nhập hệ thống Super Admin thành công!');
-        router.push('/admin');
-      } else if (email && password) {
-        // Log in as standard tenant_admin (VILLAGE_OWNER / artisan) if email & password entered
-        login(
-          {
-            id: 'tenant-id-abc',
-            email: email,
-            name: email.split('@')[0],
-            role: 'tenant_admin',
-          },
-          'mock-jwt-token-standard'
-        );
-        toast.success('Đăng nhập cổng quản trị Làng nghề thành công!');
-        router.push('/dashboard');
+    try {
+      const response = await api.post('/auth/login', {
+        email,
+        password,
+      });
+
+      if (response.data && response.data.success) {
+        const { user, accessToken, refreshToken } = response.data.data;
+        
+        // Map backend user response properties to the store structure
+        const mappedUser = {
+          id: user._id || user.id,
+          email: user.email,
+          name: user.fullName || user.name,
+          role: user.role.toLowerCase(), // Store roles in lowercase for consistency
+          avatar: user.avatar,
+        };
+
+        login(mappedUser, accessToken, refreshToken);
+        toast.success('Đăng nhập hệ thống thành công!');
+
+        // Dynamic redirect based on role
+        if (user.role === 'ADMIN') {
+          router.push('/admin');
+        } else if (user.role === 'VILLAGE_OWNER') {
+          router.push('/dashboard');
+        } else {
+          router.push('/');
+        }
       } else {
-        toast.error(t('auth.errorAuth'));
+        toast.error(response.data?.message || 'Đăng nhập thất bại.');
       }
+    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+      console.error('Login error:', err);
+      
+      let errorMessage = 'Email hoặc mật khẩu không chính xác.';
+      
+      if (err.response?.data) {
+        if (err.response.data.message) {
+          errorMessage = err.response.data.message;
+        } else if (typeof err.response.data === 'string') {
+          if (err.response.data.includes('<!DOCTYPE html>') || err.response.data.includes('<html')) {
+            errorMessage = 'Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found).';
+          } else {
+            errorMessage = err.response.data;
+          }
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   if (!mounted) {
@@ -186,7 +210,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   type="email"
-                  placeholder="admin@restx.food hoặc email của bạn"
+                  placeholder="admin@hoalang.vn hoặc email của bạn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -223,15 +247,18 @@ export default function LoginPage() {
             <div className="bg-parchment border border-stone rounded-xs p-4 text-left space-y-2.5">
               <span className="text-[9px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Tài khoản thử nghiệm mặc định</span>
+                <span>Tài khoản thử nghiệm hệ thống</span>
               </span>
               
               <div className="font-mono text-[10px] text-ash space-y-1 leading-normal">
                 <div>
-                  • Super Admin: <span className="font-semibold text-charcoal">admin@restx.food</span> / <span className="font-semibold text-charcoal">Admin@123</span>
+                  • Super Admin: <span className="font-semibold text-charcoal">admin@hoalang.vn</span> / <span className="font-semibold text-charcoal">Admin@123</span>
                 </div>
                 <div>
-                  • Tenant Artisan: <span className="font-semibold text-charcoal">battrang@hoalang.vn</span> / <span className="font-semibold text-charcoal">battrang123</span> (hoặc email bất kỳ)
+                  • Bát Tràng Owner: <span className="font-semibold text-charcoal">owner@battrang.vn</span> / <span className="font-semibold text-charcoal">TruongHuy888!</span>
+                </div>
+                <div>
+                  • Traveler Demo: <span className="font-semibold text-charcoal">traveler@gmail.com</span> / <span className="font-semibold text-charcoal">TruongHuy888!</span>
                 </div>
               </div>
             </div>
@@ -254,6 +281,34 @@ export default function LoginPage() {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
+              </button>
+
+              {/* Breathtaking luxury editorial divider */}
+              <div className="relative flex items-center justify-center py-1">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-stone/50"></div>
+                </div>
+                <span className="relative px-3 bg-cream font-heading text-xs italic text-ash">
+                  hoặc / or
+                </span>
+              </div>
+
+              {/* Premium Google OAuth SSO Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+                  window.location.href = `${backendUrl}/auth/google`;
+                }}
+                className="w-full bg-transparent border border-stone text-charcoal font-sans text-[11px] font-semibold uppercase tracking-widest py-3.5 rounded-xs hover:border-bronze hover:text-bronze shadow-sm transition-all flex items-center justify-center gap-2.5 active:scale-[0.98]"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span>Đăng Nhập Bằng Google</span>
               </button>
 
               <div className="text-center text-xs text-ash leading-relaxed font-light">

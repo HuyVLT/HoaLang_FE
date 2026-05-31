@@ -8,9 +8,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
-  MapPin,
   Image as ImageIcon,
-  Link2,
   Database,
   Grid,
   CheckCircle,
@@ -21,7 +19,7 @@ import {
   Gem,
   Trees
 } from 'lucide-react';
-import { SectionLabel, OrnamentDivider, ImageUploader, AddressAutocomplete, VnAddressSelect } from '@/components/shared';
+import { SectionLabel, ImageUploader, AddressAutocomplete, VnAddressSelect } from '@/components/shared';
 import TemplatePicker from '@/components/onboarding/TemplatePicker';
 
 const fadeUp = {
@@ -37,16 +35,6 @@ const CATEGORIES = [
   { id: 'stone carving', label: 'Đá khắc / Stone', icon: Gem },
   { id: 'bamboo', label: 'Mây tre / Bamboo', icon: Trees },
   { id: 'embroidery', label: 'Thêu ren / Embroidery', icon: Grid },
-];
-
-const PROVINCES = [
-  'Hà Nội',
-  'Bắc Ninh',
-  'Quảng Nam',
-  'Đà Nẵng',
-  'Thừa Thiên Huế',
-  'Ninh Bình',
-  'Bình Dương',
 ];
 
 export default function OnboardingWizard() {
@@ -76,7 +64,6 @@ export default function OnboardingWizard() {
     'idle' | 'database' | 'collections' | 'template' | 'success' | 'error'
   >('idle');
   const [statusMessage, setStatusMessage] = useState('');
-  const [apiError, setApiError] = useState('');
   
   // Live Slug generation preview
   useEffect(() => {
@@ -165,7 +152,7 @@ export default function OnboardingWizard() {
       } else {
         throw new Error('Onboarding API failed');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.warn('[OnboardingProvision] Backend connection failed, resolving online simulation:', error);
       
       // Standalone simulation fallback for local demo offline robustness

@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Plus, Trash2, Clock, Tag, User } from 'lucide-react';
-import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import { Plus, Trash2, Clock, Tag } from 'lucide-react';
+import { SectionLabel } from '@/components/shared';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -264,4 +264,3 @@ export default function WorkshopsManager() {
     </div>
   );
 }
-export { WorkshopsManager };

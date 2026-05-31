@@ -3,12 +3,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Compass, Layers, MapPin, ZoomIn, ZoomOut } from 'lucide-react';
+import { Layers, MapPin, ZoomIn, ZoomOut } from 'lucide-react';
 
 // Set the access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-interface MapboxVillage {
+export interface MapboxVillage {
   slug: string;
   name: { vi: string; en: string };
   province: { vi: string; en: string };
@@ -43,6 +43,8 @@ export default function MapboxMap({
   const [mapStyle, setMapStyle] = useState<'outdoors' | 'satellite' | 'light'>('outdoors');
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const hasToken = !!mapboxgl.accessToken;
+
   const styleUrls = {
     outdoors: 'mapbox://styles/mapbox/outdoors-v12',
     satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
@@ -51,7 +53,7 @@ export default function MapboxMap({
 
   // Initialize Map
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    if (!hasToken || !mapContainerRef.current) return;
 
     // Determine initial center
     let center: [number, number] = [105.9327, 20.9733]; // Default to Bat Trang
@@ -95,10 +97,11 @@ export default function MapboxMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [mapStyle]);
+  }, [mapStyle, hasToken]);
 
   // Update markers
   useEffect(() => {
+    if (!hasToken) return;
     const map = mapRef.current;
     if (!map) return;
 
@@ -142,10 +145,11 @@ export default function MapboxMap({
 
       markersRef.current[village.slug] = marker;
     });
-  }, [villages, selectedVillage, isLoaded]);
+  }, [villages, selectedVillage, isLoaded, hasToken]);
 
   // Center on selected village
   useEffect(() => {
+    if (!hasToken) return;
     const map = mapRef.current;
     if (!map || !selectedVillage) return;
 
@@ -155,10 +159,11 @@ export default function MapboxMap({
       speed: 1.2,
       essential: true,
     });
-  }, [selectedVillage]);
+  }, [selectedVillage, hasToken]);
 
   // Handle fitBounds when selectedVillage becomes null to restore full view
   useEffect(() => {
+    if (!hasToken) return;
     const map = mapRef.current;
     if (!map) return;
 
@@ -167,7 +172,7 @@ export default function MapboxMap({
       villages.forEach((v) => bounds.extend([v.lng, v.lat]));
       map.fitBounds(bounds, { padding: 80, maxZoom: 10, duration: 1500 });
     }
-  }, [selectedVillage, villages]);
+  }, [selectedVillage, villages, hasToken]);
 
   const handleZoom = (direction: 'in' | 'out') => {
     const map = mapRef.current;
@@ -184,6 +189,32 @@ export default function MapboxMap({
     const nextIndex = (styles.indexOf(mapStyle) + 1) % styles.length;
     setMapStyle(styles[nextIndex]);
   };
+
+  if (!hasToken) {
+    return (
+      <div className="w-full h-full min-h-[400px] relative rounded-sm overflow-hidden border border-stone bg-[#FAF7F2] flex flex-col items-center justify-center p-8 text-center space-y-4 shadow-sm select-none">
+        <div className="absolute inset-0 bg-grain pointer-events-none opacity-40 z-0" />
+        
+        <div className="w-12 h-12 rounded-full border border-gold/40 flex items-center justify-center text-[#C4952A] bg-cream shadow-sm relative z-10 animate-pulse">
+          <MapPin className="w-5 h-5" />
+        </div>
+        
+        <div className="space-y-2 relative z-10 max-w-sm">
+          <span className="text-[9px] font-semibold uppercase tracking-widest text-[#C4952A] font-sans block">
+            Bản đồ di sản tương tác / Heritage Atlas
+          </span>
+          <h4 className="font-heading text-lg font-bold italic text-charcoal">
+            {locale === 'vi' ? 'Thiết lập Mapbox Token' : 'Mapbox Token Required'}
+          </h4>
+          <p className="font-sans text-xs text-[#8C8070] leading-relaxed">
+            {locale === 'vi' 
+              ? 'Nền tảng yêu cầu một Mapbox Access Token hợp lệ để khởi chạy bản đồ di sản tương tác. Vui lòng cấu hình biến NEXT_PUBLIC_MAPBOX_TOKEN trong .env.local.'
+              : 'The platform requires a valid Mapbox Access Token to initialize the interactive heritage map. Please configure NEXT_PUBLIC_MAPBOX_TOKEN in your .env.local file.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full relative rounded-sm overflow-hidden border border-stone shadow-sm">
@@ -265,7 +296,7 @@ export default function MapboxMap({
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
             </button>
             <button
-              onClick={() => onSelectVillage?.(null as any)}
+              onClick={() => onSelectVillage?.(null as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
               className="w-8 h-8 flex items-center justify-center border border-stone/50 hover:border-stone rounded-xs text-ash hover:text-charcoal transition-all shrink-0 cursor-pointer"
               title={locale === 'vi' ? 'Đóng' : 'Close'}
             >

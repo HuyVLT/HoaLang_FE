@@ -34,7 +34,15 @@
     "submitRegister": "Đăng ký",
     "noAccount": "Chưa có tài khoản?",
     "hasAccount": "Đã có tài khoản?",
-    "errorAuth": "Thông tin tài khoản hoặc mật khẩu không chính xác"
+    "errorAuth": "Thông tin tài khoản hoặc mật khẩu không chính xác",
+    "activating": "Đang kích hoạt tài khoản...",
+    "activationSuccess": "Kích hoạt tài khoản thành công!",
+    "activationSuccessDesc": "Chào mừng bạn đến với HoaLang. Tài khoản của bạn đã được xác minh thành công. Hệ thống sẽ tự động chuyển hướng trong giây lát.",
+    "activationFailed": "Kích hoạt tài khoản thất bại",
+    "activationFailedDesc": "Mã xác thực của bạn đã hết hạn hoặc không hợp lệ. Vui lòng đăng ký lại để nhận mã kích hoạt mới.",
+    "goToLogin": "Quay lại Đăng nhập",
+    "oauthCallback": "Đang xác thực tài khoản di sản...",
+    "oauthRedirecting": "Đang chuyển hướng về bảng điều khiển..."
   },
   "hero": {
     "discover": "Khám Phá Việt Nam / Discover Vietnam",
@@ -87,5 +95,14 @@
     "successTitle": "Cảm ơn bạn!",
     "successDesc": "Hành trình của bạn đang được chuẩn bị — hãy kiểm tra email.",
     "footer": "Không cần tài khoản  •  Miễn phí  •  Hỗ trợ 4 ngôn ngữ"
+  },
+  "footer": {
+    "desc": "Nền tảng kết nối du lịch và gìn giữ giá trị di sản làng nghề truyền thống Việt Nam. Hành trình gìn giữ hồn cốt dân tộc Việt.",
+    "explore": "Khám Phá",
+    "products": "Sản Phẩm & Workshop",
+    "terms": "Điều khoản sử dụng",
+    "contact": "Liên Hệ",
+    "address": "Hà Nội, Việt Nam",
+    "system": "Hệ thống Quản trị di sản Làng nghề"
   }
 }

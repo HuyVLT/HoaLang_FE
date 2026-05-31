@@ -88,7 +88,22 @@ interface AddressAutocompleteProps {
   placeholder?: string;
 }
 
-function formatSuggestion(item: any): string {
+interface NominatimAddress {
+  house_number?: string;
+  road?: string;
+  suburb?: string;
+  city_district?: string;
+  city?: string;
+  state?: string;
+}
+
+interface NominatimResult {
+  name?: string;
+  display_name: string;
+  address: NominatimAddress;
+}
+
+function formatSuggestion(item: NominatimResult): string {
   const road = [item.address?.house_number, item.address?.road]
     .filter(Boolean)
     .join(' ')
@@ -202,7 +217,7 @@ export default function AddressAutocomplete({
         );
         const data = await response.json();
 
-        const liveMatches = data.map((item: any) => {
+        const liveMatches = data.map((item: NominatimResult) => {
           const rawMain = item.name || item.display_name.split(',')[0];
           const prefix = getPrependPrefix(query, rawMain);
           const mainText = prefix + rawMain;
