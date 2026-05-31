@@ -9,6 +9,13 @@ const getInitialBaseUrl = (): string => {
     return process.env.INTERNAL_API_URL || 'http://localhost:5000/api/v1';
   }
 
+  // In local development on localhost:3000, 127.0.0.1, or local subdomains (e.g., battrang.localhost),
+  // use absolute backend URL to prevent 404 HTML page returns
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.localhost')) {
+    return 'http://localhost:5000/api/v1';
+  }
+
   // Client-side: Always use relative path to preserve the hostname (subdomain)
   // e.g. battrang.hoalang.site/api/v1/...
   return '/api/v1';

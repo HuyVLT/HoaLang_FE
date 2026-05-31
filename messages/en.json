@@ -34,7 +34,15 @@
     "submitRegister": "Register",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "errorAuth": "Incorrect email or password"
+    "errorAuth": "Incorrect email or password",
+    "activating": "Activating account...",
+    "activationSuccess": "Account activated successfully!",
+    "activationSuccessDesc": "Welcome to HoaLang. Your account has been successfully verified. Redirecting you shortly.",
+    "activationFailed": "Activation failed",
+    "activationFailedDesc": "Your verification link has expired or is invalid. Please register again to request a new link.",
+    "goToLogin": "Back to Login",
+    "oauthCallback": "Authenticating heritage account...",
+    "oauthRedirecting": "Redirecting to your dashboard..."
   },
   "hero": {
     "discover": "Discover Vietnam",

@@ -6,8 +6,9 @@ import { useRouter } from '@/navigation';
 import { Link } from '@/navigation';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Compass, User, Mail, Lock, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Compass, User, Mail, Lock, Sparkles, ArrowRight, Loader2, Phone } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import api from '@/lib/api';
 
 export default function RegisterPage() {
   const t = useTranslations();
@@ -15,6 +16,7 @@ export default function RegisterPage() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -23,17 +25,92 @@ export default function RegisterPage() {
     setMounted(true);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Mock registration delay
-    setTimeout(() => {
-      toast.success('Đăng ký tài khoản thành công! Hãy đăng nhập để bắt đầu.');
-      router.push('/auth/login');
+    try {
+      const response = await api.post('/auth/register', {
+        fullName: name,
+        email,
+        phone,
+        password,
+        role: 'USER',
+      });
+
+      if (response.data && response.data.success) {
+        toast.success(
+          response.data.message || 'Đăng ký thành công! Hãy kiểm tra email để kích hoạt tài khoản.'
+        );
+        router.push('/auth/login');
+      } else {
+        toast.error(response.data?.message || 'Đăng ký tài khoản thất bại.');
+      }
+    } catch (err: unknown) {
+      console.error('Registration error:', err);
+      
+      let errorMessage = 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.';
+      const axiosError = err as {
+        response?: {
+          data?: {
+            message?: string;
+          } | string;
+        };
+        message?: string;
+      };
+      
+      if (axiosError.response?.data) {
+        // Backend JSON error payload
+        if (typeof axiosError.response.data === 'object' && axiosError.response.data.message) {
+          const rawMsg = axiosError.response.data.message;
+          
+          if (rawMsg.includes('Input validation failed:')) {
+            // Parse and translate validation errors beautifully
+            const fields = rawMsg.replace('Input validation failed: ', '').split('; ');
+            const translatedFields = fields.map((f: string) => {
+              if (f.toLowerCase().includes('phone')) {
+                return 'Số điện thoại phải chứa chính xác 10 chữ số.';
+              }
+              if (f.toLowerCase().includes('password')) {
+                return 'Mật khẩu tối thiểu 6 ký tự, gồm ít nhất 1 chữ hoa, 1 chữ số và 1 ký tự đặc biệt.';
+              }
+              if (f.toLowerCase().includes('fullname')) {
+                return 'Họ và tên phải có độ dài từ 2 ký tự trở lên.';
+              }
+              return f;
+            });
+            errorMessage = `Thông tin nhập liệu không hợp lệ:\n• ${translatedFields.join('\n• ')}`;
+          } else if (
+            rawMsg.includes('duplicate value for key: email') || 
+            rawMsg.includes('already in use') || 
+            rawMsg.includes('Unique restriction')
+          ) {
+            errorMessage = 'Địa chỉ Email này đã được sử dụng trên hệ thống.';
+          } else {
+            errorMessage = rawMsg;
+          }
+        } else if (typeof axiosError.response.data === 'string') {
+          if (axiosError.response.data.includes('<!DOCTYPE html>') || axiosError.response.data.includes('<html')) {
+            errorMessage = 'Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found).';
+          } else {
+            errorMessage = axiosError.response.data;
+          }
+        }
+      } else if (axiosError.message) {
+        // Network/Axios general error
+        errorMessage = axiosError.message;
+      }
+
+      toast.error(errorMessage, {
+        style: {
+          whiteSpace: 'pre-line', // Preserve newline formatting for bullet list
+        }
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
+
 
   if (!mounted) {
     return (
@@ -170,6 +247,23 @@ export default function RegisterPage() {
                 placeholder="Ví dụ: nva@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-parchment border border-stone focus:border-bronze focus:outline-none rounded-xs px-4 py-3 font-sans text-xs text-charcoal placeholder-ash/50 transition-colors"
+              />
+            </div>
+
+            {/* Input field: Phone */}
+            <div className="space-y-1.5 text-left">
+              <label className="text-[10px] font-semibold uppercase tracking-wider text-ash flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-accent" />
+                <span>Số điện thoại / Phone Number</span>
+              </label>
+              
+              <input
+                type="text"
+                placeholder="Ví dụ: 0987654321"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
                 className="w-full bg-parchment border border-stone focus:border-bronze focus:outline-none rounded-xs px-4 py-3 font-sans text-xs text-charcoal placeholder-ash/50 transition-colors"
               />
