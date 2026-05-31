@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Plus, Trash2, Tag, Box, Info } from 'lucide-react';
-import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import { Plus, Trash2, Tag, Box } from 'lucide-react';
+import { SectionLabel } from '@/components/shared';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -278,4 +278,3 @@ export default function ProductsManager() {
     </div>
   );
 }
-export { ProductsManager };

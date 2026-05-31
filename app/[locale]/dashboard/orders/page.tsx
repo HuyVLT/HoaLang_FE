@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, ArrowUpRight, DollarSign, Tag, CheckCircle } from 'lucide-react';
-import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import { SectionLabel } from '@/components/shared';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -102,4 +101,3 @@ export default function OrdersLog() {
     </div>
   );
 }
-export { OrdersLog };

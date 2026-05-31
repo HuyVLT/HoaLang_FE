@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion, Reorder } from 'framer-motion';
+import { Reorder } from 'framer-motion';
 import {
-  Sparkles,
   Save,
-  ChevronRight,
   Palette,
   LayoutGrid,
   FileText,
@@ -61,7 +59,7 @@ export default function WebsiteEditor() {
         } else {
           throw new Error('Fallback to mock');
         }
-      } catch (err) {
+      } catch {
         const mock = getMockTenantConfig(slugParam);
         if (mock) {
           setConfig(JSON.parse(JSON.stringify(mock)));
@@ -126,21 +124,22 @@ export default function WebsiteEditor() {
     const newSections = config.sections.map((sec) => {
       if (sec.id !== sectionId) return sec;
 
-      const updated = { ...sec } as any;
-      let current = updated;
+      const updated = { ...sec };
+      let current = updated as Record<string, unknown>;
       
       for (let i = 0; i < path.length - 1; i++) {
-        current = current[path[i]];
+        current = current[path[i]] as Record<string, unknown>;
       }
       
       const lastKey = path[path.length - 1];
-      if (current[lastKey] && typeof current[lastKey] === 'object') {
-        current[lastKey][locale] = value;
+      const target = current[lastKey];
+      if (target && typeof target === 'object' && target !== null) {
+        (target as Record<string, string>)[locale] = value;
       } else {
         current[lastKey] = value;
       }
 
-      return updated;
+      return updated as Section;
     });
 
     setConfig({ ...config, sections: newSections });
@@ -156,6 +155,12 @@ export default function WebsiteEditor() {
       </div>
     );
   }
+
+  const tabs: Array<{ id: 'layout' | 'theme' | 'content'; icon: React.ComponentType<{ className?: string }>; label: string }> = [
+    { id: 'layout', icon: LayoutGrid, label: 'Bố cục' },
+    { id: 'theme', icon: Palette, label: 'Chủ đề' },
+    { id: 'content', icon: FileText, label: 'Nội dung' },
+  ];
 
   return (
     <div className="flex-grow flex flex-col overflow-hidden h-full">
@@ -193,14 +198,10 @@ export default function WebsiteEditor() {
         <aside className="w-[360px] bg-cream border-r border-stone/50 flex flex-col overflow-hidden shrink-0 select-none">
           {/* Customizer Tabs */}
           <div className="flex border-b border-stone/40 bg-parchment/50">
-            {[
-              { id: 'layout', icon: LayoutGrid, label: 'Bố cục' },
-              { id: 'theme', icon: Palette, label: 'Chủ đề' },
-              { id: 'content', icon: FileText, label: 'Nội dung' },
-            ].map((tab) => (
+            {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-3 flex flex-col items-center gap-1 text-[11px] font-semibold uppercase tracking-wider border-b-2 transition-all ${
                   activeTab === tab.id
                     ? 'border-primary text-primary bg-cream'
@@ -507,4 +508,3 @@ export default function WebsiteEditor() {
     </div>
   );
 }
-export { WebsiteEditor };

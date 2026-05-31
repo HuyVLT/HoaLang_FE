@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Tag } from 'lucide-react';
+import { Clock, Tag } from 'lucide-react';
 import { ExperiencesSection as ExperiencesSectionType } from '@/types/tenant';
 import { SectionLabel, LocaleText, useCheckoutStore } from '@/components/shared';
 import { fadeUp, stagger } from './motion';

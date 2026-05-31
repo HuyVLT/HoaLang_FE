@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { Globe, Check, Eye, AlertCircle, RefreshCw } from 'lucide-react';
+import { Globe, Eye, AlertCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PublishPanelProps {
@@ -36,7 +36,7 @@ export default function PublishPanel({
         onStatusChange(newStatus);
         if (newStatus) {
           toast.success('Website của bạn đã được xuất bản trực tuyến!', {
-            description: `Truy cập tại địa chỉ: ${tenantSlug}.hoalang.vn`,
+            description: `Truy cập tại địa chỉ: ${liveUrl}`,
           });
         } else {
           toast.info('Đã gỡ website xuống bản thảo (Draft)!', {
@@ -52,7 +52,7 @@ export default function PublishPanel({
       onStatusChange(newStatus);
       if (newStatus) {
         toast.success('Đã mô phỏng xuất bản website thành công!', {
-          description: `Giao diện mô phỏng tại: ${tenantSlug}.hoalang.vn`,
+          description: `Giao diện mô phỏng tại: ${liveUrl}`,
         });
       } else {
         toast.info('Đã mô phỏng gỡ website xuống bản thảo!');
