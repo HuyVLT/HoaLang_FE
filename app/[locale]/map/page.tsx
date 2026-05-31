@@ -18,7 +18,7 @@ import {
   Info,
   Layers
 } from 'lucide-react';
-import { SectionLabel, TagBadge, OrnamentDivider } from '@/components/shared';
+import { SectionLabel, TagBadge, OrnamentDivider, MapboxMap } from '@/components/shared';
 
 // High-fidelity Mock data for traditional craft villages mapped across Vietnam
 interface VillageMarker {
@@ -31,7 +31,8 @@ interface VillageMarker {
     vi: string;
     en: string;
   };
-  coords: { x: number; y: number }; // Percentage offsets on our custom digital canvas
+  lng: number;
+  lat: number;
   coverImage: string;
   isVerified: boolean;
   history: {
@@ -51,7 +52,8 @@ const VILLAGES: VillageMarker[] = [
       vi: 'Làng gốm cổ nằm bên dòng sông Hồng lịch sử, nổi tiếng với kỹ thuật xoay gốm thủ công bằng tay và các bài men cổ độc bản nung ở nhiệt độ cao củi lửa 1300°C.',
       en: 'An ancient pottery village nested along the Red River, renowned for handcrafted wheel-turning techniques and heritage wood-fired glaze styles.'
     },
-    coords: { x: 34, y: 15 },
+    lng: 105.9327,
+    lat: 20.9733,
     coverImage: '/images/village-bat-trang.png',
     isVerified: true,
     history: {
@@ -69,7 +71,8 @@ const VILLAGES: VillageMarker[] = [
       vi: 'Cái nôi của dòng lụa Vân lụa Hà Đông tơ tằm nguyên bản. Mềm, mịn, mát và đặc biệt có hoa văn chìm tinh xảo biến đổi óng ánh theo góc độ ánh sáng cực phẩm.',
       en: 'The cradle of premium Ha Dong mulberry silk. Famous for its soft, lustrous weight and subtle jacquard patterns that shimmer dynamically in daylight.'
     },
-    coords: { x: 31, y: 18 },
+    lng: 105.7725,
+    lat: 20.9767,
     coverImage: '/images/village-van-phuc.png',
     isVerified: true,
     history: {
@@ -87,7 +90,8 @@ const VILLAGES: VillageMarker[] = [
       vi: 'Nơi sản sinh ra các bức tranh khắc gỗ mộc mạc lưu truyền cốt cách hồn quê Việt Nam, in trên nền giấy điệp lấp lánh làm từ vỏ sò và màu sắc chiết xuất hoàn toàn thiên nhiên.',
       en: 'Home of rustic folk woodblock prints depicting Vietnamese agrarian soul, pressed onto shimmering scallop-shell Diep paper with completely organic plant-derived pigments.'
     },
-    coords: { x: 38, y: 16 },
+    lng: 106.0744,
+    lat: 21.0967,
     coverImage: '/images/village-dong-ho.png',
     isVerified: true,
     history: {
@@ -105,7 +109,8 @@ const VILLAGES: VillageMarker[] = [
       vi: 'Tọa lạc ngay dưới chân núi Ngũ Hành Sơn hùng vĩ, nổi tiếng với nghệ thuật chế tác đá cẩm thạch đỉnh cao từ tượng tâm linh cổ đến trang sức mỹ nghệ tinh tế.',
       en: 'Nestled at the foot of the Marble Mountains, famous for grand marble sculptures and exquisite hand-carved ornamental stone art.'
     },
-    coords: { x: 50, y: 44 },
+    lng: 108.2619,
+    lat: 16.0125,
     coverImage: '/images/register_silk_bg.png', // Fallback high-fidelity asset
     isVerified: false,
     history: {
@@ -123,7 +128,8 @@ const VILLAGES: VillageMarker[] = [
       vi: 'Làng nghề ven dòng Thu Bồn êm đềm, nổi tiếng với các sản phẩm gốm mộc không tráng men mang màu cam đỏ gạch ấm áp, phản ánh tinh thần miền Trung đôn hậu.',
       en: 'A peaceful terracotta village on the Thu Bon riverbanks, specializing in unglazed, warm orange-red earthenware reflecting the resilient spirit of Central Vietnam.'
     },
-    coords: { x: 52, y: 47 },
+    lng: 108.3072,
+    lat: 15.8825,
     coverImage: '/images/login_pottery_bg.png', // Fallback high-fidelity asset
     isVerified: true,
     history: {
@@ -141,7 +147,8 @@ const VILLAGES: VillageMarker[] = [
       vi: 'Vương quốc của những lò nung cồng chiêng, nhạc cụ, chuông đồng cổ xưa. Kỹ nghệ pha chế đồng độc quyền mang lại âm thanh trầm bổng đặc trưng cho văn hóa Tây Nguyên.',
       en: 'A sanctuary of sacred bronze gongs, temple bells, and royal bronze items. Renowned for custom metal alloys that create evocative spiritual sounds.'
     },
-    coords: { x: 49, y: 50 },
+    lng: 108.2325,
+    lat: 15.8592,
     coverImage: '/images/village-van-phuc.png',
     isVerified: false,
     history: {
@@ -153,19 +160,8 @@ const VILLAGES: VillageMarker[] = [
 
 export default function InteractiveMapPage() {
   const locale = useLocale() as 'vi' | 'en';
-  const [selectedVillage, setSelectedVillage] = useState<VillageMarker | null>(VILLAGES[0]);
+  const [selectedVillage, setSelectedVillage] = useState<VillageMarker | null>(null);
   const [currentRegionFilter, setCurrentRegionFilter] = useState<'All' | 'North' | 'Center'>('All');
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [mapOffset, setMapOffset] = useState({ x: 0, y: 0 });
-
-  const handleZoom = (direction: 'in' | 'out') => {
-    if (direction === 'in') {
-      setZoomLevel(prev => Math.min(prev + 0.25, 2));
-    } else {
-      setZoomLevel(prev => Math.max(prev - 0.25, 1));
-      if (zoomLevel <= 1.25) setMapOffset({ x: 0, y: 0 });
-    }
-  };
 
   const filteredVillages = currentRegionFilter === 'All' 
     ? VILLAGES 
@@ -185,25 +181,26 @@ export default function InteractiveMapPage() {
   };
 
   return (
-    <div className="min-h-screen bg-parchment flex flex-col relative select-none overflow-hidden">
+    <div className="h-screen bg-parchment flex flex-col relative select-none overflow-hidden">
       {/* Organic Grain texture overlay */}
       <div className="absolute inset-0 bg-grain pointer-events-none opacity-30 z-10" />
 
       {/* Main Fullscreen Workspace */}
-      <div className="flex-1 flex flex-col lg:flex-row h-full relative z-0">
+      <div className="flex-1 flex flex-col lg:flex-row h-full relative z-0 overflow-hidden">
         
         {/* Left Side: Map Container */}
-        <div className="flex-1 relative flex flex-col items-center justify-center p-4 lg:p-8 min-h-[500px] lg:min-h-0 bg-cream/30">
+        <div className="flex-1 relative w-full h-full min-h-[300px] lg:min-h-0">
           
-          {/* Subtle gold grid guidelines */}
-          <div className="absolute inset-0 grid grid-cols-6 grid-rows-6 opacity-[0.03] pointer-events-none border border-gold/10">
-            {Array.from({ length: 36 }).map((_, i) => (
-              <div key={i} className="border border-gold/15" />
-            ))}
-          </div>
+          {/* Mapbox Map Component */}
+          <MapboxMap
+            villages={filteredVillages}
+            selectedVillage={selectedVillage}
+            onSelectVillage={(v) => setSelectedVillage(v as VillageMarker)}
+            locale={locale}
+          />
 
           {/* Floating Atlas Header Panel */}
-          <div className="absolute top-6 left-6 z-20 max-w-sm text-left bg-cream/90 backdrop-blur-md border border-stone p-5 rounded-sm shadow-sm">
+          <div className="absolute top-20 left-4 right-4 md:left-6 md:right-auto md:max-w-sm z-20 text-left bg-cream/90 backdrop-blur-md border border-stone p-5 rounded-sm shadow-sm">
             <span className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-gold block mb-1">
               {t.metaTitle}
             </span>
@@ -231,106 +228,10 @@ export default function InteractiveMapPage() {
               ))}
             </div>
           </div>
-
-          {/* Map Interaction Toolbar */}
-          <div className="absolute bottom-6 left-6 z-20 flex gap-2">
-            <button
-              onClick={() => handleZoom('in')}
-              className="w-9 h-9 bg-cream/90 backdrop-blur-md border border-stone hover:border-bronze flex items-center justify-center rounded-sm text-charcoal shadow-sm transition-all"
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleZoom('out')}
-              className="w-9 h-9 bg-cream/90 backdrop-blur-md border border-stone hover:border-bronze flex items-center justify-center rounded-sm text-charcoal shadow-sm transition-all"
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-            <div className="px-3 bg-cream/95 backdrop-blur-md border border-stone flex items-center text-[10px] font-sans font-bold uppercase tracking-wider text-ash rounded-sm shadow-sm select-none">
-              Zoom: {zoomLevel * 100}%
-            </div>
-          </div>
-
-          {/* Interactive Geographic S-Shape Vietnam Canvas */}
-          <div
-            className="w-full max-w-[480px] aspect-[9/16] relative transition-transform duration-500 ease-out flex items-center justify-center"
-            style={{
-              transform: `scale(${zoomLevel}) translate(${mapOffset.x}px, ${mapOffset.y}px)`,
-            }}
-          >
-            {/* Elegant Background SVG outline of Vietnam map */}
-            <svg
-              className="w-full h-full text-stone/20 fill-current drop-shadow-[0_8px_24px_rgba(26,18,8,0.06)]"
-              viewBox="0 0 200 400"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Abstract editorial representations of North/Center regions */}
-              <path
-                d="M 50,20 C 60,18 78,25 78,35 C 78,45 68,52 64,58 C 60,64 62,70 65,76 C 68,82 72,90 70,95 C 68,100 62,108 65,115 C 68,122 84,138 88,144 C 92,150 96,162 98,170 C 100,178 106,190 102,198 C 98,206 102,216 106,220 C 110,224 116,236 112,242 C 108,248 114,258 118,264"
-                stroke="var(--color-stone)"
-                strokeWidth="1.5"
-                fill="none"
-                strokeDasharray="4 4"
-                className="text-stone/60"
-              />
-              <path
-                d="M 52,24 C 62,22 75,28 75,37 C 75,46 66,50 62,56 C 58,62 60,68 63,74 C 66,80 70,88 68,93 C 66,98 60,105 63,112 C 66,119 82,135 86,141 C 90,147 94,159 96,167 C 98,175 104,187 100,195 C 96,203 100,213 104,217 C 108,221 114,233 110,239"
-                stroke="#C4952A"
-                strokeWidth="0.75"
-                fill="none"
-                className="opacity-40"
-              />
-
-              {/* Dynamic geographic zones outlines */}
-              <g className="text-stone/30 opacity-80 font-heading text-[10px] italic">
-                <text x="30" y="50" fill="currentColor">Kinh Bắc</text>
-                <text x="36" y="90" fill="currentColor">Thăng Long</text>
-                <text x="68" y="195" fill="currentColor">Thu Bồn</text>
-              </g>
-            </svg>
-
-            {/* Glowing Map pins */}
-            {filteredVillages.map(v => {
-              const isSelected = selectedVillage?.slug === v.slug;
-              return (
-                <button
-                  key={v.slug}
-                  onClick={() => setSelectedVillage(v)}
-                  className="absolute group z-30 transition-transform duration-300"
-                  style={{
-                    left: `${v.coords.x}%`,
-                    top: `${v.coords.y}%`,
-                    transform: 'translate(-50%, -50%)',
-                  }}
-                >
-                  <div className="relative flex items-center justify-center">
-                    {/* Ring pulsations */}
-                    <span className={`absolute inline-flex h-10 w-10 rounded-full opacity-60 transition-all ${
-                      isSelected ? 'animate-ping bg-lacquer/30' : 'group-hover:animate-ping bg-gold/20'
-                    }`} />
-                    
-                    {/* Solid marker center */}
-                    <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all shadow-md ${
-                      isSelected
-                        ? 'bg-lacquer border-lacquer text-cream scale-110 shadow-lg'
-                        : 'bg-cream border-stone text-gold group-hover:border-bronze group-hover:scale-105'
-                    }`}>
-                      <MapPin className={`w-4 h-4 ${isSelected ? 'animate-bounce' : ''}`} />
-                    </div>
-
-                    {/* Minimal hover label */}
-                    <div className="absolute top-9 left-1/2 -translate-x-1/2 whitespace-nowrap bg-charcoal text-cream text-[9px] font-sans uppercase tracking-widest font-semibold px-2 py-0.5 rounded-[2px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-sm z-50">
-                      {v.name[locale]}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
         </div>
 
         {/* Right Side: Editorial Info Side Drawer */}
-        <div className="w-full lg:w-[440px] border-t lg:border-t-0 lg:border-l border-stone/50 bg-cream/95 backdrop-blur-md flex flex-col justify-between relative shadow-2xl z-10 text-left">
+        <div className="w-full lg:w-[440px] h-[340px] lg:h-full border-t lg:border-t-0 lg:border-l border-stone/50 bg-cream/95 backdrop-blur-md flex flex-col justify-between relative shadow-2xl z-10 text-left shrink-0 lg:pt-16">
           <AnimatePresence mode="wait">
             {selectedVillage ? (
               <motion.div
@@ -339,13 +240,13 @@ export default function InteractiveMapPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="flex-1 flex flex-col justify-between"
+                className="flex-1 flex flex-col justify-between overflow-hidden"
               >
                 {/* Upper Scrollable Info Content */}
-                <div className="p-6 lg:p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-140px)]">
+                <div className="p-5 lg:p-8 space-y-4 lg:space-y-6 overflow-y-auto max-h-[220px] lg:max-h-[calc(100vh-140px)] flex-grow">
                   
                   {/* Village Cover Image aspect-ratio 4/3 */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden border border-stone rounded-sm bg-stone/20">
+                  <div className="relative w-full h-28 lg:h-auto lg:aspect-[4/3] overflow-hidden border border-stone rounded-sm bg-stone/20 shrink-0">
                     <img
                       src={selectedVillage.coverImage}
                       alt={selectedVillage.name[locale]}
@@ -363,16 +264,16 @@ export default function InteractiveMapPage() {
                   </div>
 
                   {/* Province & Header */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-ash font-sans block">
+                  <div className="space-y-1">
+                    <span className="text-[9px] lg:text-[10px] font-semibold uppercase tracking-widest text-ash font-sans block">
                       {selectedVillage.province[locale]} • {selectedVillage.region === 'North' ? t.filterNorth : t.filterCenter}
                     </span>
-                    <h2 className="font-heading text-3xl font-bold italic text-charcoal leading-tight">
+                    <h2 className="font-heading text-2xl lg:text-3xl font-bold italic text-charcoal leading-tight">
                       {selectedVillage.name[locale]}
                     </h2>
                   </div>
 
-                  <OrnamentDivider className="text-stone/30" />
+                  <OrnamentDivider className="text-stone/30 py-1 lg:py-2" />
 
                   {/* Story Description */}
                   <div className="space-y-3">
@@ -408,7 +309,7 @@ export default function InteractiveMapPage() {
                 </div>
 
                 {/* Footer Dynamic CTA Button */}
-                <div className="p-6 border-t border-stone/30 bg-cream">
+                <div className="p-4 lg:p-6 border-t border-stone/30 bg-cream shrink-0">
                   <Link
                     href={`/tenant/${selectedVillage.slug}`}
                     className="flex items-center justify-center gap-2 w-full bg-lacquer text-cream font-sans font-semibold uppercase tracking-widest text-[12px] py-4 rounded-sm hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"

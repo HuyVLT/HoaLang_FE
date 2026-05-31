@@ -87,5 +87,14 @@
     "successTitle": "Thank you!",
     "successDesc": "Your itinerary is being prepared — please check your email.",
     "footer": "No account required  •  100% Free  •  4 languages supported"
+  },
+  "footer": {
+    "desc": "A platform connecting travel and preserving the heritage values of Vietnamese traditional craft villages. A journey to cherish the soul of the nation.",
+    "explore": "Explore",
+    "products": "Products & Workshops",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "address": "Hanoi, Vietnam",
+    "system": "Artisanal Heritage Management System"
   }
 }

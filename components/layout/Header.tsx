@@ -16,17 +16,36 @@ export default function Header() {
   const cartItems = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isTenant, setIsTenant] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 40);
-    // Set initial state in case page loads already scrolled
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Client-side subdomain detection
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      const parts = host.split('.');
+      let subdomain = '';
+      if (host.includes('localhost')) {
+        subdomain = host.split('.localhost')[0];
+        if (subdomain === 'localhost') subdomain = '';
+      } else {
+        if (parts.length > 2) {
+          subdomain = parts[0];
+          if (subdomain === 'www') subdomain = '';
+        }
+      }
+      setIsTenant(!!subdomain);
+    }
+
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   if (
+    isTenant ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/tenant') ||
     pathname.startsWith('/onboarding') ||
@@ -39,7 +58,7 @@ export default function Header() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const navLinks = [
-    { href: '/#map',        label: t('map') },
+    { href: '/map',         label: t('map') },
     { href: '/#villages',   label: t('villages') },
     { href: '/#itinerary',  label: t('itinerary') },
     { href: '/#shop',       label: t('shop') },

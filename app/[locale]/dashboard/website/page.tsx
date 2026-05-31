@@ -182,7 +182,7 @@ export default function WebsiteEditor() {
 
         <PublishPanel
           tenantSlug={tenantSlug}
-          isPublished={config.published}
+          isPublished={config.published ?? false}
           onStatusChange={handlePublishStatusChange}
         />
       </div>

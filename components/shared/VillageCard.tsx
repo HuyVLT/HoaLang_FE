@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 export interface MultilingualText {
   vi: string;
-  en: string;
+  en?: string;
   ja?: string;
   ko?: string;
   zh?: string;

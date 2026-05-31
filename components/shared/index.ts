@@ -10,6 +10,4 @@ export * from './CheckoutDrawer';
 export { default as ImageUploader } from './ImageUploader';
 export { default as AddressAutocomplete } from './AddressAutocomplete';
 export { default as VnAddressSelect } from './VnAddressSelect';
-
-
-
+export { default as MapboxMap } from './MapboxMap';
