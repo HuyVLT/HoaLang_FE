@@ -29,11 +29,40 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
-### [2026-06-01] Next.js Page Export & Type Safety Resolution
+### [2026-06-01] Premium Overlay Registration Modal Implementation
+
+#### Tác vụ hoàn thành
+- Khắc phục giao diện lỗi thời và không nhất quán khi thay thế hộp thoại nhập tin nhắn gốc của trình duyệt (`window.prompt()`) bằng một **Overlay Modal biểu mẫu đăng ký cao cấp**.
+- Thiết kế biểu mẫu điền thông tin đăng ký có đầy đủ các trường phong phú (Tên làng, Tên miền phụ, Tên nghệ nhân, SĐT, Tỉnh thành, và Bản mẫu thiết kế) được thiết kế theo đúng nhận diện thương hiệu nghệ thuật và màu sắc dó/sơn mài của HoaLang.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Interactive Overlay Form Dialog**:
+   - Thay đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx).
+   - Tích hợp thêm component Modal điều khiển bằng trạng thái React, kết hợp với các hiệu ứng chuyển động mượt mà của **Framer Motion (`AnimatePresence` và `motion.div`)**.
+   - Bổ sung tính năng tự động chuẩn hóa và sinh tên miền phụ (Clean Slug Generator) tự động biến đổi chuỗi tiếng Việt có dấu (ví dụ: `Làng Gốm Bàu Trúc` -> `bau-truc`) thành slug hợp lệ tại runtime thời gian thực.
+   - Thêm nút tắt linh hoạt dạng icon và nút hủy bỏ giúp tăng tốc độ thao tác của người quản trị.
+
+---
+
+### [2026-06-01] Google OAuth Avatar Referrer Policy Resolution
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi hiển thị ảnh đại diện (avatar) bị lỗi hiển thị/broken image khi người dùng thực hiện đăng nhập bằng tài khoản Google.
+- Thêm thuộc tính `referrerPolicy="no-referrer"` vào các thẻ `<img>` hiển thị avatar trên toàn hệ thống giao diện (Desktop Header và Mobile Drawer Header) để vượt qua lớp bảo mật chống Hotlinking của Google.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Header Avatar Images Refactoring**:
+   - Thay đổi trong [Header.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/layout/Header.tsx).
+   - Tích hợp thêm thuộc tính `referrerPolicy="no-referrer"` cho cả component hiển thị ảnh đại diện người dùng ở thanh Menu chính phía trên (Desktop) và trong menu trượt di động (Mobile Drawer). Việc này giúp trình duyệt loại bỏ header `Referer` khi tải ảnh từ máy chủ `lh3.googleusercontent.com` của Google, giải quyết triệt để lỗi `403 Forbidden` do Google chặn cross-origin request.
+
+---
+
+### [2026-06-01] Next.js Page Export, Type Safety & Subdomain Routing Resolution
 
 #### Tác vụ hoàn thành
 - Khắc phục triệt để lỗi biên dịch `npm run build` trên Frontend liên quan đến Named Exports trong các trang (`page.tsx`).
 - Refactor cấu trúc Dynamic Component Renderers trong `SectionRenderer.tsx` để đạt 100% Type Safety tuyệt đối mà không cần dùng `any` hay ép kiểu không an toàn.
+- Giải quyết vấn đề định tuyến đa chi nhánh (Subdomain Routing): Sửa lỗi liên kết truy cập website làng nghề trên bản đồ và hệ thống bảng quản trị để hướng trực tiếp tới subdomain thực tế (ví dụ: `nonnuoc.hoalang.site`) thay vì đường dẫn thư mục giả lập trên domain chính (`/vi/tenant/...`).
 - Đạt trạng thái biên dịch thành công hoàn hảo (Zero Errors) cho cả Frontend và Backend (`pnpm build`).
 
 #### Chi tiết kỹ thuật & File thay đổi
@@ -44,7 +73,13 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
    - Thay đổi trong [SectionRenderer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/tenant/SectionRenderer.tsx).
    - Thay thế cấu trúc ánh xạ động `SECTION_MAP` (vốn vi phạm TypeScript parameter type contravariance) bằng cấu trúc lệnh rẽ nhánh `switch (section.type)` cực kỳ tường minh.
    - Nhờ đó, TypeScript phân tích luồng dữ liệu (control flow analysis) có thể tự động thu hẹp kiểu dữ liệu (type narrowing) của `section` tương ứng với mỗi Component của từng Section cụ thể, đảm bảo sự an toàn tuyệt đối 100% Type Safety mà không có bất kỳ khai báo `any` nào.
-3. **Build Pipeline Validation**:
+3. **Subdomain Routing & Link Synchronization**:
+   - Sửa đổi trong [app/[locale]/map/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/map/page.tsx). Tích hợp hàm tiện ích `getTenantUrl` và đổi nút "Truy cập website" thành thẻ `<a>` hướng tới địa chỉ subdomain tương ứng (như `nonnuoc.hoalang.site`) thay vì Next.js `<Link>` dẫn tới `/tenant/[slug]`. Đảm bảo mở trang ở tab mới (`target="_blank"`) giúp nâng tầm trải nghiệm khám phá bản đồ. Đồng thời, xóa bỏ import `Link` không sử dụng để vượt qua ESLint.
+   - Sửa đổi trong [app/[locale]/admin/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx). Thay thế link xem trực tiếp website của Super Admin bằng hàm `getTenantUrl` để điều hướng chuẩn xác tới subdomain của làng nghề.
+   - Sửa đổi trong [app/[locale]/tenant/[slug]/builder/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/tenant/[slug]/builder/page.tsx). Cập nhật nút Back "Quay lại website" để dẫn tới subdomain chính thức thay vì thư mục con.
+   - Sửa đổi trong [components/dashboard/DashboardSidebar.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/dashboard/DashboardSidebar.tsx) (cả giao diện Desktop và Mobile drawer). Đồng bộ nút "Xem Website" để trỏ về subdomain thực tế của chi nhánh.
+   - Sửa đổi trong [components/dashboard/PublishPanel.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/dashboard/PublishPanel.tsx). Cập nhật biến `liveUrl` và `previewUrl` sử dụng helper `getTenantUrl` để phản ánh đúng cấu trúc URL tên miền phụ động ở mọi môi trường (Local và Production).
+4. **Build Pipeline Validation**:
    - Chạy `npm run build` ở phía FE và `pnpm build` ở phía BE đều đạt trạng thái thành công 100%.
 
 ---

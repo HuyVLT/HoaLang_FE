@@ -17,6 +17,7 @@ import {
 import { toast } from 'sonner';
 import { PageConfig, Section } from '@/types/tenant';
 import { getMockTenantConfig } from '@/lib/mockTenants';
+import { getTenantUrl } from '@/lib/tenant-url';
 import TenantThemeProvider from '@/components/tenant/TenantThemeProvider';
 import SectionRenderer from '@/components/tenant/SectionRenderer';
 
@@ -171,7 +172,7 @@ export default function VisualBuilder({ params }: BuilderProps) {
       <header className="bg-charcoal text-cream border-b border-stone/20 px-6 py-4 flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-4">
           <a
-            href={`/vi/tenant/${slug}`}
+            href={getTenantUrl(slug, 'vi')}
             className="p-2 hover:bg-cream/10 rounded-sm text-stone hover:text-cream transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

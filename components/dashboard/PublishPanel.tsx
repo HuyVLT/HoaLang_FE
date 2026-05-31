@@ -5,6 +5,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Globe, Eye, AlertCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { getTenantUrl } from '@/lib/tenant-url';
 
 interface PublishPanelProps {
   tenantSlug: string;
@@ -18,8 +19,8 @@ export default function PublishPanel({
   onStatusChange,
 }: PublishPanelProps) {
   const [publishing, setPublishing] = useState(false);
-  const liveUrl = `https://${tenantSlug}.hoalang.vn`;
-  const previewUrl = `/vi/tenant/${tenantSlug}`;
+  const liveUrl = getTenantUrl(tenantSlug, 'vi');
+  const previewUrl = getTenantUrl(tenantSlug, 'vi');
 
   const handlePublishToggle = async () => {
     setPublishing(true);
