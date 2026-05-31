@@ -12,11 +12,13 @@ import {
   Power,
   Coins,
   TrendingUp,
-  CheckCircle
+  CheckCircle,
+  X
 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
 import { getTenantUrl } from '@/lib/tenant-url';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TenantItem {
   id: string;
@@ -61,6 +63,47 @@ interface OperationalLog {
 export default function SuperAdminDashboard() {
   const [activeTab, setActiveTab] = useState<'tenants' | 'revenue' | 'templates' | 'logs'>('tenants');
   const [commissionRate, setCommissionRate] = useState<number>(5.0); // Global fee rate 5.0%
+
+  // Overlay form states for premium registration modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [newVillageName, setNewVillageName] = useState('');
+  const [newVillageSlug, setNewVillageSlug] = useState('');
+  const [newArtisanName, setNewArtisanName] = useState('Nghệ nhân Đăng Ký Trực Tuyến');
+  const [newPhone, setNewPhone] = useState('Chưa cập nhật');
+  const [newProvince, setNewProvince] = useState('Việt Nam');
+  const [newDescription, setNewDescription] = useState('Gian hàng trực tuyến đăng ký tự động từ cổng HoaLang Onboarding.');
+  const [newTemplate, setNewTemplate] = useState('Bản Giấy Dó (Minimalist Paper)');
+
+  const handleSubmitNewVillage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVillageName || !newVillageSlug) {
+      toast.error('Vui lòng điền tên và slug tên miền phụ!');
+      return;
+    }
+    
+    const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    setPendingRegistrations(prev => [
+      ...prev,
+      {
+        id: `R0${prev.length + 1}`,
+        name: newVillageName,
+        slug: newVillageSlug.toLowerCase().trim().replace(/\s+/g, '-'),
+        artisanName: newArtisanName,
+        phone: newPhone,
+        category: 'Thủ công mỹ nghệ / Handicrafts',
+        province: newProvince,
+        description: newDescription,
+        appliedAt: new Date().toISOString().split('T')[0],
+        template: newTemplate,
+      }
+    ]);
+    setLogs(prev => [
+      { timestamp: nowStr, type: 'SYSTEM', message: `APPLICATION RECEIVED: Nhận hồ sơ đăng ký đối tác mới từ ${newVillageName} (slug: ${newVillageSlug}).` },
+      ...prev
+    ]);
+    setModalOpen(false);
+    toast.success('Hồ sơ đăng ký đã được xếp hàng chờ phê duyệt!');
+  };
 
   const [tenants, setTenants] = useState<TenantItem[]>([
     {
@@ -268,31 +311,14 @@ export default function SuperAdminDashboard() {
             
             <button
               onClick={() => {
-                const name = prompt('Nhập tên làng nghề đăng ký mới:');
-                const slug = prompt('Nhập slug tên miền phụ (vd: dong-ho):');
-                if (name && slug) {
-                  const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
-                  setPendingRegistrations(prev => [
-                    ...prev,
-                    {
-                      id: `R0${prev.length + 1}`,
-                      name,
-                      slug,
-                      artisanName: 'Nghệ nhân Đăng Ký Trực Tuyến',
-                      phone: 'Chưa cập nhật',
-                      category: 'Thủ công mỹ nghệ / Handicrafts',
-                      province: 'Việt Nam',
-                      description: 'Gian hàng trực tuyến đăng ký tự động từ cổng HoaLang Onboarding.',
-                      appliedAt: new Date().toISOString().split('T')[0],
-                      template: 'Bản Giấy Dó (Minimalist Paper)',
-                    }
-                  ]);
-                  setLogs(prev => [
-                    { timestamp: nowStr, type: 'SYSTEM', message: `APPLICATION RECEIVED: Nhận hồ sơ đăng ký đối tác mới từ ${name} (slug: ${slug}).` },
-                    ...prev
-                  ]);
-                  toast.success('Hồ sơ đăng ký đã được xếp hàng chờ phê duyệt!');
-                }
+                setNewVillageName('');
+                setNewVillageSlug('');
+                setNewArtisanName('Nghệ nhân Đăng Ký Trực Tuyến');
+                setNewPhone('Chưa cập nhật');
+                setNewProvince('Việt Nam');
+                setNewDescription('Gian hàng trực tuyến đăng ký tự động từ cổng HoaLang Onboarding.');
+                setNewTemplate('Bản Giấy Dó (Minimalist Paper)');
+                setModalOpen(true);
               }}
               className="inline-flex items-center gap-2 bg-lacquer text-cream font-sans text-xs font-semibold uppercase tracking-wider px-5 py-3 rounded-sm hover:brightness-110 shadow-sm transition-all shrink-0 active:scale-[0.98]"
             >
@@ -881,6 +907,189 @@ export default function SuperAdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* ── PREMIUM OVERLAY REGISTRATION MODAL ── */}
+        <AnimatePresence>
+          {modalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setModalOpen(false)}
+                className="absolute inset-0 bg-ink/75 backdrop-blur-sm"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.97, y: 16 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-parchment border border-stone rounded-sm max-w-lg w-full overflow-hidden shadow-lg p-6 relative z-10 flex flex-col gap-5 text-left select-none max-h-[90vh] overflow-y-auto"
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className="absolute top-4 right-4 p-1.5 hover:bg-stone/20 rounded-full transition-colors text-ash hover:text-charcoal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-gold font-sans block">
+                    Đăng ký đối tác mới / SaaS Tenant
+                  </span>
+                  <h3 className="font-heading text-2xl font-bold italic text-charcoal">
+                    Đăng Ký Làng Nghề Mới
+                  </h3>
+                </div>
+
+                <div className="h-px bg-stone/40 w-full" />
+
+                <form onSubmit={handleSubmitNewVillage} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                        Tên Làng Nghề <span className="text-lacquer">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ví dụ: Làng Gốm Bàu Trúc"
+                        value={newVillageName}
+                        onChange={(e) => {
+                          setNewVillageName(e.target.value);
+                          // Auto generate clean slug
+                          const genSlug = e.target.value
+                            .toLowerCase()
+                            .normalize("NFD")
+                            .replace(/[\u0300-\u036f]/g, "")
+                            .replace(/[đĐ]/g, "d")
+                            .replace(/[^a-z0-9\s-]/g, "")
+                            .trim()
+                            .replace(/\s+/g, "-");
+                          setNewVillageSlug(genSlug);
+                        }}
+                        className="w-full border border-stone bg-cream p-2.5 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink placeholder-ash/50 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                        Tên miền phụ / Subdomain <span className="text-lacquer">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type="text"
+                          required
+                          placeholder="vd: bau-truc"
+                          value={newVillageSlug}
+                          onChange={(e) => setNewVillageSlug(e.target.value)}
+                          className="w-full border border-stone bg-cream py-2.5 pl-2.5 pr-20 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink placeholder-ash/50 transition-colors font-mono font-semibold"
+                        />
+                        <span className="absolute right-2.5 font-mono text-[9px] font-semibold text-ash/80 select-none">
+                          .hoalang.site
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                        Nghệ nhân đại diện
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Nghệ nhân Đàng Thị Phan"
+                        value={newArtisanName}
+                        onChange={(e) => setNewArtisanName(e.target.value)}
+                        className="w-full border border-stone bg-cream p-2.5 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                        Số điện thoại liên hệ
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="0912.345.678"
+                        value={newPhone}
+                        onChange={(e) => setNewPhone(e.target.value)}
+                        className="w-full border border-stone bg-cream p-2.5 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                        Tỉnh / Thành phố
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ninh Thuận"
+                        value={newProvince}
+                        onChange={(e) => setNewProvince(e.target.value)}
+                        className="w-full border border-stone bg-cream p-2.5 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                        Bản thiết kế mẫu / Theme Template
+                      </label>
+                      <select
+                        value={newTemplate}
+                        onChange={(e) => setNewTemplate(e.target.value)}
+                        className="w-full border border-stone bg-cream p-2.5 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink transition-colors"
+                      >
+                        <option value="Bản Giấy Dó (Minimalist Paper)">Bản Giấy Dó (Minimalist Paper)</option>
+                        <option value="Bản Bát Tràng (Ceramics Starter)">Bản Bát Tràng (Ceramics Starter)</option>
+                        <option value="Bản Vạn Phúc (Silk Editorial)">Bản Vạn Phúc (Silk Editorial)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="font-sans text-[10px] font-semibold uppercase tracking-wider text-ash mb-1 block">
+                      Mô tả ngắn làng nghề
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Nhập nét đặc sắc của nghề dệt/làm gốm..."
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      className="w-full border border-stone bg-cream p-2.5 rounded-sm text-xs font-sans focus:outline-none focus:border-bronze text-ink transition-colors resize-none"
+                    />
+                  </div>
+
+                  <div className="h-px bg-stone/30 w-full pt-1" />
+
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setModalOpen(false)}
+                      className="px-5 py-3 border border-stone hover:border-bronze bg-transparent text-charcoal font-sans text-[10px] font-bold uppercase tracking-wider rounded-xs transition-all active:scale-[0.98]"
+                    >
+                      Hủy Bỏ
+                    </button>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center gap-1.5 bg-lacquer text-cream font-sans text-[10px] font-bold uppercase tracking-wider px-6 py-3 rounded-xs hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-accent" />
+                      <span>Xác Nhận Đăng Ký</span>
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>

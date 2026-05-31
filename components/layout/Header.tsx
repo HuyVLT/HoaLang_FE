@@ -195,6 +195,7 @@ export default function Header() {
                     <img
                       src={user.avatar}
                       alt={user.name}
+                      referrerPolicy="no-referrer"
                       className="w-7 h-7 rounded-sm object-cover border border-stone/60 transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
@@ -364,6 +365,7 @@ export default function Header() {
                             <img
                               src={user.avatar}
                               alt={user.name}
+                              referrerPolicy="no-referrer"
                               className="w-9 h-9 rounded-sm object-cover border border-stone"
                             />
                           ) : (

@@ -29,6 +29,34 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-01] Premium Overlay Registration Modal Implementation
+
+#### Tác vụ hoàn thành
+- Khắc phục giao diện lỗi thời và không nhất quán khi thay thế hộp thoại nhập tin nhắn gốc của trình duyệt (`window.prompt()`) bằng một **Overlay Modal biểu mẫu đăng ký cao cấp**.
+- Thiết kế biểu mẫu điền thông tin đăng ký có đầy đủ các trường phong phú (Tên làng, Tên miền phụ, Tên nghệ nhân, SĐT, Tỉnh thành, và Bản mẫu thiết kế) được thiết kế theo đúng nhận diện thương hiệu nghệ thuật và màu sắc dó/sơn mài của HoaLang.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Interactive Overlay Form Dialog**:
+   - Thay đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx).
+   - Tích hợp thêm component Modal điều khiển bằng trạng thái React, kết hợp với các hiệu ứng chuyển động mượt mà của **Framer Motion (`AnimatePresence` và `motion.div`)**.
+   - Bổ sung tính năng tự động chuẩn hóa và sinh tên miền phụ (Clean Slug Generator) tự động biến đổi chuỗi tiếng Việt có dấu (ví dụ: `Làng Gốm Bàu Trúc` -> `bau-truc`) thành slug hợp lệ tại runtime thời gian thực.
+   - Thêm nút tắt linh hoạt dạng icon và nút hủy bỏ giúp tăng tốc độ thao tác của người quản trị.
+
+---
+
+### [2026-06-01] Google OAuth Avatar Referrer Policy Resolution
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi hiển thị ảnh đại diện (avatar) bị lỗi hiển thị/broken image khi người dùng thực hiện đăng nhập bằng tài khoản Google.
+- Thêm thuộc tính `referrerPolicy="no-referrer"` vào các thẻ `<img>` hiển thị avatar trên toàn hệ thống giao diện (Desktop Header và Mobile Drawer Header) để vượt qua lớp bảo mật chống Hotlinking của Google.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Header Avatar Images Refactoring**:
+   - Thay đổi trong [Header.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/layout/Header.tsx).
+   - Tích hợp thêm thuộc tính `referrerPolicy="no-referrer"` cho cả component hiển thị ảnh đại diện người dùng ở thanh Menu chính phía trên (Desktop) và trong menu trượt di động (Mobile Drawer). Việc này giúp trình duyệt loại bỏ header `Referer` khi tải ảnh từ máy chủ `lh3.googleusercontent.com` của Google, giải quyết triệt để lỗi `403 Forbidden` do Google chặn cross-origin request.
+
+---
+
 ### [2026-06-01] Next.js Page Export, Type Safety & Subdomain Routing Resolution
 
 #### Tác vụ hoàn thành
