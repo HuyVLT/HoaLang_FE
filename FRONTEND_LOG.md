@@ -51,3 +51,82 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 #### Lưu ý cho lần phát triển tiếp theo
 - Khi xây dựng các trang mới (Ví dụ: danh sách làng nghề, chi tiết sản phẩm), luôn bọc văn bản bằng `useTranslations` từ `next-intl`.
 - Khi dùng các API key bên ngoài (Mapbox, v.v.), luôn có phương án fallback UI phòng trường hợp biến môi trường không khả dụng.
+
+### [2026-05-31] Complete Authentication Integration: verify-account & OAuth callback
+
+#### Tác vụ hoàn thành
+- Tích hợp thành công 2 trang đích quan trọng trong Authentication Flow: Kích hoạt tài khoản (Email Verification) và Đăng nhập mạng xã hội (Google OAuth Callback).
+- Đồng bộ dịch thuật đa ngôn ngữ toàn diện (i18n) cho cả 2 trang, đảm bảo Tiếng Việt chuẩn xác có dấu nghệ thuật, không hardcode text trực tiếp.
+- Tuân thủ nghiêm ngặt cẩm nang thiết kế HoaLang: phối màu parchment background, cream card, lacquer accent buttons và copper elements.
+- Bọc toàn bộ logic Client-Side Search Params trong `<Suspense>` của Next.js 14 App Router để loại bỏ hoàn toàn các lỗi opt-out of SSR/static compilation cảnh báo lúc build production.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Google OAuth Callback Page**:
+   - Thêm mới [callback/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/callback/page.tsx).
+   - Đọc query params: `accessToken`, `refreshToken`, `user` (được BE encode URI JSON).
+   - Hydrate toàn bộ thông tin đăng nhập vào Zustand `useAuthStore` và cập nhật cookie an toàn.
+   - Thêm hiệu ứng quay vòng đồng tinh xảo kèm grain background, tự động chuyển hướng theo phân quyền (`USER` -> Home `/`, `ADMIN` -> `/admin`, `VILLAGE_OWNER` -> `/dashboard`).
+2. **Email Verification Page**:
+   - Thêm mới [verify-account/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/verify-account/page.tsx).
+   - Truy vấn API `/auth/verify-account?token=...` qua client `api.ts`.
+   - Hiển thị các trạng thái trực quan: Loading spinner nhấp nháy màu sơn mài (lacquer), Success (thông báo chúc mừng có dấu, tự động đếm ngược 5 giây về login), và Error (thông báo lỗi, nút quay lại trang đăng nhập ghost style).
+3. **i18n Translation Keys**:
+   - Sửa đổi [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json) và [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json) để thêm các nhãn quốc tế hoá cho hai màn hình trên.
+
+### [2026-06-01] Robust local multi-tenant API base URL mapping and HTML error response filters
+
+#### Tác vụ hoàn thành
+- Khắc phục triệt để lỗi hiển thị raw HTML trang 404 của Next.js khi người dùng thao tác ở môi trường cục bộ (localhost, 127.0.0.1, hoặc các subdomain phát triển cục bộ dạng `*.localhost`).
+- Nâng cấp bộ bắt lỗi của trang Đăng nhập (`login/page.tsx`) tương ứng với các tiêu chuẩn an toàn lọc HTML đã thiết lập ở trang Đăng ký (`register/page.tsx`).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Local Multi-Tenant Host Detection**:
+   - Thay đổi trong [api.ts](file:///d:/HoaLang/HoaLang_FE/lib/api.ts).
+   - Nâng cấp `getInitialBaseUrl()` để nhận diện thêm các địa chỉ host nội bộ như `127.0.0.1` và bất kỳ subdomain con nào tận cùng bằng `.localhost` (ví dụ `battrang.localhost`). Thay vì trả về đường dẫn tương đối `/api/v1` (gây 404 do Next.js dev server không có proxy), cấu hình sẽ trả về URL tuyệt đối `http://localhost:5000/api/v1` giúp gọi thẳng sang cổng Backend Express.
+2. **Robust Login Error Handlers & Fallbacks**:
+   - Sửa đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/login/page.tsx).
+   - Áp dụng bộ lọc và rà soát chuỗi phản hồi đặc biệt. Nếu phản hồi trả về chứa thẻ HTML (lỗi 404 từ server không có router, lỗi 502/504 cổng kết nối bị sập), hệ thống sẽ hiển thị một thông báo có nghĩa về lỗi kết nối mạng ("Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found)") thay vì in nguyên bản mã nguồn HTML dài dặc lên khung thông báo Sonner.
+
+### [2026-06-01] React Strict Mode Double-Fetch Guard for Account Verification
+
+#### Tác vụ hoàn thành
+- Sửa lỗi trang kích hoạt hiển thị trạng thái "Kích hoạt thất bại / Verification Failed" do `useEffect` chạy 2 lần trong chế độ React Strict Mode của môi trường Development.
+- Bảo vệ trang kích hoạt khỏi việc gửi hai cuộc gọi API đồng thời gây ra tình trạng race condition và xung đột trạng thái xác thực.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Ref Request Guard in Verification Page**:
+   - Thay đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/verify-account/page.tsx).
+   - Sử dụng `useRef` làm lăng kính trạng thái `hasRequested` bảo vệ API. Nếu `hasRequested.current` đã là `true`, `useEffect` sẽ bỏ qua lần gọi tiếp theo. Điều này ngăn chặn triệt để cuộc gọi kép của React Strict Mode trong môi trường Development, giữ tính nhất quán 100% cho trạng thái UI.
+
+### [2026-06-01] User Name Mapping Bug Fix on Login Page
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi hiển thị Email thay vì Họ tên người dùng trên Thanh điều hướng (Header) sau khi đăng nhập bằng tài khoản hệ thống (Credentials).
+- Nhất quán hóa cấu trúc đối tượng người dùng lưu trữ trong Zustand Auth Store giữa các phương thức đăng nhập hệ thống và Google OAuth SSO.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **User Schema Property Mapping on Login**:
+   - Thay đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/login/page.tsx).
+   - Sửa đổi ánh xạ đối tượng `mappedUser`: Cập nhật trường `name` sử dụng `user.fullName || user.name` thay vì chỉ gán `user.name` (trường không tồn tại trên Mongoose User model của backend do backend sử dụng `fullName`).
+   - Việc sửa đổi này giúp đồng bộ hoàn hảo với cách ánh xạ của OAuth callback, cho phép Header render chuẩn xác Tên đầy đủ của người dùng (`user.name`) và chỉ rơi về Email khi cả hai giá trị tên đều bị khuyết thiếu.
+
+### [2026-06-01] Premium User Avatar & Dropdown Menu Integration in Header
+
+#### Tác vụ hoàn thành
+- Tích hợp trường `avatar` vào cấu trúc người dùng của Zustand Auth Store, đồng bộ ánh xạ ảnh đại diện từ cả Đăng nhập thường và Google OAuth SSO.
+- Thay thế nút "Đăng xuất" đơn giản bằng giao diện Ảnh đại diện (Avatar) tinh tế kèm Dropdown chuyển hướng động và kích hoạt đăng xuất sang trọng trên cả phiên bản Desktop và Mobile Drawer.
+- Tuân thủ chặt chẽ design tokens của HoaLang: sử dụng cấu trúc ảnh vuông nhẹ (`rounded-sm`), viền nhạt `stone`, nền sơn mài `lacquer` cho monogram fallback, và hoạt ảnh mượt mà bằng Framer Motion.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Zustand Auth Store Schema Update**:
+   - Thay đổi trong [authStore.ts](file:///d:/HoaLang/HoaLang_FE/lib/store/authStore.ts).
+   - Bổ sung trường `avatar?: string` vào giao diện người dùng `User`.
+2. **Auth Pages Mapping**:
+   - Thay đổi trong [login/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/login/page.tsx) và [callback/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/callback/page.tsx).
+   - Ánh xạ thêm trường `avatar` từ phản hồi của API Backend vào Zustand Store.
+3. **Header User Interface Redesign**:
+   - Thay đổi trong [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx).
+   - Thiết kế Avatar vuông `rounded-sm` (tương thích triết lý ảnh tạp chí của HoaLang) kết hợp Monogram tự động sinh từ chữ cái đầu của tên/email nếu người dùng chưa cập nhật ảnh.
+   - Thêm dropdown menu sử dụng Framer Motion (`AnimatePresence` & `motion.div`) hiển thị Tên đầy đủ, Email, tùy chọn Quản trị hệ thống (theo quyền `ADMIN` hoặc `VILLAGE_OWNER`), và nút Đăng xuất tinh xảo.
+   - Nâng cấp đồng bộ giao diện Mobile Drawer (Sheet) hiển thị block Profile người dùng có avatar và thông tin vai trò trực quan, ngăn nắp.
+
