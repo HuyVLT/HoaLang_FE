@@ -87,5 +87,14 @@
     "successTitle": "Cảm ơn bạn!",
     "successDesc": "Hành trình của bạn đang được chuẩn bị — hãy kiểm tra email.",
     "footer": "Không cần tài khoản  •  Miễn phí  •  Hỗ trợ 4 ngôn ngữ"
+  },
+  "footer": {
+    "desc": "Nền tảng kết nối du lịch và gìn giữ giá trị di sản làng nghề truyền thống Việt Nam. Hành trình gìn giữ hồn cốt dân tộc Việt.",
+    "explore": "Khám Phá",
+    "products": "Sản Phẩm & Workshop",
+    "terms": "Điều khoản sử dụng",
+    "contact": "Liên Hệ",
+    "address": "Hà Nội, Việt Nam",
+    "system": "Hệ thống Quản trị di sản Làng nghề"
   }
 }

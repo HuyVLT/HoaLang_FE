@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Link, useRouter } from '@/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Map, Sparkles, Package, ArrowRight, ArrowUpRight, ChevronRight, Compass, Database, Clock, Tag } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { Link } from '@/navigation';
+import { motion } from 'framer-motion';
+import { Sparkles, Package, ArrowRight, ArrowUpRight, Compass } from 'lucide-react';
+import { useLocale } from 'next-intl';
+import { getTenantUrl } from '@/lib/tenant-url';
+import { MapboxVillage } from '@/components/shared/MapboxMap';
 
 import {
   SectionLabel,
   VillageCard,
-  OrnamentDivider,
   AnimatedNumber,
-  CraftCard,
   MapboxMap,
   LocaleText
 } from '@/components/shared';
@@ -321,8 +321,7 @@ const mapVillages = [
 
 export default function LandingPage() {
   const locale = useLocale() as 'vi' | 'en';
-  const router = useRouter();
-  const [selectedVillage, setSelectedVillage] = useState<any>(null);
+  const [selectedVillage, setSelectedVillage] = useState<MapboxVillage | null>(null);
 
   return (
     <div className="min-h-screen bg-parchment overflow-x-hidden selection:bg-lacquer/10 selection:text-lacquer">
@@ -500,7 +499,7 @@ export default function LandingPage() {
               villages={mapVillages}
               selectedVillage={selectedVillage}
               onSelectVillage={(v) => setSelectedVillage(v)}
-              onExploreVillage={(v) => router.push(`/tenant/${v.slug}`)}
+              onExploreVillage={(v) => { window.location.href = getTenantUrl(v.slug); }}
               locale={locale as 'vi' | 'en'}
             />
           </div>

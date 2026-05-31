@@ -16,17 +16,36 @@ export default function Header() {
   const cartItems = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isTenant, setIsTenant] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 40);
-    // Set initial state in case page loads already scrolled
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Client-side subdomain detection
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      const parts = host.split('.');
+      let subdomain = '';
+      if (host.includes('localhost')) {
+        subdomain = host.split('.localhost')[0];
+        if (subdomain === 'localhost') subdomain = '';
+      } else {
+        if (parts.length > 2) {
+          subdomain = parts[0];
+          if (subdomain === 'www') subdomain = '';
+        }
+      }
+      setIsTenant(!!subdomain);
+    }
+
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   if (
+    isTenant ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/tenant') ||
     pathname.startsWith('/onboarding') ||

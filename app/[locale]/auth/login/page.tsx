@@ -7,8 +7,9 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { Link } from '@/navigation';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Compass, Mail, Lock, ShieldAlert, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Compass, Mail, Lock, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
+import api from '@/lib/api';
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -32,42 +33,48 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router, mounted]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Mock delay to simulate backend round-trip
-    setTimeout(() => {
-      if (email === 'admin@restx.food' && password === 'Admin@123') {
-        login(
-          {
-            id: 'admin-id-1',
-            email: 'admin@restx.food',
-            name: 'Super Admin',
-            role: 'super_admin',
-          },
-          'mock-jwt-token-123456'
-        );
-        toast.success('Đăng nhập hệ thống Super Admin thành công!');
-        router.push('/admin');
-      } else if (email && password) {
-        // Log in as standard tenant_admin (VILLAGE_OWNER / artisan) if email & password entered
-        login(
-          {
-            id: 'tenant-id-abc',
-            email: email,
-            name: email.split('@')[0],
-            role: 'tenant_admin',
-          },
-          'mock-jwt-token-standard'
-        );
-        toast.success('Đăng nhập cổng quản trị Làng nghề thành công!');
-        router.push('/dashboard');
+    try {
+      const response = await api.post('/auth/login', {
+        email,
+        password,
+      });
+
+      if (response.data && response.data.success) {
+        const { user, accessToken, refreshToken } = response.data.data;
+        
+        // Map backend user response properties to the store structure
+        const mappedUser = {
+          id: user._id || user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role.toLowerCase(), // Store roles in lowercase for consistency
+        };
+
+        login(mappedUser, accessToken, refreshToken);
+        toast.success('Đăng nhập hệ thống thành công!');
+
+        // Dynamic redirect based on role
+        if (user.role === 'ADMIN') {
+          router.push('/admin');
+        } else if (user.role === 'VILLAGE_OWNER') {
+          router.push('/dashboard');
+        } else {
+          router.push('/');
+        }
       } else {
-        toast.error(t('auth.errorAuth'));
+        toast.error(response.data?.message || 'Đăng nhập thất bại.');
       }
+    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+      console.error('Login error:', err);
+      const errorMessage = err.response?.data?.message || 'Email hoặc mật khẩu không chính xác.';
+      toast.error(errorMessage);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   if (!mounted) {
@@ -186,7 +193,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   type="email"
-                  placeholder="admin@restx.food hoặc email của bạn"
+                  placeholder="admin@hoalang.vn hoặc email của bạn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -223,15 +230,18 @@ export default function LoginPage() {
             <div className="bg-parchment border border-stone rounded-xs p-4 text-left space-y-2.5">
               <span className="text-[9px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Tài khoản thử nghiệm mặc định</span>
+                <span>Tài khoản thử nghiệm hệ thống</span>
               </span>
               
               <div className="font-mono text-[10px] text-ash space-y-1 leading-normal">
                 <div>
-                  • Super Admin: <span className="font-semibold text-charcoal">admin@restx.food</span> / <span className="font-semibold text-charcoal">Admin@123</span>
+                  • Super Admin: <span className="font-semibold text-charcoal">admin@hoalang.vn</span> / <span className="font-semibold text-charcoal">Admin@123</span>
                 </div>
                 <div>
-                  • Tenant Artisan: <span className="font-semibold text-charcoal">battrang@hoalang.vn</span> / <span className="font-semibold text-charcoal">battrang123</span> (hoặc email bất kỳ)
+                  • Bát Tràng Owner: <span className="font-semibold text-charcoal">owner@battrang.vn</span> / <span className="font-semibold text-charcoal">TruongHuy888!</span>
+                </div>
+                <div>
+                  • Traveler Demo: <span className="font-semibold text-charcoal">traveler@gmail.com</span> / <span className="font-semibold text-charcoal">TruongHuy888!</span>
                 </div>
               </div>
             </div>

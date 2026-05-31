@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion } from 'framer-motion';
 import { Compass, Sparkles, AlertCircle } from 'lucide-react';
 import { PageConfig } from '@/types/tenant';
 import { getMockTenantConfig } from '@/lib/mockTenants';
 import TenantThemeProvider, { useTenantTheme } from '@/components/tenant/TenantThemeProvider';
 import SectionRenderer from '@/components/tenant/SectionRenderer';
+import { getTenantUrl } from '@/lib/tenant-url';
 
 // Local client-side fetch helper
 const fetchPageConfig = async (slug: string): Promise<PageConfig | null> => {
@@ -167,6 +167,7 @@ export default function TenantLandingPage({ params }: PageProps) {
 
   return (
     <TenantThemeProvider theme={config.theme}>
+      <link rel="canonical" href={getTenantUrl(slug)} />
       {/* Fallback alert ribbon if backend is down */}
       {fallbackMode && (
         <div className="bg-accent/15 border-b border-accent/30 py-2.5 text-center text-[10px] uppercase font-semibold tracking-wider text-bronze font-sans relative z-50">
