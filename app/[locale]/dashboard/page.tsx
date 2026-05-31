@@ -8,8 +8,6 @@ import {
   Calendar,
   DollarSign,
   TrendingUp,
-  UserCheck,
-  MapPin,
   Clock
 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
@@ -213,4 +211,3 @@ export default function DashboardOverview() {
     </div>
   );
 }
-export { DashboardOverview };

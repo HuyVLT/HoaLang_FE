@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, X, RefreshCw, ImagePlus, Eye, Scissors, Check } from 'lucide-react';
 import { useLocale } from 'next-intl';

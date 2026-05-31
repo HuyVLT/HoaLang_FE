@@ -6,19 +6,10 @@ import { useLocale } from 'next-intl';
 import { Link } from '@/navigation';
 import {
   Compass,
-  MapPin,
-  Sparkles,
-  ArrowRight,
-  Maximize2,
-  Minimize2,
-  ZoomIn,
-  ZoomOut,
-  Map as MapIcon,
   ChevronRight,
-  Info,
-  Layers
+  Info
 } from 'lucide-react';
-import { SectionLabel, TagBadge, OrnamentDivider, MapboxMap } from '@/components/shared';
+import { TagBadge, OrnamentDivider, MapboxMap } from '@/components/shared';
 
 // High-fidelity Mock data for traditional craft villages mapped across Vietnam
 interface VillageMarker {
