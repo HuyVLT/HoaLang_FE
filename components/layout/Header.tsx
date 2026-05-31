@@ -70,7 +70,6 @@ export default function Header() {
   // Color tokens based on scroll state
   const textColor    = scrolled ? '#2E2318' : '#FAF7F2';
   const activeColor  = scrolled ? '#8B1A1A' : '#C4952A';
-  const subtleColor  = scrolled ? '#8C8070' : 'rgba(250,247,242,0.65)';
 
   return (
     <header

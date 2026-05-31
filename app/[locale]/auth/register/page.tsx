@@ -46,15 +46,23 @@ export default function RegisterPage() {
       } else {
         toast.error(response.data?.message || 'Đăng ký tài khoản thất bại.');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Registration error:', err);
       
       let errorMessage = 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.';
+      const axiosError = err as {
+        response?: {
+          data?: {
+            message?: string;
+          } | string;
+        };
+        message?: string;
+      };
       
-      if (err.response?.data) {
+      if (axiosError.response?.data) {
         // Backend JSON error payload
-        if (err.response.data.message) {
-          const rawMsg = err.response.data.message;
+        if (typeof axiosError.response.data === 'object' && axiosError.response.data.message) {
+          const rawMsg = axiosError.response.data.message;
           
           if (rawMsg.includes('Input validation failed:')) {
             // Parse and translate validation errors beautifully
@@ -81,16 +89,16 @@ export default function RegisterPage() {
           } else {
             errorMessage = rawMsg;
           }
-        } else if (typeof err.response.data === 'string') {
-          if (err.response.data.includes('<!DOCTYPE html>') || err.response.data.includes('<html')) {
+        } else if (typeof axiosError.response.data === 'string') {
+          if (axiosError.response.data.includes('<!DOCTYPE html>') || axiosError.response.data.includes('<html')) {
             errorMessage = 'Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found).';
           } else {
-            errorMessage = err.response.data;
+            errorMessage = axiosError.response.data;
           }
         }
-      } else if (err.message) {
+      } else if (axiosError.message) {
         // Network/Axios general error
-        errorMessage = err.message;
+        errorMessage = axiosError.message;
       }
 
       toast.error(errorMessage, {

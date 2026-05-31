@@ -40,11 +40,12 @@ function VerifyAccountContent() {
           setStatus('error');
           setErrorMessage(response.data?.message || t('activationFailedDesc'));
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('[VerifyAccount] Verification API error:', err);
+        const axiosError = err as { response?: { data?: { message?: string } } };
         setStatus('error');
         setErrorMessage(
-          err.response?.data?.message || t('activationFailedDesc')
+          axiosError.response?.data?.message || t('activationFailedDesc')
         );
       }
     };
