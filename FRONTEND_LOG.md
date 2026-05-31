@@ -29,11 +29,12 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
-### [2026-06-01] Next.js Page Export & Type Safety Resolution
+### [2026-06-01] Next.js Page Export, Type Safety & Subdomain Routing Resolution
 
 #### Tác vụ hoàn thành
 - Khắc phục triệt để lỗi biên dịch `npm run build` trên Frontend liên quan đến Named Exports trong các trang (`page.tsx`).
 - Refactor cấu trúc Dynamic Component Renderers trong `SectionRenderer.tsx` để đạt 100% Type Safety tuyệt đối mà không cần dùng `any` hay ép kiểu không an toàn.
+- Giải quyết vấn đề định tuyến đa chi nhánh (Subdomain Routing): Sửa lỗi liên kết truy cập website làng nghề trên bản đồ và hệ thống bảng quản trị để hướng trực tiếp tới subdomain thực tế (ví dụ: `nonnuoc.hoalang.site`) thay vì đường dẫn thư mục giả lập trên domain chính (`/vi/tenant/...`).
 - Đạt trạng thái biên dịch thành công hoàn hảo (Zero Errors) cho cả Frontend và Backend (`pnpm build`).
 
 #### Chi tiết kỹ thuật & File thay đổi
@@ -44,7 +45,13 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
    - Thay đổi trong [SectionRenderer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/tenant/SectionRenderer.tsx).
    - Thay thế cấu trúc ánh xạ động `SECTION_MAP` (vốn vi phạm TypeScript parameter type contravariance) bằng cấu trúc lệnh rẽ nhánh `switch (section.type)` cực kỳ tường minh.
    - Nhờ đó, TypeScript phân tích luồng dữ liệu (control flow analysis) có thể tự động thu hẹp kiểu dữ liệu (type narrowing) của `section` tương ứng với mỗi Component của từng Section cụ thể, đảm bảo sự an toàn tuyệt đối 100% Type Safety mà không có bất kỳ khai báo `any` nào.
-3. **Build Pipeline Validation**:
+3. **Subdomain Routing & Link Synchronization**:
+   - Sửa đổi trong [app/[locale]/map/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/map/page.tsx). Tích hợp hàm tiện ích `getTenantUrl` và đổi nút "Truy cập website" thành thẻ `<a>` hướng tới địa chỉ subdomain tương ứng (như `nonnuoc.hoalang.site`) thay vì Next.js `<Link>` dẫn tới `/tenant/[slug]`. Đảm bảo mở trang ở tab mới (`target="_blank"`) giúp nâng tầm trải nghiệm khám phá bản đồ. Đồng thời, xóa bỏ import `Link` không sử dụng để vượt qua ESLint.
+   - Sửa đổi trong [app/[locale]/admin/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx). Thay thế link xem trực tiếp website của Super Admin bằng hàm `getTenantUrl` để điều hướng chuẩn xác tới subdomain của làng nghề.
+   - Sửa đổi trong [app/[locale]/tenant/[slug]/builder/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/tenant/[slug]/builder/page.tsx). Cập nhật nút Back "Quay lại website" để dẫn tới subdomain chính thức thay vì thư mục con.
+   - Sửa đổi trong [components/dashboard/DashboardSidebar.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/dashboard/DashboardSidebar.tsx) (cả giao diện Desktop và Mobile drawer). Đồng bộ nút "Xem Website" để trỏ về subdomain thực tế của chi nhánh.
+   - Sửa đổi trong [components/dashboard/PublishPanel.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/dashboard/PublishPanel.tsx). Cập nhật biến `liveUrl` và `previewUrl` sử dụng helper `getTenantUrl` để phản ánh đúng cấu trúc URL tên miền phụ động ở mọi môi trường (Local và Production).
+4. **Build Pipeline Validation**:
    - Chạy `npm run build` ở phía FE và `pnpm build` ở phía BE đều đạt trạng thái thành công 100%.
 
 ---

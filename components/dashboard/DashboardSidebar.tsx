@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getTenantUrl } from '@/lib/tenant-url';
 
 interface SidebarItem {
   name: string;
@@ -121,7 +122,7 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
         {/* Footer brand external reference */}
         <div className="p-4 border-t border-stone/30">
           <a
-            href={`/vi/tenant/${tenantSlug}`}
+            href={getTenantUrl(tenantSlug, 'vi')}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-transparent border border-stone/50 hover:border-bronze rounded-xs font-sans text-[10px] font-semibold uppercase tracking-wider text-ash hover:text-charcoal transition-all"
@@ -212,7 +213,7 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
               {/* View Site Footer */}
               <div className="border-t border-stone/30 pt-4">
                 <a
-                  href={`/vi/tenant/${tenantSlug}`}
+                  href={getTenantUrl(tenantSlug, 'vi')}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-transparent border border-stone/50 rounded-xs font-sans text-[10px] font-semibold uppercase tracking-wider text-ash font-medium"
