@@ -13,7 +13,7 @@ import TestimonialsSection from './sections/TestimonialsSection';
 import CTASection from './sections/CTASection';
 import MapSection from './sections/MapSection';
 
-const SECTION_MAP: Record<string, React.ComponentType<any>> = {
+const SECTION_MAP: Record<string, React.ComponentType<{ section: Section }>> = {
   hero: HeroSection,
   story: StorySection,
   gallery: GallerySection,
