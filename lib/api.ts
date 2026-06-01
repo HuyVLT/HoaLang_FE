@@ -66,13 +66,24 @@ api.interceptors.request.use(
         }
       }
 
+      let slug = '';
       if (subdomain) {
         const map: Record<string, string> = {
           'battrang': 'bat-trang',
           'vanphuc': 'van-phuc',
           'nonnuoc': 'non-nuoc',
         };
-        const slug = map[subdomain] || subdomain;
+        slug = map[subdomain] || subdomain;
+      } else {
+        // Fallback: Parse tenant slug from URL pathname (e.g. /tenant/bat-trang or /vi/tenant/bat-trang)
+        const pathParts = window.location.pathname.split('/');
+        const tenantIndex = pathParts.indexOf('tenant');
+        if (tenantIndex !== -1 && pathParts[tenantIndex + 1]) {
+          slug = pathParts[tenantIndex + 1];
+        }
+      }
+
+      if (slug) {
         config.headers['x-tenant-slug'] = slug;
       }
     }
