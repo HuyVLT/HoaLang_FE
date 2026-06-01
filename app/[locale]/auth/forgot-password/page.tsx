@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/navigation';
 import { Link } from '@/navigation';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,7 +11,6 @@ import api from '@/lib/api';
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('auth');
-  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);

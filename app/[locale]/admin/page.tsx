@@ -90,18 +90,6 @@ export default function SuperAdminDashboard() {
   const [activeTab, setActiveTab] = useState<'tenants' | 'revenue' | 'templates' | 'logs'>('tenants');
   const [commissionRate, setCommissionRate] = useState<number>(5.0); // Global fee rate 5.0%
 
-  if (!mounted || !isAuthorized) {
-    return (
-      <div className="h-screen w-screen bg-parchment flex flex-col items-center justify-center select-none relative">
-        <div className="absolute inset-0 bg-grain pointer-events-none opacity-40 z-0" />
-        <div className="flex flex-col items-center gap-3 relative z-10">
-          <Compass className="w-12 h-12 text-lacquer animate-spin duration-3000" />
-          <span className="font-heading italic text-lg text-charcoal font-semibold">Đang xác thực quyền quản trị / Authenticating Admin...</span>
-        </div>
-      </div>
-    );
-  }
-
   // Overlay form states for premium registration modal
   const [modalOpen, setModalOpen] = useState(false);
   const [newVillageName, setNewVillageName] = useState('');
@@ -226,6 +214,18 @@ export default function SuperAdminDashboard() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
+
+  if (!mounted || !isAuthorized) {
+    return (
+      <div className="h-screen w-screen bg-parchment flex flex-col items-center justify-center select-none relative">
+        <div className="absolute inset-0 bg-grain pointer-events-none opacity-40 z-0" />
+        <div className="flex flex-col items-center gap-3 relative z-10">
+          <Compass className="w-12 h-12 text-lacquer animate-spin duration-3000" />
+          <span className="font-heading italic text-lg text-charcoal font-semibold">Đang xác thực quyền quản trị / Authenticating Admin...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Financial aggregation
   const totalGMV = transactions.reduce((acc, t) => acc + t.amount, 0);
