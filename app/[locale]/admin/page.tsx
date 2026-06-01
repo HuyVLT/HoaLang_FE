@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from '@/navigation';
+import { useAuthStore } from '@/lib/store/authStore';
 import {
   Users,
   Database,
@@ -13,7 +15,8 @@ import {
   Coins,
   TrendingUp,
   CheckCircle,
-  X
+  X,
+  Compass
 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
 import { getTenantUrl } from '@/lib/tenant-url';
@@ -61,8 +64,43 @@ interface OperationalLog {
 }
 
 export default function SuperAdminDashboard() {
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      if (!isAuthenticated || !user) {
+        toast.error('Vui lòng đăng nhập để truy cập trang quản trị hệ thống.');
+        router.replace('/auth/login');
+      } else if (user.role !== 'admin') {
+        toast.error('Tài khoản của bạn không có quyền truy cập trang quản trị hệ thống.');
+        router.replace('/');
+      } else {
+        setIsAuthorized(true);
+      }
+    }
+  }, [mounted, isAuthenticated, user, router]);
+
   const [activeTab, setActiveTab] = useState<'tenants' | 'revenue' | 'templates' | 'logs'>('tenants');
   const [commissionRate, setCommissionRate] = useState<number>(5.0); // Global fee rate 5.0%
+
+  if (!mounted || !isAuthorized) {
+    return (
+      <div className="h-screen w-screen bg-parchment flex flex-col items-center justify-center select-none relative">
+        <div className="absolute inset-0 bg-grain pointer-events-none opacity-40 z-0" />
+        <div className="flex flex-col items-center gap-3 relative z-10">
+          <Compass className="w-12 h-12 text-lacquer animate-spin duration-3000" />
+          <span className="font-heading italic text-lg text-charcoal font-semibold">Đang xác thực quyền quản trị / Authenticating Admin...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Overlay form states for premium registration modal
   const [modalOpen, setModalOpen] = useState(false);

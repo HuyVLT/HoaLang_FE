@@ -226,9 +226,9 @@ export default function LoginPage() {
                   <Lock className="w-3.5 h-3.5 text-accent" />
                   <span>{t('auth.passwordLabel')}</span>
                 </label>
-                <a href="#forgot" className="text-[10px] font-semibold uppercase tracking-wider text-bronze hover:text-lacquer transition-colors">
+                <Link href="/auth/forgot-password" className="text-[10px] font-semibold uppercase tracking-wider text-bronze hover:text-lacquer transition-colors">
                   Quên mật khẩu?
-                </a>
+                </Link>
               </div>
               
               <div className="relative">

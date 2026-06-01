@@ -42,7 +42,20 @@
     "activationFailedDesc": "Mã xác thực của bạn đã hết hạn hoặc không hợp lệ. Vui lòng đăng ký lại để nhận mã kích hoạt mới.",
     "goToLogin": "Quay lại Đăng nhập",
     "oauthCallback": "Đang xác thực tài khoản di sản...",
-    "oauthRedirecting": "Đang chuyển hướng về bảng điều khiển..."
+    "oauthRedirecting": "Đang chuyển hướng về bảng điều khiển...",
+    "forgotPasswordTitle": "Khôi phục mật khẩu",
+    "forgotPasswordDesc": "Nhập địa chỉ email đã đăng ký để nhận liên kết khôi phục mật khẩu.",
+    "submitForgotPassword": "Gửi yêu cầu khôi phục",
+    "forgotPasswordSuccess": "Yêu cầu khôi phục mật khẩu đã được gửi!",
+    "forgotPasswordSuccessDesc": "Chúng tôi đã gửi một liên kết khôi phục mật khẩu đến email của bạn. Vui lòng kiểm tra hộp thư để tiếp tục thiết lập lại mật khẩu mới.",
+    "resetPasswordTitle": "Thiết lập mật khẩu mới",
+    "resetPasswordDesc": "Vui lòng nhập mật khẩu mới và xác nhận mật khẩu mới bên dưới.",
+    "submitResetPassword": "Đặt lại mật khẩu mới",
+    "newPasswordLabel": "Mật khẩu mới",
+    "confirmPasswordLabel": "Xác nhận mật khẩu mới",
+    "resetPasswordSuccess": "Đặt lại mật khẩu thành công!",
+    "resetPasswordSuccessDesc": "Mật khẩu của bạn đã được cập nhật thành công. Hệ thống sẽ tự động chuyển hướng về trang Đăng nhập sau 5 giây.",
+    "resetPasswordError": "Đặt lại mật khẩu thất bại. Token có thể đã hết hạn hoặc không hợp lệ."
   },
   "hero": {
     "discover": "Khám Phá Việt Nam / Discover Vietnam",

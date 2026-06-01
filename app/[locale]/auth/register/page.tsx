@@ -20,6 +20,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [activeRole, setActiveRole] = useState<'USER' | 'VILLAGE_OWNER'>('USER');
 
   useEffect(() => {
     setMounted(true);
@@ -35,7 +36,7 @@ export default function RegisterPage() {
         email,
         phone,
         password,
-        role: 'USER',
+        role: activeRole,
       });
 
       if (response.data && response.data.success) {
@@ -212,8 +213,36 @@ export default function RegisterPage() {
               {t('auth.registerTitle')}
             </h2>
             <p className="font-sans text-xs text-ash font-light leading-relaxed">
-              Tạo tài khoản mới để sở hữu hệ thống quản trị và quảng bá làng nghề.
+              {activeRole === 'USER'
+                ? 'Tạo tài khoản du khách để khám phá bản đồ di sản Việt Nam và trải nghiệm văn hóa truyền thống.'
+                : 'Tạo tài khoản nghệ nhân đại diện để sở hữu hệ thống quản trị và thiết kế website làng nghề.'}
             </p>
+          </div>
+
+          {/* Role Switching Premium Tabs */}
+          <div className="flex border border-stone rounded-xs mb-6 overflow-hidden bg-parchment/40 p-0.5 select-none">
+            <button
+              type="button"
+              onClick={() => setActiveRole('USER')}
+              className={`flex-1 py-2.5 text-[9px] font-sans font-semibold uppercase tracking-wider transition-all duration-300 rounded-xs ${
+                activeRole === 'USER'
+                  ? 'bg-lacquer text-cream shadow-xs'
+                  : 'text-ash hover:text-charcoal hover:bg-stone/10'
+              }`}
+            >
+              Du Khách / Traveler
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveRole('VILLAGE_OWNER')}
+              className={`flex-1 py-2.5 text-[9px] font-sans font-semibold uppercase tracking-wider transition-all duration-300 rounded-xs ${
+                activeRole === 'VILLAGE_OWNER'
+                  ? 'bg-lacquer text-cream shadow-xs'
+                  : 'text-ash hover:text-charcoal hover:bg-stone/10'
+              }`}
+            >
+              Chủ Làng Nghề / Artisan Owner
+            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -222,12 +251,14 @@ export default function RegisterPage() {
             <div className="space-y-1.5 text-left">
               <label className="text-[10px] font-semibold uppercase tracking-wider text-ash flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-accent" />
-                <span>Họ và tên của bạn / Full Name</span>
+                <span>
+                  {activeRole === 'USER' ? 'Họ và tên của bạn / Full Name' : 'Họ và tên nghệ nhân / Artisan Name'}
+                </span>
               </label>
               
               <input
                 type="text"
-                placeholder="Ví dụ: Nguyễn Văn A"
+                placeholder={activeRole === 'USER' ? 'Ví dụ: Nguyễn Văn A' : 'Ví dụ: Nghệ nhân Nguyễn Văn A'}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -244,7 +275,7 @@ export default function RegisterPage() {
               
               <input
                 type="email"
-                placeholder="Ví dụ: nva@gmail.com"
+                placeholder={activeRole === 'USER' ? 'Ví dụ: nva@gmail.com' : 'Ví dụ: owner@battrang.vn'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -290,12 +321,24 @@ export default function RegisterPage() {
             <div className="bg-parchment border border-stone rounded-xs p-3.5 text-left space-y-1.5">
               <span className="text-[9px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Quyền lợi tài khoản di sản</span>
+                <span>
+                  {activeRole === 'USER' ? 'Quyền lợi tài khoản du khách' : 'Quyền lợi tài khoản nghệ nhân'}
+                </span>
               </span>
               <ul className="text-[10px] text-ash space-y-1 list-none font-sans font-light leading-normal">
-                <li>• Khởi tạo 1 Website Làng nghề chuẩn SEO.</li>
-                <li>• Quản lý 100+ mặt hàng thủ công mỹ nghệ.</li>
-                <li>• AI tự động đề xuất và cá nhân hóa lộ trình du lịch.</li>
+                {activeRole === 'USER' ? (
+                  <>
+                    <li>• Khám phá bản đồ nghệ thuật tương tác 3D.</li>
+                    <li>• Lên lộ trình trải nghiệm và đặt trước khóa học.</li>
+                    <li>• Trực tiếp mua sắm sản phẩm thủ công chính gốc.</li>
+                  </>
+                ) : (
+                  <>
+                    <li>• Khởi tạo 1 Website Làng nghề chuẩn SEO.</li>
+                    <li>• Quản lý danh mục tác phẩm và khóa học trải nghiệm.</li>
+                    <li>• AI đề xuất lộ trình trải nghiệm cho khách du lịch.</li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -328,9 +371,7 @@ export default function RegisterPage() {
             </div>
 
           </form>
-
         </motion.div>
-
       </div>
     </div>
   );
