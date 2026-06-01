@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useRouter } from '@/navigation';
+import { useAuthStore } from '@/lib/store/authStore';
+import { toast } from 'sonner';
 import {
   Compass,
   LayoutGrid,
@@ -44,17 +47,49 @@ interface DashboardSidebarProps {
 
 export default function DashboardSidebar({ children }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [tenantSlug, setTenantSlug] = useState('bat-trang');
   const [tenantName, setTenantName] = useState('Làng Gốm Bát Tràng');
+  const [mounted, setMounted] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     // Read session storage values from onboarding completed state if present
     const savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
     const savedName = sessionStorage.getItem('hoalang_tenant_name');
     if (savedSlug) setTenantSlug(savedSlug);
     if (savedName) setTenantName(savedName);
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      if (!isAuthenticated || !user) {
+        toast.error('Vui lòng đăng nhập để truy cập Bảng quản trị.');
+        router.replace('/auth/login');
+      } else if (user.role !== 'village_owner') {
+        toast.error('Tài khoản của bạn không có quyền truy cập Bảng quản trị.');
+        router.replace('/');
+      } else {
+        setIsAuthorized(true);
+      }
+    }
+  }, [mounted, isAuthenticated, user, router]);
+
+  if (!mounted || !isAuthorized) {
+    return (
+      <div className="h-screen w-screen bg-parchment flex flex-col items-center justify-center select-none relative">
+        <div className="absolute inset-0 bg-grain pointer-events-none opacity-40 z-0" />
+        <div className="flex flex-col items-center gap-3 relative z-10">
+          <Compass className="w-12 h-12 text-lacquer animate-spin duration-3000" />
+          <span className="font-heading italic text-lg text-charcoal font-semibold">Đang xác thực quyền truy cập / Authenticating...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Determine active item based on current sub-path
   const getActiveItemName = () => {

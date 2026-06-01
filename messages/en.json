@@ -42,7 +42,20 @@
     "activationFailedDesc": "Your verification link has expired or is invalid. Please register again to request a new link.",
     "goToLogin": "Back to Login",
     "oauthCallback": "Authenticating heritage account...",
-    "oauthRedirecting": "Redirecting to your dashboard..."
+    "oauthRedirecting": "Redirecting to your dashboard...",
+    "forgotPasswordTitle": "Recover Password",
+    "forgotPasswordDesc": "Enter your registered email address to receive a password reset link.",
+    "submitForgotPassword": "Send Recovery Link",
+    "forgotPasswordSuccess": "Recovery link sent!",
+    "forgotPasswordSuccessDesc": "We have sent a password recovery link to your email address. Please check your inbox to continue setting up a new password.",
+    "resetPasswordTitle": "Set New Password",
+    "resetPasswordDesc": "Please enter your new password and confirm it below.",
+    "submitResetPassword": "Reset Password",
+    "newPasswordLabel": "New Password",
+    "confirmPasswordLabel": "Confirm New Password",
+    "resetPasswordSuccess": "Password reset successful!",
+    "resetPasswordSuccessDesc": "Your password has been successfully updated. You will be automatically redirected to the Login page in 5 seconds.",
+    "resetPasswordError": "Password reset failed. The token may be expired or invalid."
   },
   "hero": {
     "discover": "Discover Vietnam",
