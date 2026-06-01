@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocale } from 'next-intl';
-import { Link } from '@/navigation';
+import { getTenantUrl } from '@/lib/tenant-url';
 import {
   Compass,
   ChevronRight,
@@ -301,13 +301,15 @@ export default function InteractiveMapPage() {
 
                 {/* Footer Dynamic CTA Button */}
                 <div className="p-4 lg:p-6 border-t border-stone/30 bg-cream shrink-0">
-                  <Link
-                    href={`/tenant/${selectedVillage.slug}`}
+                  <a
+                    href={getTenantUrl(selectedVillage.slug, locale)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full bg-lacquer text-cream font-sans font-semibold uppercase tracking-widest text-[12px] py-4 rounded-sm hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"
                   >
                     <span>{t.exploreBtn}</span>
                     <ChevronRight className="w-4 h-4" />
-                  </Link>
+                  </a>
                 </div>
               </motion.div>
             ) : (
