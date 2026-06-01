@@ -60,7 +60,7 @@ export default function Header() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const navLinks = [
-    { href: '/map',         label: t('map') },
+    { href: '/#map',        label: t('map') },
     { href: '/#villages',   label: t('villages') },
     { href: '/#itinerary',  label: t('itinerary') },
     { href: '/#shop',       label: t('shop') },

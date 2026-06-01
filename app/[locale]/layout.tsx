@@ -57,7 +57,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${beVietnam.variable} ${cormorant.variable} ${playfair.variable}`}>
+    <html lang={locale} className={`${beVietnam.variable} ${cormorant.variable} ${playfair.variable} scroll-smooth`}>
       <body className="bg-background text-foreground antialiased min-h-screen relative font-sans">
         
         {/* Subtle background organic grain layer */}

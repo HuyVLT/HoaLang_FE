@@ -459,3 +459,66 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 2. **Reset Password Screen Catch Refactor**:
    - Sửa đổi trong [reset-password/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/reset-password/page.tsx).
    - Thay thế kiểu bắt lỗi của khối `catch` từ `err: any` thành `err: unknown` tương thích với cơ chế rà soát TypeScript nghiêm ngặt, chuyển đổi cách truy cập các thuộc tính phản hồi Axios an toàn tuyệt đối.
+
+---
+
+### [2026-06-01] Multi-Tenant Dynamic PayOS & COD Checkout Integration
+
+#### Tác vụ hoàn thành
+- Kết nối thành công phân hệ Checkout với API Backend đa chi nhánh (multi-tenant) thực tế.
+- Tự động hóa phân tách phương thức thanh toán dựa trên cấu hình cổng PayOS của từng làng nghề: chỉ hiển thị VietQR PayOS nếu làng nghề đó đã kết nối, ngược lại vô hiệu hóa và thông tin chi tiết qua tooltip/cảnh báo tinh xảo.
+- Triển khai phân giải tên danh mục sang MongoDB ObjectIds tự động để đồng bộ với cấu trúc cơ sở dữ liệu Express/Mongoose.
+- Xử lý các kịch bản COD thanh toán truyền thống hiển thị biên nhận di sản sang trọng và tự động chuyển hướng du khách tới trang thanh toán PayOS thật khi thực hiện giao dịch online sandbox.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Dynamic Checkout System**:
+   - Thay đổi trong [CheckoutDrawer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/CheckoutDrawer.tsx).
+   - Tích hợp `api` và `toast` thông báo. Khi mở Drawer, tự động gọi `GET /api/v1/tenant/payment-methods` để kiểm tra cấu hình PayOS của làng nghề.
+   - Thêm trạng thái tải phương thức `fetchingMethods` hiển thị micro-loader và xử lý disable cổng thanh toán PayOS bằng viền đứt `dashed border`, làm mờ nhạt và hiển thị popover hướng dẫn chủ làng nghề cấu hình key.
+   - Tích hợp `GET /api/v1/products` và `GET /api/v1/experiences` khi drawer mở ra, tự động đối chiếu tên Catalog tĩnh của trang landing với dữ liệu thật trong Database để trích xuất `matchedId`, tránh lỗi crash 404 khi gửi đơn đặt hàng.
+   - Gửi yêu cầu thật qua `POST /api/v1/orders` (đối với Sản phẩm) và `POST /api/v1/bookings` (đối với Trải nghiệm/Workshop), tự động xử lý chuyển hướng `window.location.href = res.data.data.checkoutUrl` an toàn và mượt mà.
+2. **Local Tenant Resolution Enhancement**:
+   - Thay đổi trong [api.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/lib/api.ts).
+   - Bổ sung cơ chế fallback cho interceptor: trích xuất động slug từ pathname URL dạng `/tenant/[slug]` khi không sử dụng local subdomains, đảm bảo toàn bộ các request API trong quá trình kiểm thử E2E cục bộ tự động đính kèm header `x-tenant-slug` chuẩn xác.
+
+---
+
+### [2026-06-01] 100% Zero-Hardcoded i18n Localization for Checkout Module
+
+#### Tác vụ hoàn thành
+- Quốc tế hóa song ngữ toàn diện (Bilingual Elegance) cho toàn bộ phân hệ Checkout trong hệ thống HoaLang.
+- Loại bỏ hoàn toàn các chuỗi hiển thị tĩnh (hardcoded strings) cũng như các logic rẽ nhánh ngôn ngữ thủ công (`locale === 'vi' ? ... : ...`) trong giao diện người dùng, tuân thủ nghiêm ngặt Quy tắc i18n số 12 của HoaLang UI Rule.
+- Khắc phục lỗi cú pháp dư thừa dấu đóng ngoặc nhọn ở cuối các file dịch quốc tế `vi.json` và `en.json`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Checkout Translation Namespace**:
+   - Thay đổi trong [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json) và [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json).
+   - Thiết lập block ngôn ngữ `"checkout"` chứa toàn bộ 38 khóa biên dịch cho nhãn (labels), tiêu đề đơn đặt hàng, mô tả chi tiết phương thức COD/PayOS, các thông điệp cảnh báo vô hiệu hóa, thông báo trạng thái giao dịch (toasts), biên nhận di sản (invoice), chỉ dẫn thanh toán thủ công và toàn bộ các placeholder trường nhập liệu động.
+   - Sửa đổi cú pháp JSON: Loại bỏ dấu ngoặc nhọn thừa `}` ở dòng cuối cùng của cả hai file, phục hồi tính toàn vẹn cú pháp 100% cho cấu trúc tệp dịch.
+2. **Checkout i18n Refactoring**:
+   - Thay đổi trong [CheckoutDrawer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/CheckoutDrawer.tsx).
+   - Tích hợp hook `useTranslations('checkout')` của `next-intl` để quản lý tập trung hóa dữ liệu ngôn ngữ.
+   - Thay thế toàn bộ nhãn giao diện tĩnh, placeholder của các trường nhập liệu (`fullName`, `address`, `date`), toasts khởi tạo/kết nối PayOS sandbox và nội dung thông báo lỗi kết nối database bằng cú pháp dịch động `t('key')`.
+
+---
+
+### [2026-06-01] Desktop Full-Screen Frame Sizing, Smooth Scrolling & E2E Responsiveness Audit
+
+#### Tác vụ hoàn thành
+- Nâng cấp toàn diện giao diện trang chủ chính để mỗi phân hệ chính (`Bản đồ`, `Làng nghề`, `AI Lịch trình`, `Cửa hàng`, `Trải nghiệm`, và `Đăng ký nghệ nhân`) chiếm trọn vẹn **đúng 1 khung hình hiển thị (1 Viewport Height / 100vh)** khi hiển thị trên màn hình Desktop lớn, tạo cảm xúc tạp chí văn hóa siêu cao cấp.
+- Thiết kế hệ thống tự động co giãn và thích ứng 100% (Responsiveness Audit) cho tất cả các thiết bị: Cho phép các phân hệ dàn trải tự nhiên theo chiều dọc (`min-h-screen py-12 sm:py-16`) trên thiết bị Tablet/Mobile để triệt tiêu hoàn toàn lỗi chồng chữ hoặc tràn khung chứa.
+- Tích hợp cơ chế cuộn mượt tự động (Scroll Smooth) tăng tốc phần cứng trình duyệt khi du khách nhấn điều hướng trên thanh Header di sản.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Root Layout Smooth Scroll**:
+   - Sửa đổi trong [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/layout.tsx).
+   - Bổ sung class utility `scroll-smooth` vào thẻ root `<html>` để hỗ trợ cơ chế cuộn mượt tự nhiên của Next.js và trình duyệt.
+2. **Anchor smooth navigation links**:
+   - Sửa đổi trong [Header.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/layout/Header.tsx).
+   - Thay đổi định hướng liên kết của nút "BẢN ĐỒ" trong `navLinks` từ `/map` (trang atlas riêng) thành `/#map` (định danh neo tới phân vùng bản đồ trên trang chủ), giúp cả 5 nút điều hướng chính đồng bộ hóa cuộn mượt tới từng khung hình tương ứng.
+3. **Viewport Frame Landing Page Redesign**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/page.tsx).
+   - Cấu hình lại các thẻ `<section>` di sản (`#map`, `#villages`, `#itinerary`, `#shop`, `#experience`, `#artisan-registration`) sang cấu trúc khung hiển thị chuẩn `min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 relative overflow-hidden`.
+   - Điều chỉnh chiều cao của hộp chứa Mapbox Map sang dạng `lg:h-[460px] lg:max-h-[52vh]` và các hộp chứa mỹ thuật của Cửa hàng, Trải nghiệm sang `lg:h-[380px] lg:max-h-[45vh]` để tối ưu hóa không gian hiển thị, loại bỏ 100% nguy cơ tràn chiều cao màn hình trên Laptop 13-15 inches.
+   - Thử nghiệm và biên dịch thành công 100% bằng câu lệnh `npm run build` trên Front-end mà không gặp bất kỳ lỗi logic hay cảnh báo nghiêm trọng nào.
+
