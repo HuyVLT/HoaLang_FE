@@ -46,7 +46,13 @@ api.interceptors.request.use(
 
     // 2. Strip Content-Type for FormData to let browser set boundary (crucial for uploads!)
     if (config.data instanceof FormData) {
-      delete config.headers['Content-Type'];
+      if (config.headers && typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type');
+        config.headers.delete('content-type');
+      } else {
+        delete config.headers['Content-Type'];
+        delete config.headers['content-type'];
+      }
     }
 
     // 3. Dynamically inject the x-tenant-slug based on the client subdomain

@@ -187,5 +187,50 @@
     "placeholderFullName": "Nguyễn Văn A",
     "placeholderAddress": "Số 123 Đường Trần Hưng Đạo, Quận 1, TP. HCM",
     "placeholderDate": "Ngày 29/05/2026 lúc 14:00"
+  },
+  "villagesList": {
+    "title": "Hành trình di sản",
+    "subtitle": "Khám phá các làng nghề thủ công truyền thống tinh hoa trải dài khắp Việt Nam, nơi lưu giữ giá trị nghệ thuật dân tộc.",
+    "searchPlaceholder": "Tìm kiếm làng nghề hoặc tỉnh thành...",
+    "allProvinces": "Tất cả tỉnh thành",
+    "allCategories": "Tất cả ngành nghề",
+    "noResults": "Không tìm thấy làng nghề nào phù hợp với bộ lọc của bạn.",
+    "backHome": "Quay lại trang chủ",
+    "breadcrumb": "Làng nghề",
+    "allVillages": "Tất cả",
+    "filterVerified": "Đã xác minh"
+  },
+  "shopList": {
+    "title": "Gian hàng di sản",
+    "subtitle": "Giao thương trực tiếp với các xưởng nghệ nhân truyền thống hàng đầu Việt Nam. Hỗ trợ kinh tế địa phương.",
+    "breadcrumb": "Cửa hàng",
+    "searchPlaceholder": "Tìm kiếm gian hàng di sản...",
+    "visitShop": "Vào cửa hàng",
+    "allShops": "Tất cả gian hàng",
+    "noResults": "Không tìm thấy gian hàng nào phù hợp với tìm kiếm của bạn.",
+    "verifiedBoutique": "Gian hàng xác minh"
+  },
+  "profile": {
+    "title": "Hồ sơ di sản",
+    "subtitle": "Xem thông tin tài khoản di sản và quản lý các hoạt động đồng hành cùng nghệ nhân.",
+    "breadcrumb": "Hồ sơ",
+    "fullName": "Họ và tên",
+    "email": "Địa chỉ Email",
+    "phone": "Số điện thoại",
+    "role": "Vai trò hệ thống",
+    "walletBalance": "Số dư ví đồng hành",
+    "notAvailable": "Chưa cập nhật",
+    "loading": "Đang đồng bộ hồ sơ...",
+    "roleAdmin": "Quản trị viên",
+    "roleOwner": "Chủ làng nghề",
+    "roleUser": "Du khách di sản",
+    "btnEdit": "Chỉnh sửa hồ sơ",
+    "btnSave": "Lưu thay đổi",
+    "btnCancel": "Hủy",
+    "saving": "Đang cập nhật...",
+    "updateSuccess": "Cập nhật hồ sơ thành công!",
+    "updateFailed": "Cập nhật thất bại. Vui lòng kiểm tra lại.",
+    "phoneError": "Số điện thoại phải gồm đúng 10 chữ số.",
+    "nameError": "Họ tên phải dài ít nhất 2 ký tự."
   }
 }

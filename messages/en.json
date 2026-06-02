@@ -187,5 +187,50 @@
     "placeholderFullName": "John Doe",
     "placeholderAddress": "123 Wall St, NY",
     "placeholderDate": "2026-06-05T14:00:00Z"
+  },
+  "villagesList": {
+    "title": "Heritage Journey",
+    "subtitle": "Discover the exquisite traditional craft villages across Vietnam, where the nation's artistic soul is preserved.",
+    "searchPlaceholder": "Search craft villages or provinces...",
+    "allProvinces": "All provinces",
+    "allCategories": "All categories",
+    "noResults": "No craft villages found matching your filter criteria.",
+    "backHome": "Back to Home",
+    "breadcrumb": "Villages",
+    "allVillages": "All",
+    "filterVerified": "Verified Only"
+  },
+  "shopList": {
+    "title": "Heritage Boutiques",
+    "subtitle": "Trade directly with Vietnam's leading traditional artisan studios. Supporting local communities.",
+    "breadcrumb": "Shop",
+    "searchPlaceholder": "Search heritage shops...",
+    "visitShop": "Enter Shop",
+    "allShops": "All Boutiques",
+    "noResults": "No boutiques found matching your search.",
+    "verifiedBoutique": "Verified Boutique"
+  },
+  "profile": {
+    "title": "Heritage Profile",
+    "subtitle": "View your heritage account details and manage collaboration activities with master artisans.",
+    "breadcrumb": "Profile",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "role": "System Role",
+    "walletBalance": "Companion Wallet Balance",
+    "notAvailable": "Not available",
+    "loading": "Syncing profile details...",
+    "roleAdmin": "Administrator",
+    "roleOwner": "Craft Village Owner",
+    "roleUser": "Heritage Traveler",
+    "btnEdit": "Edit Profile",
+    "btnSave": "Save Changes",
+    "btnCancel": "Cancel",
+    "saving": "Saving changes...",
+    "updateSuccess": "Profile updated successfully!",
+    "updateFailed": "Update failed. Please try again.",
+    "phoneError": "Phone number must be exactly 10 digits.",
+    "nameError": "Full name must be at least 2 characters."
   }
 }
