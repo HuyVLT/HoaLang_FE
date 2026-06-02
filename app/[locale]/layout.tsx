@@ -8,6 +8,9 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/sonner';
 import CheckoutDrawer from '@/components/shared/CheckoutDrawer';
+import CartDrawer from '@/components/shared/CartDrawer';
+import SSOHandler from '@/components/shared/SSOHandler';
+import { Suspense } from 'react';
 import '../globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -64,6 +67,9 @@ export default async function LocaleLayout({
         <div className="fixed inset-0 pointer-events-none bg-grain z-0 opacity-80" />
         
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <Suspense fallback={null}>
+            <SSOHandler />
+          </Suspense>
           <div className="relative z-10 flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow">
@@ -73,9 +79,11 @@ export default async function LocaleLayout({
           </div>
           <Toaster richColors closeButton position="top-right" />
           <CheckoutDrawer />
+          <CartDrawer />
         </NextIntlClientProvider>
 
       </body>
     </html>
   );
 }
+

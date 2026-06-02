@@ -8,7 +8,8 @@
     "experience": "Experience",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout"
+    "logout": "Logout",
+    "vouchers": "Discount Codes"
   },
   "common": {
     "search": "Search craft villages...",
@@ -232,5 +233,19 @@
     "updateFailed": "Update failed. Please try again.",
     "phoneError": "Phone number must be exactly 10 digits.",
     "nameError": "Full name must be at least 2 characters."
+  },
+  "vouchers": {
+    "title": "Heritage Vouchers",
+    "subtitle": "Discover and apply promotion campaigns in support of master artisans.",
+    "breadcrumb": "Vouchers",
+    "noVouchers": "No vouchers are currently available.",
+    "minOrder": "Min. Order {amount}",
+    "maxDiscount": "Max. Discount {amount}",
+    "percentageOff": "{value}% Off",
+    "fixedOff": "{value} Off",
+    "copyCode": "Copy Code",
+    "copied": "Copied voucher {code}!",
+    "validUntil": "Valid until: {date}",
+    "btnBackProfile": "Back to Profile"
   }
 }
