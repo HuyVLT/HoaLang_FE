@@ -8,7 +8,8 @@
     "experience": "体験ワークショップ",
     "login": "ログイン",
     "register": "会員登録",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "vouchers": "割引コード"
   },
   "common": {
     "search": "工芸村を検索...",
@@ -105,5 +106,19 @@
     "updateFailed": "更新に失敗しました。再試行してください。",
     "phoneError": "電話番号は正確に10桁である必要があります。",
     "nameError": "名前は少なくとも2文字以上である必要があります。"
+  },
+  "vouchers": {
+    "title": "遺産割引コード",
+    "subtitle": "伝統職人を支援するプロモーションキャンペーンを見つけて適用します。",
+    "breadcrumb": "割引コード",
+    "noVouchers": "現在利用可能な割引コードはありません。",
+    "minOrder": "最低注文金額 {amount}",
+    "maxDiscount": "最大割引 {amount}",
+    "percentageOff": "{value}% 割引",
+    "fixedOff": "{value} 割引",
+    "copyCode": "コードをコピー",
+    "copied": "割引コード {code} をコピーしました！",
+    "validUntil": "有効期限: {date}",
+    "btnBackProfile": "プロフィールに戻る"
   }
 }

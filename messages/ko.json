@@ -8,7 +8,8 @@
     "experience": "체험하기",
     "login": "로그인",
     "register": "회원가입",
-    "logout": "로그아웃"
+    "logout": "로그아웃",
+    "vouchers": "할인 코드"
   },
   "common": {
     "search": "전통 공예 마을 검색...",
@@ -105,5 +106,19 @@
     "updateFailed": "업데이트에 실패했습니다. 다시 시도해 주세요.",
     "phoneError": "전화번호는 정확히 10자리여야 합니다.",
     "nameError": "이름은 최소 2글자 이상이어야 합니다."
+  },
+  "vouchers": {
+    "title": "헤리티지 할인 코드",
+    "subtitle": "전통 장인을 후원하는 다양한 프로모션 코드를 복사해서 사용해 보세요.",
+    "breadcrumb": "할인 코드",
+    "noVouchers": "현재 사용 가능한 할인 코드가 없습니다.",
+    "minOrder": "최소 주문 금액 {amount}",
+    "maxDiscount": "최대 할인 금액 {amount}",
+    "percentageOff": "{value}% 할인",
+    "fixedOff": "{value} 할인",
+    "copyCode": "코드 복사",
+    "copied": "할인 코드 {code} 복사 완료!",
+    "validUntil": "유효기간: {date}",
+    "btnBackProfile": "프로필로 돌아가기"
   }
 }

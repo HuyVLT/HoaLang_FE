@@ -8,7 +8,8 @@
     "experience": "非遗体验课",
     "login": "登录",
     "register": "注册",
-    "logout": "注销"
+    "logout": "注销",
+    "vouchers": "优惠券"
   },
   "common": {
     "search": "搜索传统手艺村...",
@@ -105,5 +106,19 @@
     "updateFailed": "更新失败，请重试。",
     "phoneError": "手机号码必须为10位数字。",
     "nameError": "姓名至少需要2个字符。"
+  },
+  "vouchers": {
+    "title": "文化遗产优惠券",
+    "subtitle": "探索并使用支持传统手工艺师傅的各项促销活动优惠券。",
+    "breadcrumb": "优惠券",
+    "noVouchers": "目前没有可用的优惠券。",
+    "minOrder": "最低消费额 {amount}",
+    "maxDiscount": "最高折扣额 {amount}",
+    "percentageOff": "享 {value}% 折扣",
+    "fixedOff": "立减 {value}",
+    "copyCode": "复制券码",
+    "copied": "优惠券码 {code} 已复制！",
+    "validUntil": "有效期至: {date}",
+    "btnBackProfile": "返回个人中心"
   }
 }
