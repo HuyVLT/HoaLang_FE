@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useCartStore } from '@/lib/store/cartStore';
+import { useCartDrawerStore } from '@/components/shared/CartDrawer';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, ShoppingBag, LogOut } from 'lucide-react';
@@ -12,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header() {
   const t = useTranslations('nav');
+  const locale = useLocale();
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuthStore();
   const cartItems = useCartStore((state) => state.items);
@@ -167,10 +169,11 @@ export default function Header() {
           <LanguageSwitcher variant={scrolled ? 'dark' : 'light'} />
 
           {/* Cart icon */}
-          <Link
-            href="/shop"
-            className="relative flex items-center justify-center w-8 h-8 transition-colors duration-300"
+          <button
+            onClick={() => useCartDrawerStore.getState().openCart()}
+            className="relative flex items-center justify-center w-8 h-8 transition-colors duration-300 focus:outline-none"
             style={{ color: textColor }}
+            aria-label={locale === 'vi' ? 'Mở giỏ hàng' : 'Open Cart'}
           >
             <ShoppingBag className="w-[18px] h-[18px]" />
             {mounted && totalCartCount > 0 && (
@@ -181,7 +184,7 @@ export default function Header() {
                 {totalCartCount}
               </span>
             )}
-          </Link>
+          </button>
 
           {/* Auth — desktop only */}
           <div className="hidden md:flex items-center gap-3">
@@ -270,6 +273,16 @@ export default function Header() {
                             ) : null}
                           </div>
                         )}
+
+                        <div className="border-b border-stone/40 py-1">
+                          <Link
+                            href="/profile/vouchers"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex w-full px-4 py-2 text-left font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal hover:bg-parchment hover:text-lacquer transition-colors cursor-pointer"
+                          >
+                            {t('vouchers')}
+                          </Link>
+                        </div>
 
                         <button
                           onClick={() => {
@@ -409,6 +422,15 @@ export default function Header() {
                             ) : null}
                           </div>
                         )}
+
+                        <div className="flex flex-col gap-1 border-b border-stone/30 py-2 mb-1">
+                          <Link
+                            href="/profile/vouchers"
+                            className="font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal py-2 text-left"
+                          >
+                            {t('vouchers')}
+                          </Link>
+                        </div>
 
                         <button
                           onClick={logout}

@@ -7,7 +7,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   X,
   ShoppingBag,
-  Calendar,
   CheckCircle,
   CreditCard,
   ArrowRight,
@@ -16,55 +15,40 @@ import {
   Phone,
   Mail,
   MapPin,
-  HelpCircle
+  HelpCircle,
+  Trash2,
+  Minus,
+  Plus
 } from 'lucide-react';
-
-interface DBItem {
-  _id: string;
-  name?: { vi: string; en?: string };
-  title?: { vi: string; en?: string };
-}
 import { toast } from 'sonner';
 import api from '@/lib/api';
 import { Voucher } from '@/lib/services/voucherService';
 import { useCartStore } from '@/lib/store/cartStore';
 
-
-export interface CheckoutItem {
-  name: string;
-  price: number;
-  type: 'product' | 'workshop';
-  image?: string;
-  villageName?: string;
-}
-
-interface CheckoutStore {
+interface CartDrawerStore {
   isOpen: boolean;
-  item: CheckoutItem | null;
-  openCheckout: (item: CheckoutItem) => void;
-  closeCheckout: () => void;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
-// Globally exportable store so any component can invoke checkout
-export const useCheckoutStore = create<CheckoutStore>((set) => ({
+export const useCartDrawerStore = create<CartDrawerStore>((set) => ({
   isOpen: false,
-  item: null,
-  openCheckout: (item) => set({ isOpen: true, item }),
-  closeCheckout: () => set({ isOpen: false, item: null }),
+  openCart: () => set({ isOpen: true }),
+  closeCart: () => set({ isOpen: false }),
 }));
 
-export default function CheckoutDrawer() {
+export default function CartDrawer() {
   const locale = useLocale() as 'vi' | 'en';
   const t = useTranslations('checkout');
-  const { isOpen, item, closeCheckout } = useCheckoutStore();
+  const { isOpen, closeCart } = useCartDrawerStore();
+  const { items, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore();
 
-  const [step, setStep] = useState<'form' | 'processing' | 'success'>('form');
+  const [step, setStep] = useState<'cart' | 'form' | 'processing' | 'success'>('cart');
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
     email: '',
-    addressOrDate: '',
-    quantity: 1,
+    address: '',
     paymentMethod: 'COD',
   });
 
@@ -80,31 +64,13 @@ export default function CheckoutDrawer() {
     payos: false,
   });
   const [fetchingMethods, setFetchingMethods] = useState(false);
-  const [dbItems, setDbItems] = useState<DBItem[]>([]);
 
-  // Fetch dynamic payment methods and DB items when open
+  // Fetch dynamic payment methods when opening checkout step
   useEffect(() => {
-    if (isOpen) {
-      setStep('form');
-      setFormData({
-        fullName: '',
-        phone: '',
-        email: '',
-        addressOrDate: '',
-        quantity: 1,
-        paymentMethod: 'COD',
-      });
-      setVoucherInput('');
-      setAppliedVoucher(null);
-      setDiscountAmount(0);
-      setVoucherError('');
-      setApplying(false);
-
-      const fetchConfigAndItems = async () => {
+    if (isOpen && step === 'form') {
+      const fetchConfigAndMethods = async () => {
         try {
           setFetchingMethods(true);
-          
-          // 1. Fetch dynamic payment choices
           const resMethods = await api.get('/tenant/payment-methods');
           if (resMethods.data && resMethods.data.success) {
             setPaymentMethods(resMethods.data.data);
@@ -113,41 +79,42 @@ export default function CheckoutDrawer() {
               paymentMethod: resMethods.data.data.payos ? 'PAYOS' : 'COD',
             }));
           }
-
-          // 2. Fetch DB items for ID resolving
-          if (item) {
-            if (item.type === 'product') {
-              const resItems = await api.get('/products');
-              if (resItems.data && resItems.data.success) {
-                setDbItems(resItems.data.data);
-              }
-            } else {
-              const resItems = await api.get('/experiences');
-              if (resItems.data && resItems.data.success) {
-                setDbItems(resItems.data.data);
-              }
-            }
-          }
         } catch (err) {
-          console.error('Failed to fetch tenant configuration or items:', err);
-          // Muted fallback
+          console.error('Failed to fetch payment methods:', err);
           setPaymentMethods({ cod: true, payos: false });
           setFormData(prev => ({ ...prev, paymentMethod: 'COD' }));
         } finally {
           setFetchingMethods(false);
         }
       };
-
-      fetchConfigAndItems();
+      fetchConfigAndMethods();
     }
-  }, [isOpen, item]);
+  }, [isOpen, step]);
 
-  if (!isOpen || !item) return null;
+  // Reset steps and values on open/close
+  useEffect(() => {
+    if (isOpen) {
+      setStep('cart');
+      setFormData({
+        fullName: '',
+        phone: '',
+        email: '',
+        address: '',
+        paymentMethod: 'COD',
+      });
+      setVoucherInput('');
+      setAppliedVoucher(null);
+      setDiscountAmount(0);
+      setVoucherError('');
+      setApplying(false);
+    }
+  }, [isOpen]);
 
-  const resolvedPrice = item.price;
-  const totalPrice = resolvedPrice * formData.quantity;
-  const shippingFee = (item.type === 'product' && totalPrice < 500000) ? 30000 : 0;
-  const grandTotal = Math.max(0, totalPrice + shippingFee - discountAmount);
+  if (!isOpen) return null;
+
+  const subtotal = getTotalPrice();
+  const shippingFee = (subtotal > 0 && subtotal < 500000) ? 30000 : 0;
+  const grandTotal = Math.max(0, subtotal + shippingFee - discountAmount);
 
   const handleApplyVoucher = async () => {
     if (!voucherInput.trim()) return;
@@ -163,7 +130,7 @@ export default function CheckoutDrawer() {
           setVoucherError(locale === 'vi' ? 'Mã giảm giá không hợp lệ hoặc đã hết hạn.' : 'Invalid or expired voucher code.');
           setAppliedVoucher(null);
           setDiscountAmount(0);
-        } else if (totalPrice < found.minOrderValue) {
+        } else if (subtotal < found.minOrderValue) {
           setVoucherError(
             locale === 'vi'
               ? `Đơn hàng tối thiểu phải từ ${found.minOrderValue.toLocaleString('vi-VN')}đ để áp dụng mã này.`
@@ -174,7 +141,7 @@ export default function CheckoutDrawer() {
         } else {
           let discount = 0;
           if (found.discountType === 'PERCENTAGE') {
-            discount = totalPrice * (found.discountValue / 100);
+            discount = subtotal * (found.discountValue / 100);
             if (found.maxDiscountValue) {
               discount = Math.min(discount, found.maxDiscountValue);
             }
@@ -191,7 +158,7 @@ export default function CheckoutDrawer() {
       }
     } catch (err) {
       console.error('Failed to validate voucher:', err);
-      setVoucherError(locale === 'vi' ? 'Bạn cần đăng nhập để sử dụng mã giảm giá.' : 'You must login to use discount codes.');
+      setVoucherError(locale === 'vi' ? 'Đã xảy ra lỗi khi kiểm tra mã.' : 'An error occurred during verification.');
     } finally {
       setApplying(false);
     }
@@ -201,7 +168,6 @@ export default function CheckoutDrawer() {
     setAppliedVoucher(null);
     setDiscountAmount(0);
     setVoucherInput('');
-    setVoucherError('');
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -209,59 +175,9 @@ export default function CheckoutDrawer() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const adjustQuantity = (amount: number) => {
-    setFormData(prev => ({
-      ...prev,
-      quantity: Math.max(1, prev.quantity + amount),
-    }));
-  };
-
-  const handleAddToCart = () => {
-    try {
-      // Find matching item ID in seeded DB collections
-      let matchedId = '';
-      if (item.type === 'product') {
-        const matched = dbItems.find(p => 
-          (p.name?.vi && p.name.vi.toLowerCase() === item.name.toLowerCase()) ||
-          (p.name?.en && p.name.en.toLowerCase() === item.name.toLowerCase())
-        );
-        if (matched) {
-          matchedId = matched._id;
-        } else if (dbItems.length > 0) {
-          matchedId = dbItems[0]._id;
-        }
-      }
-
-      if (!matchedId) {
-        toast.error(locale === 'vi' ? 'Không thể tìm thấy sản phẩm tương ứng trong cơ sở dữ liệu.' : 'Failed to find matching product in database.');
-        return;
-      }
-
-      // Add to Zustand Cart Store
-      useCartStore.getState().addItem({
-        id: matchedId,
-        name: item.name,
-        price: item.price,
-        image: item.image || '',
-        villageName: item.villageName || '',
-      }, formData.quantity);
-
-      toast.success(
-        locale === 'vi' 
-          ? `Đã thêm ${formData.quantity} ${item.name} vào giỏ hàng!`
-          : `Added ${formData.quantity} ${item.name} to cart!`
-      );
-      
-      closeCheckout();
-    } catch (err) {
-      console.error('[handleAddToCart] Error adding item to cart:', err);
-      toast.error(locale === 'vi' ? 'Không thể thêm vào giỏ hàng.' : 'Failed to add item to cart.');
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.phone || !formData.addressOrDate) {
+    if (!formData.fullName || !formData.phone || !formData.address) {
       toast.error(t('errorRequired'));
       return;
     }
@@ -269,87 +185,41 @@ export default function CheckoutDrawer() {
     setStep('processing');
 
     try {
-      // Find matching item ID in seeded DB collections
-      let matchedId = '';
-      if (item.type === 'product') {
-        const matched = dbItems.find(p => 
-          (p.name?.vi && p.name.vi.toLowerCase() === item.name.toLowerCase()) ||
-          (p.name?.en && p.name.en.toLowerCase() === item.name.toLowerCase())
-        );
-        if (matched) {
-          matchedId = matched._id;
-        } else if (dbItems.length > 0) {
-          matchedId = dbItems[0]._id;
-        }
-      } else {
-        const matched = dbItems.find(e => 
-          (e.title?.vi && e.title.vi.toLowerCase() === item.name.toLowerCase()) ||
-          (e.title?.en && e.title.en.toLowerCase() === item.name.toLowerCase())
-        );
-        if (matched) {
-          matchedId = matched._id;
-        } else if (dbItems.length > 0) {
-          matchedId = dbItems[0]._id;
-        }
-      }
+      const itemsPayload = items.map(item => ({
+        productId: item.product.id,
+        qty: item.quantity
+      }));
 
-      if (!matchedId) {
-        throw new Error(t('errorDatabase'));
-      }
+      // Submit multi-item order to tenant backend
+      const res = await api.post('/orders', {
+        items: itemsPayload,
+        shippingAddress: {
+          fullName: formData.fullName,
+          phone: formData.phone,
+          email: formData.email,
+          addressOrDate: formData.address
+        },
+        paymentMethod: formData.paymentMethod,
+        voucherCode: appliedVoucher ? appliedVoucher.code : undefined
+      });
 
-      if (item.type === 'product') {
-        // Create order
-        const res = await api.post('/orders', {
-          items: [{ productId: matchedId, qty: formData.quantity }],
-          shippingAddress: {
-            fullName: formData.fullName,
-            phone: formData.phone,
-            address: formData.addressOrDate,
-            city: 'Hà Nội',
-            province: 'Hà Nội'
-          },
-          paymentMethod: formData.paymentMethod,
-          voucherCode: appliedVoucher ? appliedVoucher.code : undefined
-        });
-
-        if (res.data && res.data.success) {
-          if (formData.paymentMethod === 'PAYOS') {
-            toast.success(t('initPayos'));
-            setTimeout(() => {
-              window.location.href = res.data.data.checkoutUrl;
-            }, 1200);
-          } else {
-            setStep('success');
-          }
-        }
-      } else {
-        // Create booking
-        let bookingDate = new Date(formData.addressOrDate);
-        if (isNaN(bookingDate.getTime())) {
-          bookingDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // default to 3 days later if input is organic string
-        }
-
-        const res = await api.post('/bookings', {
-          experienceId: matchedId,
-          date: bookingDate.toISOString(),
-          guests: formData.quantity,
-          notes: 'Đặt trải nghiệm di sản HoaLang',
-          paymentMethod: formData.paymentMethod
-        });
-
-        if (res.data && res.data.success) {
-          if (formData.paymentMethod === 'PAYOS') {
-            toast.success(t('connectPayos'));
-            setTimeout(() => {
-              window.location.href = res.data.data.checkoutUrl;
-            }, 1200);
-          } else {
-            setStep('success');
-          }
+      if (res.data && res.data.success) {
+        const orderData = res.data.data;
+        
+        // If PayOS, redirect immediately to checkout
+        if (formData.paymentMethod === 'PAYOS' && orderData.checkoutUrl) {
+          toast.success(locale === 'vi' ? 'Đang chuyển hướng thanh toán trực tuyến...' : 'Redirecting to payment portal...');
+          setTimeout(() => {
+            window.location.href = orderData.checkoutUrl;
+          }, 1200);
+        } else {
+          // If COD, show receipt
+          setStep('success');
+          clearCart(); // Success purchase clears the active cart
         }
       }
     } catch (err: unknown) {
-      console.error('Checkout failed:', err);
+      console.error('Cart checkout failed:', err);
       const axiosError = err as { response?: { data?: { message?: string } }; message?: string };
       toast.error(t('errorTx'), {
         description: axiosError.response?.data?.message || axiosError.message || t('errorTxDesc')
@@ -366,7 +236,7 @@ export default function CheckoutDrawer() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={closeCheckout}
+          onClick={closeCart}
           className="absolute inset-0 bg-ink-70/60 backdrop-blur-xs cursor-pointer"
         />
 
@@ -383,12 +253,12 @@ export default function CheckoutDrawer() {
 
           {/* Upper Header Row */}
           <div className="relative z-10 p-5 border-b border-stone/30 flex items-center justify-between bg-cream">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-gold flex items-center gap-1">
-              {item.type === 'product' ? <ShoppingBag className="w-3.5 h-3.5" /> : <Calendar className="w-3.5 h-3.5" />}
-              {item.type === 'product' ? t('titleProduct') : t('titleWorkshop')}
+            <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
+              <ShoppingBag className="w-3.5 h-3.5" />
+              {locale === 'vi' ? 'Giỏ hàng di sản' : 'Heritage Cart'}
             </span>
             <button
-              onClick={closeCheckout}
+              onClick={closeCart}
               className="w-8 h-8 rounded-full border border-stone/30 flex items-center justify-center text-ash hover:text-ink hover:border-stone transition-all"
             >
               <X className="w-4 h-4" />
@@ -398,54 +268,131 @@ export default function CheckoutDrawer() {
           {/* Dynamic Content Stages */}
           <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-6">
             
+            {/* Step 1: Cart listing */}
+            {step === 'cart' && (
+              <div className="space-y-6 h-full flex flex-col justify-between">
+                {items.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center text-center py-20 space-y-4 flex-1">
+                    <div className="w-16 h-16 rounded-full bg-cream border border-stone/60 flex items-center justify-center text-ash">
+                      <ShoppingBag className="w-6 h-6 stroke-[1.5]" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-heading italic text-lg text-charcoal font-semibold">
+                        {locale === 'vi' ? 'Giỏ hàng của bạn đang trống' : 'Your cart is empty'}
+                      </h4>
+                      <p className="text-xs text-ash max-w-xs leading-relaxed">
+                        {locale === 'vi' 
+                          ? 'Hãy ghé qua Cửa hàng để thêm những tác phẩm thủ công di sản độc đáo.' 
+                          : 'Explore our Shop page to discover unique handcrafted heritage masterworks.'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={closeCart}
+                      className="bg-lacquer text-cream hover:brightness-110 font-sans text-[11px] font-semibold uppercase tracking-widest px-6 py-3 rounded-sm transition-all active:scale-[0.98]"
+                    >
+                      {locale === 'vi' ? 'Tiếp tục mua sắm' : 'Continue Shopping'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4 flex-1 flex flex-col justify-between">
+                    <div className="space-y-3 overflow-y-auto max-h-[60vh] pr-1">
+                      {items.map((item) => (
+                        <div 
+                          key={item.product.id}
+                          className="bg-cream border border-stone/80 p-3.5 rounded-sm flex gap-3.5 transition-all hover:shadow-hover hover:border-bronze"
+                        >
+                          {item.product.image && (
+                            <div className="w-16 h-16 rounded-xs overflow-hidden border border-stone/50 bg-stone/20 shrink-0">
+                              <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                          <div className="flex-grow flex flex-col justify-between min-w-0">
+                            <div>
+                              <div className="flex justify-between items-start gap-1">
+                                <h4 className="font-heading text-sm font-bold italic text-charcoal leading-tight truncate flex-grow">
+                                  {item.product.name}
+                                </h4>
+                                <button
+                                  onClick={() => removeItem(item.product.id)}
+                                  className="text-ash hover:text-lacquer p-0.5"
+                                  title={locale === 'vi' ? 'Xóa sản phẩm' : 'Remove item'}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              {item.product.villageName && (
+                                <span className="text-[9px] font-semibold uppercase tracking-wider text-gold block mt-0.5">
+                                  Làng {item.product.villageName}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="text-xs font-semibold text-lacquer font-sans">
+                                {item.product.price.toLocaleString('vi-VN')}đ
+                              </span>
+                              
+                              {/* Quantity select */}
+                              <div className="flex items-center gap-2.5">
+                                <button
+                                  type="button"
+                                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                                  className="w-5 h-5 rounded-xs border border-stone/80 flex items-center justify-center text-charcoal hover:border-bronze active:scale-95"
+                                >
+                                  <Minus className="w-2.5 h-2.5" />
+                                </button>
+                                <span className="w-4 text-center text-xs font-bold font-sans">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                                  className="w-5 h-5 rounded-xs border border-stone/80 flex items-center justify-center text-charcoal hover:border-bronze active:scale-95"
+                                >
+                                  <Plus className="w-2.5 h-2.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="border-t border-stone/30 pt-4 mt-6 space-y-4">
+                      <div className="flex justify-between items-center text-xs font-semibold font-sans">
+                        <span className="text-ash">{locale === 'vi' ? 'Tổng tiền hàng' : 'Subtotal'}</span>
+                        <span className="text-md font-bold text-charcoal">{subtotal.toLocaleString('vi-VN')}đ</span>
+                      </div>
+                      <button
+                        onClick={() => setStep('form')}
+                        className="w-full flex items-center justify-center gap-2 bg-lacquer text-cream font-sans font-semibold uppercase tracking-widest text-[11px] py-4 rounded-sm hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"
+                      >
+                        <span>{locale === 'vi' ? 'Đặt hàng ngay' : 'Checkout Now'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 2: Customer checkout form */}
             {step === 'form' && (
               <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* Simple Item Summary Display */}
-                <div className="bg-cream border border-stone/80 p-4 rounded-sm flex gap-4">
-                  {item.image && (
-                    <div className="w-16 h-16 rounded-xs overflow-hidden border border-stone/50 bg-stone/20 shrink-0">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="space-y-1 text-left flex-grow">
-                    {item.villageName && (
-                      <span className="text-[9px] font-semibold uppercase tracking-wider text-ash block">
-                        {item.villageName}
-                      </span>
-                    )}
-                    <h4 className="font-heading text-md font-bold italic text-charcoal leading-tight">
-                      {item.name}
-                    </h4>
-                    <span className="text-sm font-semibold text-lacquer font-sans block">
-                      {resolvedPrice.toLocaleString('vi-VN')}đ
-                    </span>
-                  </div>
-                </div>
-
-                {/* Quantity or Guest Selectors */}
-                <div className="flex items-center justify-between border-y border-stone/30 py-3">
-                  <span className="text-xs font-semibold text-charcoal font-sans">
-                    {item.type === 'product' ? t('quantity') : t('guests')}
+                {/* Checkout summary header */}
+                <div className="bg-cream border border-stone/80 p-4 rounded-sm space-y-2">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-ash block">
+                    {locale === 'vi' ? 'Thông tin tóm tắt đơn đặt hàng' : 'Order Summary'}
                   </span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => adjustQuantity(-1)}
-                      className="w-7 h-7 rounded-sm border border-stone/80 flex items-center justify-center text-charcoal hover:border-bronze select-none"
-                    >
-                      -
-                    </button>
-                    <span className="w-6 text-center text-xs font-bold font-sans">
-                      {formData.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => adjustQuantity(1)}
-                      className="w-7 h-7 rounded-sm border border-stone/80 flex items-center justify-center text-charcoal hover:border-bronze select-none"
-                    >
-                      +
-                    </button>
+                  <div className="text-xs text-charcoal font-sans space-y-1.5">
+                    {items.map(item => (
+                      <div key={item.product.id} className="flex justify-between truncate">
+                        <span className="truncate max-w-[280px] font-light text-ash">
+                          {item.product.name} <span className="font-semibold text-charcoal text-[10px]">x{item.quantity}</span>
+                        </span>
+                        <span className="font-semibold">{(item.product.price * item.quantity).toLocaleString('vi-VN')}đ</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -511,28 +458,20 @@ export default function CheckoutDrawer() {
                     </div>
                   </div>
 
-                  {/* Context Address or Date */}
+                  {/* Context Address */}
                   <div className="space-y-1">
                     <label className="text-[10px] font-semibold text-ash block font-sans">
-                      {item.type === 'product' ? t('deliveryAddress') : t('workshopDate')}
+                      {t('deliveryAddress')}
                     </label>
                     <div className="relative">
-                      {item.type === 'product' ? (
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/60" />
-                      ) : (
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/60" />
-                      )}
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/60" />
                       <input
                         type="text"
-                        name="addressOrDate"
+                        name="address"
                         required
-                        value={formData.addressOrDate}
+                        value={formData.address}
                         onChange={handleFormChange}
-                        placeholder={
-                          item.type === 'product'
-                            ? t('placeholderAddress')
-                            : t('placeholderDate')
-                        }
+                        placeholder={t('placeholderAddress')}
                         className="w-full bg-cream border border-stone rounded-sm pl-9 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-bronze font-sans"
                       />
                     </div>
@@ -540,58 +479,56 @@ export default function CheckoutDrawer() {
                 </div>
 
                 {/* Voucher / Promo code input section */}
-                {item.type === 'product' && (
-                  <div className="space-y-2 border-y border-stone/30 py-4">
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-gold block">
-                      {locale === 'vi' ? 'Mã giảm giá' : 'Discount Code'}
-                    </span>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={voucherInput}
-                        onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
-                        placeholder={locale === 'vi' ? 'Nhập mã (Ví dụ: HOALANG10)' : 'Enter code (e.g. HOALANG10)'}
-                        disabled={!!appliedVoucher}
-                        className="flex-grow bg-cream border border-stone rounded-sm px-3 py-2 text-xs text-charcoal focus:outline-none focus:border-bronze font-sans uppercase placeholder:normal-case disabled:opacity-60 animate-ease-out"
-                      />
-                      {appliedVoucher ? (
-                        <button
-                          type="button"
-                          onClick={handleRemoveVoucher}
-                          className="bg-transparent border border-lacquer text-lacquer hover:bg-lacquer/5 font-sans text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-sm transition-all active:scale-[0.98]"
-                        >
-                          {locale === 'vi' ? 'Hủy' : 'Remove'}
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleApplyVoucher}
-                          disabled={!voucherInput.trim() || applying}
-                          className="bg-lacquer text-cream hover:brightness-110 font-sans text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-sm transition-all active:scale-[0.98] disabled:opacity-50"
-                        >
-                          {applying ? (
-                            <span className="animate-pulse">{locale === 'vi' ? 'Đang áp dụng...' : 'Applying...'}</span>
-                          ) : (
-                            locale === 'vi' ? 'Áp dụng' : 'Apply'
-                          )}
-                        </button>
-                      )}
-                    </div>
-                    
-                    {voucherError && (
-                      <p className="text-[10px] text-lacquer font-semibold mt-1">
-                        {voucherError}
-                      </p>
-                    )}
-                    {appliedVoucher && (
-                      <p className="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1 animate-pulse">
-                        ✓ {locale === 'vi' 
-                          ? `Đã áp dụng mã ${appliedVoucher.code} (Giảm ${discountAmount.toLocaleString('vi-VN')}đ)` 
-                          : `Applied code ${appliedVoucher.code} (-${discountAmount.toLocaleString('vi-VN')}đ)`}
-                      </p>
+                <div className="space-y-2 border-y border-stone/30 py-4">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-gold block">
+                    {locale === 'vi' ? 'Mã giảm giá' : 'Discount Code'}
+                  </span>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={voucherInput}
+                      onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
+                      placeholder={locale === 'vi' ? 'Nhập mã (Ví dụ: HOALANG10)' : 'Enter code (e.g. HOALANG10)'}
+                      disabled={!!appliedVoucher}
+                      className="flex-grow bg-cream border border-stone rounded-sm px-3 py-2 text-xs text-charcoal focus:outline-none focus:border-bronze font-sans uppercase placeholder:normal-case disabled:opacity-60 animate-ease-out"
+                    />
+                    {appliedVoucher ? (
+                      <button
+                        type="button"
+                        onClick={handleRemoveVoucher}
+                        className="bg-transparent border border-lacquer text-lacquer hover:bg-lacquer/5 font-sans text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-sm transition-all active:scale-[0.98]"
+                      >
+                        {locale === 'vi' ? 'Hủy' : 'Remove'}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleApplyVoucher}
+                        disabled={!voucherInput.trim() || applying}
+                        className="bg-lacquer text-cream hover:brightness-110 font-sans text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                      >
+                        {applying ? (
+                          <span className="animate-pulse">{locale === 'vi' ? 'Đang áp dụng...' : 'Applying...'}</span>
+                        ) : (
+                          locale === 'vi' ? 'Áp dụng' : 'Apply'
+                        )}
+                      </button>
                     )}
                   </div>
-                )}
+                  
+                  {voucherError && (
+                    <p className="text-[10px] text-lacquer font-semibold mt-1">
+                      {voucherError}
+                    </p>
+                  )}
+                  {appliedVoucher && (
+                    <p className="text-[10px] text-emerald-700 font-semibold mt-1 flex items-center gap-1 animate-pulse">
+                      ✓ {locale === 'vi' 
+                        ? `Đã áp dụng mã ${appliedVoucher.code} (Giảm ${discountAmount.toLocaleString('vi-VN')}đ)` 
+                        : `Applied code ${appliedVoucher.code} (-${discountAmount.toLocaleString('vi-VN')}đ)`}
+                    </p>
+                  )}
+                </div>
 
                 {/* Dynamic Payment Selector */}
                 <div className="space-y-2.5">
@@ -686,15 +623,13 @@ export default function CheckoutDrawer() {
                 <div className="border-t border-stone/30 pt-4 space-y-2">
                   <div className="flex justify-between items-center text-xs font-sans text-charcoal">
                     <span className="text-ash">{locale === 'vi' ? 'Tạm tính' : 'Subtotal'}</span>
-                    <span>{totalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span>{subtotal.toLocaleString('vi-VN')}đ</span>
                   </div>
 
-                  {item.type === 'product' && (
-                    <div className="flex justify-between items-center text-xs font-sans text-charcoal">
-                      <span className="text-ash">{locale === 'vi' ? 'Phí vận chuyển' : 'Shipping'}</span>
-                      <span>{shippingFee > 0 ? '30.000đ' : (locale === 'vi' ? 'Miễn phí' : 'Free')}</span>
-                    </div>
-                  )}
+                  <div className="flex justify-between items-center text-xs font-sans text-charcoal">
+                    <span className="text-ash">{locale === 'vi' ? 'Phí vận chuyển' : 'Shipping'}</span>
+                    <span>{shippingFee > 0 ? '30.000đ' : (locale === 'vi' ? 'Miễn phí' : 'Free')}</span>
+                  </div>
 
                   {discountAmount > 0 && (
                     <div className="flex justify-between items-center text-xs font-sans text-emerald-700 font-semibold">
@@ -708,31 +643,27 @@ export default function CheckoutDrawer() {
                     <span className="text-lg font-bold text-lacquer">{grandTotal.toLocaleString('vi-VN')}đ</span>
                   </div>
 
-                  <div className="pt-2 space-y-2">
+                  <div className="pt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setStep('cart')}
+                      className="w-1/3 flex items-center justify-center bg-transparent border border-stone text-charcoal font-sans font-semibold uppercase tracking-widest text-[11px] py-4 rounded-sm hover:border-bronze hover:text-bronze transition-all active:scale-[0.98]"
+                    >
+                      {locale === 'vi' ? 'Giỏ hàng' : 'Back'}
+                    </button>
                     <button
                       type="submit"
-                      className="w-full flex items-center justify-center gap-2 bg-lacquer text-cream font-sans font-semibold uppercase tracking-widest text-[12px] py-4 rounded-sm hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"
+                      className="flex-grow flex items-center justify-center gap-2 bg-lacquer text-cream font-sans font-semibold uppercase tracking-widest text-[11px] py-4 rounded-sm hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"
                     >
                       <span>{t('btnConfirm')}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
-
-                    {item.type === 'product' && (
-                      <button
-                        type="button"
-                        onClick={handleAddToCart}
-                        className="w-full flex items-center justify-center gap-2 bg-transparent border border-stone text-charcoal font-sans font-semibold uppercase tracking-widest text-[12px] py-4 rounded-sm hover:border-bronze hover:text-bronze shadow-sm transition-all active:scale-[0.98]"
-                      >
-                        <ShoppingBag className="w-4 h-4" />
-                        <span>{locale === 'vi' ? 'Thêm vào giỏ hàng' : 'Add to Cart'}</span>
-                      </button>
-                    )}
                   </div>
                 </div>
               </form>
             )}
 
-            {/* Step 2: Animated secure validation */}
+            {/* Step 3: Animated secure validation */}
             {step === 'processing' && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
@@ -749,7 +680,7 @@ export default function CheckoutDrawer() {
               </motion.div>
             )}
 
-            {/* Step 3: Heritage Receipt invoice */}
+            {/* Step 4: Heritage Receipt invoice */}
             {step === 'success' && (
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
@@ -779,14 +710,16 @@ export default function CheckoutDrawer() {
                       {t('invoiceTitle')}
                     </span>
                     <span className="text-[9px] text-ash uppercase tracking-wider block mt-0.5">
-                      {t('txId')}: HL-COD-{Math.floor(100000 + Math.random() * 900000)}
+                      {t('txId')}: HL-CART-{Math.floor(100000 + Math.random() * 900000)}
                     </span>
                   </div>
 
                   <div className="space-y-2.5 text-left border-b border-stone/30 pb-4">
                     <div className="flex justify-between">
-                      <span className="text-ash">{t('itemName')}</span>
-                      <span className="font-semibold text-charcoal max-w-[200px] text-right truncate">{item.name}</span>
+                      <span className="text-ash">{locale === 'vi' ? 'Sản phẩm mua' : 'Items'}</span>
+                      <span className="font-semibold text-charcoal max-w-[200px] text-right truncate">
+                        {locale === 'vi' ? `${items.length} tác phẩm` : `${items.length} items`}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-ash">{t('purchaser')}</span>
@@ -797,12 +730,8 @@ export default function CheckoutDrawer() {
                       <span className="font-semibold text-charcoal">{formData.phone}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ash">{item.type === 'product' ? t('deliveryAddress') : t('workshopDate')}</span>
-                      <span className="font-semibold text-charcoal max-w-[180px] text-right truncate">{formData.addressOrDate}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-ash">{t('quantity')}</span>
-                      <span className="font-semibold text-charcoal">{formData.quantity}</span>
+                      <span className="text-ash">{t('deliveryAddress')}</span>
+                      <span className="font-semibold text-charcoal max-w-[180px] text-right truncate">{formData.address}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-ash">{t('method')}</span>
@@ -826,7 +755,7 @@ export default function CheckoutDrawer() {
                 </div>
 
                 <button
-                  onClick={closeCheckout}
+                  onClick={closeCart}
                   className="w-full flex items-center justify-center gap-2 bg-charcoal text-cream font-sans font-semibold uppercase tracking-widest text-[11px] py-4 rounded-sm hover:brightness-115 shadow-sm transition-all"
                 >
                   <span>{t('completed')}</span>

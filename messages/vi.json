@@ -8,7 +8,8 @@
     "experience": "Trải nghiệm",
     "login": "Đăng nhập",
     "register": "Đăng ký",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "vouchers": "Mã giảm giá"
   },
   "common": {
     "search": "Tìm kiếm làng nghề...",
@@ -232,5 +233,19 @@
     "updateFailed": "Cập nhật thất bại. Vui lòng kiểm tra lại.",
     "phoneError": "Số điện thoại phải gồm đúng 10 chữ số.",
     "nameError": "Họ tên phải dài ít nhất 2 ký tự."
+  },
+  "vouchers": {
+    "title": "Mã giảm giá di sản",
+    "subtitle": "Khám phá và áp dụng các chương trình ưu đãi đồng hành cùng nghệ nhân truyền thống.",
+    "breadcrumb": "Mã giảm giá",
+    "noVouchers": "Không tìm thấy mã giảm giá nào khả dụng vào lúc này.",
+    "minOrder": "Đơn tối thiểu {amount}",
+    "maxDiscount": "Giảm tối đa {amount}",
+    "percentageOff": "Giảm {value}%",
+    "fixedOff": "Giảm {value}",
+    "copyCode": "Sao chép mã",
+    "copied": "Đã sao chép mã {code}!",
+    "validUntil": "Hạn dùng đến: {date}",
+    "btnBackProfile": "Quay lại hồ sơ"
   }
 }

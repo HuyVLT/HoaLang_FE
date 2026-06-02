@@ -29,6 +29,21 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-02] Remove Artisan Owner tab in Registration Page
+
+#### Tác vụ hoàn thành
+- Loại bỏ tab chuyển đổi đăng ký vai trò nghệ nhân "Chủ làng nghề / Artisan Owner" trên trang đăng ký tài khoản (`/auth/register`).
+- Đơn giản hóa toàn bộ các trường thông tin hiển thị, nhãn, gợi ý và mô tả quyền lợi để chỉ hướng tới đối tượng khách du lịch (Traveler / USER).
+- Mặc định hóa thuộc tính đăng ký `role` gửi lên API Backend luôn là `USER`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Registration Form Refactoring**:
+   - Sửa đổi trong [register/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/register/page.tsx).
+   - Thiết lập biến `activeRole` cố định ở giá trị `'USER'`.
+   - Gỡ bỏ hoàn toàn mã giao diện của thẻ trượt chuyển vai trò (Role Switching Premium Tabs).
+   - Tối giản hóa các nhãn, placeholder và danh sách quyền lợi (benefits list) để loại bỏ các trường hợp rẽ nhánh phức tạp không cần thiết cho nghệ nhân.
+
+
 ### [2026-06-01] Premium Overlay Registration Modal Implementation
 
 #### Tác vụ hoàn thành
@@ -776,3 +791,24 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 3. **Profile Page Layout**:
    - Thêm mới [profile/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/page.tsx): Triển khai giao diện hiển thị thông tin hồ sơ di sản sử dụng `PageHeader` (variant="light" nền giấy dó), các khung viền kim cương góc vàng truyền thống, bảng thông tin dạng grid tỉ mỉ, hiển thị trạng thái số dư ví định dạng theo locale hiện tại, và nút đăng xuất tài khoản đồng bộ.
    - Quản lý trạng thái xác thực và bảo mật trang: tự động chuyển hướng người dùng chưa đăng nhập về trang `/auth/login` khi cố gắng truy cập trang `/profile`.
+
+---
+
+### [2026-06-02] Vouchers & Discount Codes Navigation & Premium Editorial Page
+
+#### Tác vụ hoàn thành
+- Tích hợp thêm mục điều hướng "Mã giảm giá" / "Vouchers" trong dropdown avatar người dùng ở Header (cả trên giao diện Desktop và Mobile hamburger menu).
+- Tạo trang danh sách mã giảm giá di sản `/profile/vouchers` hiển thị các mã ưu đãi đang hoạt động của hệ thống, tuân thủ nghiêm ngặt cẩm nang mỹ thuật thương hiệu HoaLang.
+- Hỗ trợ dịch thuật quốc tế hóa (i18n) hoàn toàn trên 5 ngôn ngữ (`vi.json`, `en.json`, `ja.json`, `ko.json`, `zh.json`), không hardcode chuỗi hiển thị.
+- Thiết kế tính năng copy mã giảm giá nhanh chóng kèm toast thông báo và trạng thái đổi icon/text "Đã sao chép" sang trọng.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Header Component**:
+   - Sửa đổi [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx): Thêm link `/profile/vouchers` hiển thị nhãn `t('vouchers')` vào dropdown người dùng ở Desktop và Mobile drawer, bọc phân vùng dòng kẻ `stone/30` gọn gàng.
+2. **Voucher API Service**:
+   - Thêm mới [voucherService.ts](file:///d:/HoaLang/HoaLang_FE/lib/services/voucherService.ts): Định nghĩa kiểu dữ liệu `Voucher` và phương thức `getActiveVouchers()` để truy vấn API `/vouchers` của backend.
+3. **i18n Configuration**:
+   - Cập nhật [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json), [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json), [ja.json](file:///d:/HoaLang/HoaLang_FE/messages/ja.json), [ko.json](file:///d:/HoaLang/HoaLang_FE/messages/ko.json), và [zh.json](file:///d:/HoaLang/HoaLang_FE/messages/zh.json) để bổ sung kho dịch thuật `"vouchers"` (tiêu đề, điều kiện tối thiểu, hạn dùng, trạng thái sao chép).
+4. **Vouchers Page Layout**:
+   - Thêm mới [profile/vouchers/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/vouchers/page.tsx): Triển khai trang hiển thị danh sách ưu đãi. Thiết kế coupon card có răng cưa lượn sóng bên rìa, nền `cream` border `stone` cực mỏng, hover chuyển động `translateY(-5px)` + bóng đổ mịn `shadow-hover`, font display Cormorant Garamond và body Be Vietnam Pro. Hỗ trợ nút sao chép thông minh, Suspense & Route Guard bảo mật (tự động đẩy khách chưa đăng nhập về trang login).
+
