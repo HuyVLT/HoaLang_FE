@@ -60,10 +60,10 @@ export default function Header() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const navLinks = [
-    { href: '/#map',        label: t('map') },
-    { href: '/#villages',   label: t('villages') },
+    { href: '/map',         label: t('map') },
+    { href: '/villages',    label: t('villages') },
     { href: '/#itinerary',  label: t('itinerary') },
-    { href: '/#shop',       label: t('shop') },
+    { href: '/shop',        label: t('shop') },
     { href: '/#experience', label: t('experience') },
   ];
 
@@ -236,14 +236,18 @@ export default function Header() {
                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute right-0 mt-2.5 w-48 bg-cream border border-stone/80 rounded-sm shadow-md py-1.5 z-40"
                       >
-                        <div className="px-4 py-2 border-b border-stone/40 text-left">
+                        <Link
+                          href="/profile"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2.5 border-b border-stone/40 text-left hover:bg-parchment/60 hover:text-lacquer transition-colors cursor-pointer"
+                        >
                           <p className="font-heading text-[14px] italic font-semibold text-charcoal truncate">
                             {user?.name || 'Tài khoản'}
                           </p>
                           <p className="font-sans text-[10px] text-ash truncate">
                             {user?.email}
                           </p>
-                        </div>
+                        </Link>
 
                         {user?.role && (
                           <div className="border-b border-stone/40 py-1">
@@ -360,7 +364,10 @@ export default function Header() {
                   <div className="flex flex-col gap-3 pt-6 mt-auto border-t" style={{ borderColor: '#D4C9B5' }}>
                     {mounted && isAuthenticated ? (
                       <>
-                        <div className="flex items-center gap-3 py-1">
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-3 py-1.5 px-1 border border-transparent rounded-sm hover:bg-cream/45 hover:border-stone/20 transition-all cursor-pointer text-left"
+                        >
                           {user?.avatar ? (
                             <img
                               src={user.avatar}
@@ -381,7 +388,7 @@ export default function Header() {
                               {user?.email}
                             </span>
                           </div>
-                        </div>
+                        </Link>
 
                         {user?.role && (
                           <div className="flex flex-col gap-1 border-y border-stone/30 py-2 my-1">

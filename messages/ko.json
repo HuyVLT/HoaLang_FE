@@ -60,5 +60,50 @@
     "title": "베트남의 숨결을 느낄 준비가 되셨나요?",
     "subtitle": "HoaLang이 베트남의 아름다운 유산 투어에 동행하겠습니다.",
     "button": "지금 계획 세우기"
+  },
+  "villagesList": {
+    "title": "유산으로 떠나는 여정",
+    "subtitle": "베트남 전역의 유서 깊은 전통 공예 마을을 탐험하고, 장인 정신이 깃든 우리 유산의 정수를 만나보세요.",
+    "searchPlaceholder": "공예 마을 또는 지역 검색...",
+    "allProvinces": "모든 지역",
+    "allCategories": "모든 카테고리",
+    "noResults": "선택한 조건에 일치하는 공예 마을을 찾을 수 없습니다.",
+    "backHome": "홈으로 돌아가기",
+    "breadcrumb": "전통마을",
+    "allVillages": "전체",
+    "filterVerified": "인증된 마을만"
+  },
+  "shopList": {
+    "title": "전통 공방 상점",
+    "subtitle": "베트남을 대표하는 명품 수공예 공방에서 직접 구매하고 현지 공동체를 후원하세요.",
+    "breadcrumb": "상점",
+    "searchPlaceholder": "공방 또는 지역 검색...",
+    "visitShop": "상점 입장",
+    "allShops": "모든 상점",
+    "noResults": "검색 조건에 일치하는 상점을 찾을 수 없습니다.",
+    "verifiedBoutique": "인증된 상점"
+  },
+  "profile": {
+    "title": "헤리티지 프로필",
+    "subtitle": "헤리티지 계정 정보를 확인하고 장인과의 동행 활동을 관리합니다.",
+    "breadcrumb": "프로필",
+    "fullName": "이름",
+    "email": "이메일 주소",
+    "phone": "전화번호",
+    "role": "시스템 권한",
+    "walletBalance": "동행 지갑 잔액",
+    "notAvailable": "등록되지 않음",
+    "loading": "프로필 동기화 중...",
+    "roleAdmin": "시스템 관리자",
+    "roleOwner": "공예 마을 소유자",
+    "roleUser": "문화 여행자",
+    "btnEdit": "프로필 수정",
+    "btnSave": "변경사항 저장",
+    "btnCancel": "취소",
+    "saving": "저장 중...",
+    "updateSuccess": "프로필이 성공적으로 업데이트되었습니다!",
+    "updateFailed": "업데이트에 실패했습니다. 다시 시도해 주세요.",
+    "phoneError": "전화번호는 정확히 10자리여야 합니다.",
+    "nameError": "이름은 최소 2글자 이상이어야 합니다."
   }
 }
