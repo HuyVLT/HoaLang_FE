@@ -60,5 +60,50 @@
     "title": "伝統を巡る旅に出かけませんか？",
     "subtitle": "HoaLangがあなたのベトナム伝統遺産を巡る旅に寄り添います。",
     "button": "旅程を作成する"
+  },
+  "villagesList": {
+    "title": "遺産への旅路",
+    "subtitle": "ベトナム全土に点在する伝統工芸村を探訪し、何世代にもわたって継承されてきた技と芸術の魂に触れましょう。",
+    "searchPlaceholder": "工芸村や都道府県を検索...",
+    "allProvinces": "すべての地域",
+    "allCategories": "すべてのカテゴリ",
+    "noResults": "指定された条件に一致する工芸村が見つかりませんでした。",
+    "backHome": "ホームに戻る",
+    "breadcrumb": "工芸村",
+    "allVillages": "すべて",
+    "filterVerified": "認証済みのみ"
+  },
+  "shopList": {
+    "title": "遺産ブティック",
+    "subtitle": "ベトナムの優れた伝統工芸工房から直接購入し、地域社会をサポートしましょう。",
+    "breadcrumb": "ショップ",
+    "searchPlaceholder": "ブティックや工芸を検索...",
+    "visitShop": "ショップに入る",
+    "allShops": "すべてのブティック",
+    "noResults": "一致するブティックが見つかりませんでした。",
+    "verifiedBoutique": "認証済みブティック"
+  },
+  "profile": {
+    "title": "ヘリテージ プロフィール",
+    "subtitle": "ヘリテージアカウントの詳細を表示し、職人とのコラボレーション活動を管理します。",
+    "breadcrumb": "プロフィール",
+    "fullName": "氏名",
+    "email": "メールアドレス",
+    "phone": "電話番号",
+    "role": "システム権限",
+    "walletBalance": "ウォレット残高",
+    "notAvailable": "未登録",
+    "loading": "プロフィールを読み込み中...",
+    "roleAdmin": "システム管理者",
+    "roleOwner": "工芸村オーナー",
+    "roleUser": "遺産旅行者",
+    "btnEdit": "プロフィールを編集",
+    "btnSave": "変更を保存",
+    "btnCancel": "キャンセル",
+    "saving": "保存中...",
+    "updateSuccess": "プロフィールが更新されました！",
+    "updateFailed": "更新に失敗しました。再試行してください。",
+    "phoneError": "電話番号は正確に10桁である必要があります。",
+    "nameError": "名前は少なくとも2文字以上である必要があります。"
   }
 }

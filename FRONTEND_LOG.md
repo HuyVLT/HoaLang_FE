@@ -459,3 +459,320 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 2. **Reset Password Screen Catch Refactor**:
    - Sửa đổi trong [reset-password/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/reset-password/page.tsx).
    - Thay thế kiểu bắt lỗi của khối `catch` từ `err: any` thành `err: unknown` tương thích với cơ chế rà soát TypeScript nghiêm ngặt, chuyển đổi cách truy cập các thuộc tính phản hồi Axios an toàn tuyệt đối.
+
+---
+
+### [2026-06-01] Multi-Tenant Dynamic PayOS & COD Checkout Integration
+
+#### Tác vụ hoàn thành
+- Kết nối thành công phân hệ Checkout với API Backend đa chi nhánh (multi-tenant) thực tế.
+- Tự động hóa phân tách phương thức thanh toán dựa trên cấu hình cổng PayOS của từng làng nghề: chỉ hiển thị VietQR PayOS nếu làng nghề đó đã kết nối, ngược lại vô hiệu hóa và thông tin chi tiết qua tooltip/cảnh báo tinh xảo.
+- Triển khai phân giải tên danh mục sang MongoDB ObjectIds tự động để đồng bộ với cấu trúc cơ sở dữ liệu Express/Mongoose.
+- Xử lý các kịch bản COD thanh toán truyền thống hiển thị biên nhận di sản sang trọng và tự động chuyển hướng du khách tới trang thanh toán PayOS thật khi thực hiện giao dịch online sandbox.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Dynamic Checkout System**:
+   - Thay đổi trong [CheckoutDrawer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/CheckoutDrawer.tsx).
+   - Tích hợp `api` và `toast` thông báo. Khi mở Drawer, tự động gọi `GET /api/v1/tenant/payment-methods` để kiểm tra cấu hình PayOS của làng nghề.
+   - Thêm trạng thái tải phương thức `fetchingMethods` hiển thị micro-loader và xử lý disable cổng thanh toán PayOS bằng viền đứt `dashed border`, làm mờ nhạt và hiển thị popover hướng dẫn chủ làng nghề cấu hình key.
+   - Tích hợp `GET /api/v1/products` và `GET /api/v1/experiences` khi drawer mở ra, tự động đối chiếu tên Catalog tĩnh của trang landing với dữ liệu thật trong Database để trích xuất `matchedId`, tránh lỗi crash 404 khi gửi đơn đặt hàng.
+   - Gửi yêu cầu thật qua `POST /api/v1/orders` (đối với Sản phẩm) và `POST /api/v1/bookings` (đối với Trải nghiệm/Workshop), tự động xử lý chuyển hướng `window.location.href = res.data.data.checkoutUrl` an toàn và mượt mà.
+2. **Local Tenant Resolution Enhancement**:
+   - Thay đổi trong [api.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/lib/api.ts).
+   - Bổ sung cơ chế fallback cho interceptor: trích xuất động slug từ pathname URL dạng `/tenant/[slug]` khi không sử dụng local subdomains, đảm bảo toàn bộ các request API trong quá trình kiểm thử E2E cục bộ tự động đính kèm header `x-tenant-slug` chuẩn xác.
+
+---
+
+### [2026-06-01] 100% Zero-Hardcoded i18n Localization for Checkout Module
+
+#### Tác vụ hoàn thành
+- Quốc tế hóa song ngữ toàn diện (Bilingual Elegance) cho toàn bộ phân hệ Checkout trong hệ thống HoaLang.
+- Loại bỏ hoàn toàn các chuỗi hiển thị tĩnh (hardcoded strings) cũng như các logic rẽ nhánh ngôn ngữ thủ công (`locale === 'vi' ? ... : ...`) trong giao diện người dùng, tuân thủ nghiêm ngặt Quy tắc i18n số 12 của HoaLang UI Rule.
+- Khắc phục lỗi cú pháp dư thừa dấu đóng ngoặc nhọn ở cuối các file dịch quốc tế `vi.json` và `en.json`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Checkout Translation Namespace**:
+   - Thay đổi trong [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json) và [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json).
+   - Thiết lập block ngôn ngữ `"checkout"` chứa toàn bộ 38 khóa biên dịch cho nhãn (labels), tiêu đề đơn đặt hàng, mô tả chi tiết phương thức COD/PayOS, các thông điệp cảnh báo vô hiệu hóa, thông báo trạng thái giao dịch (toasts), biên nhận di sản (invoice), chỉ dẫn thanh toán thủ công và toàn bộ các placeholder trường nhập liệu động.
+   - Sửa đổi cú pháp JSON: Loại bỏ dấu ngoặc nhọn thừa `}` ở dòng cuối cùng của cả hai file, phục hồi tính toàn vẹn cú pháp 100% cho cấu trúc tệp dịch.
+2. **Checkout i18n Refactoring**:
+   - Thay đổi trong [CheckoutDrawer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/CheckoutDrawer.tsx).
+   - Tích hợp hook `useTranslations('checkout')` của `next-intl` để quản lý tập trung hóa dữ liệu ngôn ngữ.
+   - Thay thế toàn bộ nhãn giao diện tĩnh, placeholder của các trường nhập liệu (`fullName`, `address`, `date`), toasts khởi tạo/kết nối PayOS sandbox và nội dung thông báo lỗi kết nối database bằng cú pháp dịch động `t('key')`.
+
+---
+
+### [2026-06-01] Desktop Full-Screen Frame Sizing, Smooth Scrolling & E2E Responsiveness Audit
+
+#### Tác vụ hoàn thành
+- Nâng cấp toàn diện giao diện trang chủ chính để mỗi phân hệ chính (`Bản đồ`, `Làng nghề`, `AI Lịch trình`, `Cửa hàng`, `Trải nghiệm`, và `Đăng ký nghệ nhân`) chiếm trọn vẹn **đúng 1 khung hình hiển thị (1 Viewport Height / 100vh)** khi hiển thị trên màn hình Desktop lớn, tạo cảm xúc tạp chí văn hóa siêu cao cấp.
+- Thiết kế hệ thống tự động co giãn và thích ứng 100% (Responsiveness Audit) cho tất cả các thiết bị: Cho phép các phân hệ dàn trải tự nhiên theo chiều dọc (`min-h-screen py-12 sm:py-16`) trên thiết bị Tablet/Mobile để triệt tiêu hoàn toàn lỗi chồng chữ hoặc tràn khung chứa.
+- Tích hợp cơ chế cuộn mượt tự động (Scroll Smooth) tăng tốc phần cứng trình duyệt khi du khách nhấn điều hướng trên thanh Header di sản.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Root Layout Smooth Scroll**:
+   - Sửa đổi trong [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/layout.tsx).
+   - Bổ sung class utility `scroll-smooth` vào thẻ root `<html>` để hỗ trợ cơ chế cuộn mượt tự nhiên của Next.js và trình duyệt.
+2. **Anchor smooth navigation links**:
+   - Sửa đổi trong [Header.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/layout/Header.tsx).
+   - Thay đổi định hướng liên kết của nút "BẢN ĐỒ" trong `navLinks` từ `/map` (trang atlas riêng) thành `/#map` (định danh neo tới phân vùng bản đồ trên trang chủ), giúp cả 5 nút điều hướng chính đồng bộ hóa cuộn mượt tới từng khung hình tương ứng.
+3. **Viewport Frame Landing Page Redesign**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/page.tsx).
+   - Cấu hình lại các thẻ `<section>` di sản (`#map`, `#villages`, `#itinerary`, `#shop`, `#experience`, `#artisan-registration`) sang cấu trúc khung hiển thị chuẩn `min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 relative overflow-hidden`.
+   - Điều chỉnh chiều cao của hộp chứa Mapbox Map sang dạng `lg:h-[460px] lg:max-h-[52vh]` và các hộp chứa mỹ thuật của Cửa hàng, Trải nghiệm sang `lg:h-[380px] lg:max-h-[45vh]` để tối ưu hóa không gian hiển thị, loại bỏ 100% nguy cơ tràn chiều cao màn hình trên Laptop 13-15 inches.
+    - Thử nghiệm và biên dịch thành công 100% bằng câu lệnh `npm run build` trên Front-end mà không gặp bất kỳ lỗi logic hay cảnh báo nghiêm trọng nào.
+
+---
+
+### [2026-06-02] Craft Villages Gallery Page & Multilingual Filter Integration
+
+#### Tác vụ hoàn thành
+- Phát triển thành công trang trưng bày và tìm kiếm tất cả các Làng Nghề (`/villages`) đáp ứng đầy đủ triết lý luxury editorial và thiết kế cao cấp của HoaLang.
+- Tích hợp tính năng lọc đa năng (thanh tìm kiếm văn bản theo tên/tỉnh thành, bộ lọc dropdown Tỉnh thành, bộ lọc dropdown Ngành nghề sản xuất, và chốt chặn lọc các Làng Nghề "Đã xác minh" thiết kế hộp chọn ✦ dạng kim cương sang trọng).
+- Cập nhật liên kết điều hướng trên thanh Header để mục "LÀNG NGHỀ" (Villages) chuyển từ liên kết neo cục bộ `/#villages` sang trang `/villages` chuyên biệt.
+- Tích hợp dịch thuật đa ngôn ngữ 100% không hardcode chuỗi hiển thị cho cả 5 file cấu hình quốc tế hóa (`vi.json`, `en.json`, `ja.json`, `ko.json`, `zh.json`), tích hợp tự động phân giải tên Tỉnh thành và Nhãn ngành nghề sang ngôn ngữ tương ứng của du khách.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Types & Services**:
+   - Thêm mới [types/village.ts](file:///d:/HoaLang/HoaLang_FE/types/village.ts): Định nghĩa kiểu dữ liệu `Village` bảo mật, đồng bộ 100% với Schema của Backend MongoDB.
+   - Thêm mới [villageService.ts](file:///d:/HoaLang/HoaLang_FE/lib/services/villageService.ts): Quản lý các endpoint API gọi dữ liệu làng nghề thông qua Axios instance `api` tập trung.
+2. **Nav Links**:
+   - Sửa đổi [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx): Cập nhật href của liên kết Làng nghề từ `/#villages` thành `/villages`.
+2. **Robust Login Error Handlers & Fallbacks**:
+   - Sửa đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/login/page.tsx).
+   - Áp dụng bộ lọc và rà soát chuỗi phản hồi đặc biệt. Nếu phản hồi trả về chứa thẻ HTML (lỗi 404 từ server không có router, lỗi 502/504 cổng kết nối bị sập), hệ thống sẽ hiển thị một thông báo có nghĩa về lỗi kết nối mạng ("Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found)") thay vì in nguyên bản mã nguồn HTML dài dặc lên khung thông báo Sonner.
+
+### [2026-06-01] React Strict Mode Double-Fetch Guard for Account Verification
+
+#### Tác vụ hoàn thành
+- Sửa lỗi trang kích hoạt hiển thị trạng thái "Kích hoạt thất bại / Verification Failed" do `useEffect` chạy 2 lần trong chế độ React Strict Mode của môi trường Development.
+- Bảo vệ trang kích hoạt khỏi việc gửi hai cuộc gọi API đồng thời gây ra tình trạng race condition và xung đột trạng thái xác thực.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Ref Request Guard in Verification Page**:
+   - Thay đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/verify-account/page.tsx).
+   - Sử dụng `useRef` làm lăng kính trạng thái `hasRequested` bảo vệ API. Nếu `hasRequested.current` đã là `true`, `useEffect` sẽ bỏ qua lần gọi tiếp theo. Điều này ngăn chặn triệt để cuộc gọi kép của React Strict Mode trong môi trường Development, giữ tính nhất quán 100% cho trạng thái UI.
+
+### [2026-06-01] User Name Mapping Bug Fix on Login Page
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi hiển thị Email thay vì Họ tên người dùng trên Thanh điều hướng (Header) sau khi đăng nhập bằng tài khoản hệ thống (Credentials).
+- Nhất quán hóa cấu trúc đối tượng người dùng lưu trữ trong Zustand Auth Store giữa các phương thức đăng nhập hệ thống và Google OAuth SSO.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **User Schema Property Mapping on Login**:
+   - Thay đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/login/page.tsx).
+   - Sửa đổi ánh xạ đối tượng `mappedUser`: Cập nhật trường `name` sử dụng `user.fullName || user.name` thay vì chỉ gán `user.name` (trường không tồn tại trên Mongoose User model của backend do backend sử dụng `fullName`).
+   - Việc sửa đổi này giúp đồng bộ hoàn hảo với cách ánh xạ của OAuth callback, cho phép Header render chuẩn xác Tên đầy đủ của người dùng (`user.name`) và chỉ rơi về Email khi cả hai giá trị tên đều bị khuyết thiếu.
+
+### [2026-06-01] Premium User Avatar & Dropdown Menu Integration in Header
+
+#### Tác vụ hoàn thành
+- Tích hợp trường `avatar` vào cấu trúc người dùng của Zustand Auth Store, đồng bộ ánh xạ ảnh đại diện từ cả Đăng nhập thường và Google OAuth SSO.
+- Thay thế nút "Đăng xuất" đơn giản bằng giao diện Ảnh đại diện (Avatar) tinh tế kèm Dropdown chuyển hướng động và kích hoạt đăng xuất sang trọng trên cả phiên bản Desktop và Mobile Drawer.
+- Tuân thủ chặt chẽ design tokens của HoaLang: sử dụng cấu trúc ảnh vuông nhẹ (`rounded-sm`), viền nhạt `stone`, nền sơn mài `lacquer` cho monogram fallback, và hoạt ảnh mượt mà bằng Framer Motion.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Zustand Auth Store Schema Update**:
+   - Thay đổi trong [authStore.ts](file:///d:/HoaLang/HoaLang_FE/lib/store/authStore.ts).
+   - Bổ sung trường `avatar?: string` vào giao diện người dùng `User`.
+2. **Auth Pages Mapping**:
+   - Thay đổi trong [login/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/login/page.tsx) và [callback/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/callback/page.tsx).
+   - Ánh xạ thêm trường `avatar` từ phản hồi của API Backend vào Zustand Store.
+3. **Header User Interface Redesign**:
+   - Thay đổi trong [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx).
+   - Thiết kế Avatar vuông `rounded-sm` (tương thích triết lý ảnh tạp chí của HoaLang) kết hợp Monogram tự động sinh từ chữ cái đầu của tên/email nếu người dùng chưa cập nhật ảnh.
+   - Thêm dropdown menu sử dụng Framer Motion (`AnimatePresence` & `motion.div`) hiển thị Tên đầy đủ, Email, tùy chọn Quản trị hệ thống (theo quyền `ADMIN` hoặc `VILLAGE_OWNER`), và nút Đăng xuất tinh xảo.
+   - Nâng cấp đồng bộ giao diện Mobile Drawer (Sheet) hiển thị block Profile người dùng có avatar và thông tin vai trò trực quan, ngăn nắp.
+- Tuyệt đối tuân thủ quy tắc không dùng kiểu dữ liệu `any` và loại bỏ unused imports ngay sau khi code xong.
+
+---
+
+### [2026-06-01] Bilingual Role Registration Tabs & Artisan Owner Form Implementation
+
+#### Tác vụ hoàn thành
+- Tích hợp thêm thanh lựa chọn phân quyền (Role Switching Premium Tabs) cho phép người dùng chuyển đổi qua lại giữa hình thức đăng ký tài khoản **Khách du lịch (Traveler)** và **Chủ làng nghề (Artisan Owner)** tại trang Đăng ký tài khoản (`/auth/register`).
+- Cá nhân hóa giao diện và trải nghiệm nhập liệu động: tự động thay đổi mô tả phụ đề trang, nhãn (labels), trình giữ chỗ (placeholders), danh sách quyền lợi tài khoản (benefits list) theo phân quyền được chọn để mang lại trải nghiệm chuyên nghiệp, thanh lịch.
+- Kết nối thành công với API Backend bằng cách truyền động vai trò đăng ký (`USER` hoặc `VILLAGE_OWNER`) khi gửi biểu mẫu.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Dynamic Registration Form with Role Tabs**:
+   - Thay đổi trong [register/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/%5Blocale%5D/auth/register/page.tsx).
+   - Thiết kế thanh tab chuyển quyền siêu phẳng bằng các nút bọc trong đường viền nhẹ `stone` và nền giấy dó `parchment/40`. Khi được chọn, tab active sẽ có nền sơn mài `lacquer` và chữ màu kem `cream` sang trọng, đi kèm micro-animation mượt mà.
+   - Thêm trạng thái `activeRole` để quản lý phân quyền và đồng bộ hóa tự động các nội dung gợi ý/placeholder.
+   - Khi chọn làm chủ làng nghề (`VILLAGE_OWNER`), các nhãn đổi thành "Họ và tên nghệ nhân / Artisan Name" và hộp thoại hiển thị danh sách quyền lợi sẽ chuyển đổi sang mô hình quản trị website làng nghề.
+
+---
+
+### [2026-06-01] Client-Side Security Route Guards & Hydration Flashing Prevention
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗ hổng bảo mật cho phép khách du lịch chưa đăng nhập hoặc đăng nhập bằng tài khoản thông thường (`USER`) truy cập trái phép vào các trang quản trị của Chủ làng nghề tại đường dẫn `/dashboard` (và tất cả sub-routes bên trong).
+- Khắc phục lỗ hổng bảo mật cho phép truy cập trái phép vào trang quản trị tối cao của Super Admin tại đường dẫn `/admin`.
+- Thiết kế màn hình chờ xác thực phân quyền (Authenticating Screen) chuẩn cẩm nang mỹ thuật giúp ngăn chặn triệt để tình trạng nhấp nháy giao diện (UI flashing/flickering) khi Next.js đang hydrate và kiểm tra trạng thái xác thực.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Dashboard Route Protection**:
+   - Sửa đổi trong [DashboardSidebar.tsx](file:///d:/HoaLang/HoaLang_FE/components/dashboard/DashboardSidebar.tsx).
+   - Tích hợp Zuztand `useAuthStore` để lấy thông tin đăng nhập và router `@/navigation` để chuyển hướng.
+   - Thêm `mounted` và `isAuthorized` làm hai chốt chặn bảo vệ. Nếu người dùng chưa đăng nhập, tự động đẩy về trang đăng nhập `/auth/login` kèm thông báo lỗi. Nếu đã đăng nhập nhưng không có vai trò `village_owner`, tự động chuyển hướng về trang chủ `/` kèm cảnh báo quyền hạn.
+   - Trong thời gian chờ, render màn hình chờ xác thực có Compass xoay và grain background đồng bộ.
+2. **Super Admin Route Protection**:
+   - Sửa đổi trong [admin/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/admin/page.tsx).
+   - Áp dụng cấu trúc chốt chặn tương tự Dashboard: bảo vệ nghiêm ngặt trang `/admin` chỉ dành riêng cho tài khoản có vai trò `admin`.
+
+---
+
+### [2026-06-01] End-to-End Forgot & Reset Password Implementation
+
+#### Tác vụ hoàn thành
+- Tích hợp và hoàn thiện tính năng khôi phục/đặt lại mật khẩu (Forgot & Reset Password) đồng bộ từ giao diện Client tới Backend API.
+- Bổ sung trang yêu cầu khôi phục mật khẩu (`/auth/forgot-password`) để người dùng nhập email và nhận thư điện tử hướng dẫn khôi phục qua SMTP.
+- Bổ sung trang nhập mật khẩu mới (`/auth/reset-password`) để đặt lại mật khẩu bảo mật và tự động đưa người dùng quay lại trang đăng nhập `/auth/login` qua đồng hồ đếm ngược 5 giây.
+- Tích hợp Z Suspense boundary cho trang reset mật khẩu để Next.js 14 build tĩnh an toàn tuyệt đối.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Forgot & Reset Password Views**:
+   - Sửa đổi trong [login/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/login/page.tsx). Thay thế link quên mật khẩu từ `#forgot` sang Next-Intl Link `/auth/forgot-password` để điều hướng chuẩn xác.
+   - Thêm mới [forgot-password/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/forgot-password/page.tsx). Thiết kế biểu mẫu nhập email khôi phục tinh xảo kèm la bàn sơn mài xoay tròn lúc loading và thông điệp chúc mừng gửi thư thành công.
+   - Thêm mới [reset-password/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/reset-password/page.tsx). Tích hợp search params trích xuất reset token và bọc trong `<Suspense>`. Cho phép người dùng nhập mật khẩu mới có xác nhận, hiển thị đồng hồ đếm ngược 5 giây và redirect khi đổi thành công.
+   - Sửa đổi các file dịch [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json) và [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json) để hỗ trợ quốc tế hóa song ngữ toàn diện cho phân hệ này.
+
+---
+
+### [2026-06-01] Forgot & Reset Password Compilation & TypeScript Type Safety Fixes
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi biên dịch `Cannot find name 'AnimatePresence'` tại trang yêu cầu khôi phục mật khẩu (`/auth/forgot-password/page.tsx`) do thiếu import từ thư viện `framer-motion`.
+- Tối ưu hóa và chuyển đổi toàn bộ cấu trúc xử lý lỗi trong khối `catch` từ kiểu khai báo trực tiếp `any` sang `unknown` tại cả hai trang khôi phục mật khẩu (`forgot-password/page.tsx`) và đặt lại mật khẩu (`reset-password/page.tsx`), đảm bảo tuân thủ 100% nguyên tắc TypeScript Type Safety nghiêm ngặt (không sử dụng kiểu `any` ngầm định hay tường minh) theo Rule 13 của cẩm nang phát triển `GEMINI.md`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Forgot Password Screen Import & Catch Refactor**:
+   - Sửa đổi trong [forgot-password/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/forgot-password/page.tsx).
+   - Thêm `AnimatePresence` vào dòng khai báo import từ `framer-motion`.
+   - Thay đổi kiểu bắt lỗi của khối `catch` từ `err: any` thành `err: unknown` và sử dụng type casting an toàn để truy xuất thuộc tính của đối tượng lỗi Axios phản hồi từ API Backend.
+2. **Reset Password Screen Catch Refactor**:
+   - Sửa đổi trong [reset-password/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/reset-password/page.tsx).
+   - Thay thế kiểu bắt lỗi của khối `catch` từ `err: any` thành `err: unknown` tương thích với cơ chế rà soát TypeScript nghiêm ngặt, chuyển đổi cách truy cập các thuộc tính phản hồi Axios an toàn tuyệt đối.
+
+---
+
+### [2026-06-02] User Profile Editing & Cloudinary Avatar Uploads
+
+#### Tác vụ hoàn thành
+- Tích hợp khả năng chỉnh sửa thông tin cá nhân bao gồm Họ tên, Số điện thoại và Ảnh đại diện ngay trên giao diện `/profile`.
+- Hỗ trợ xem trước ảnh đại diện lập tức (avatar preview) khi người dùng chọn tập tin hình ảnh mới từ máy trước khi tiến hành lưu trữ.
+- Đồng bộ dữ liệu cập nhật động với Zustand `useAuthStore` toàn cục để cập nhật lập tức Họ tên và Ảnh đại diện trên Thanh điều hướng (Header) mà không cần tải lại trang.
+- Tích hợp chốt chặn hợp lệ phía Client (Họ tên tối thiểu 2 chữ cái, Số điện thoại phải đúng 10 số).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Zustand Auth Store**:
+   - Sửa đổi [authStore.ts](file:///d:/HoaLang/HoaLang_FE/lib/store/authStore.ts): Thêm hành động `setUser(user: User)` để cập nhật thông tin người dùng trực tiếp trong kho lưu trữ Zustand.
+2. **Auth Service**:
+   - Sửa đổi [authService.ts](file:///d:/HoaLang/HoaLang_FE/lib/services/authService.ts): Thêm phương thức `updateProfile` gửi FormData chứa hình ảnh avatar và các trường văn bản đến backend bằng định dạng `multipart/form-data`.
+3. **i18n Configuration**:
+   - Sửa đổi các file dịch [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json), [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json), [ja.json](file:///d:/HoaLang/HoaLang_FE/messages/ja.json), [ko.json](file:///d:/HoaLang/HoaLang_FE/messages/ko.json), và [zh.json](file:///d:/HoaLang/HoaLang_FE/messages/zh.json) bổ sung các nút bấm biên dịch như `"btnEdit"`, `"btnSave"`, `"btnCancel"`, các thông báo trạng thái lỗi kiểm tra và lưu thành công.
+4. **Profile View & Edit Layout**:
+   - Sửa đổi [profile/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/page.tsx): Tái cấu trúc trang để hỗ trợ hai chế độ View Mode và Edit Mode. Ở chế độ chỉnh sửa, hiển thị Camera icon dạng hover mờ trên ảnh đại diện, chuyển đổi các thẻ text sang input có hiển thị báo lỗi validator, hiển thị trạng thái đang lưu (loader xoay), đồng bộ hóa Zustand khi lưu thành công và thu hồi tài nguyên xem trước ảnh.
+
+---
+
+### [2026-06-01] Multi-Tenant Dynamic PayOS & COD Checkout Integration
+
+#### Tác vụ hoàn thành
+- Kết nối thành công phân hệ Checkout với API Backend đa chi nhánh (multi-tenant) thực tế.
+- Tự động hóa phân tách phương thức thanh toán dựa trên cấu hình cổng PayOS của từng làng nghề: chỉ hiển thị VietQR PayOS nếu làng nghề đó đã kết nối, ngược lại vô hiệu hóa và thông tin chi tiết qua tooltip/cảnh báo tinh xảo.
+- Triển khai phân giải tên danh mục sang MongoDB ObjectIds tự động để đồng bộ với cấu trúc cơ sở dữ liệu Express/Mongoose.
+- Xử lý các kịch bản COD thanh toán truyền thống hiển thị biên nhận di sản sang trọng và tự động chuyển hướng du khách tới trang thanh toán PayOS thật khi thực hiện giao dịch online sandbox.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Dynamic Checkout System**:
+   - Thay đổi trong [CheckoutDrawer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/CheckoutDrawer.tsx).
+   - Tích hợp `api` và `toast` thông báo. Khi mở Drawer, tự động gọi `GET /api/v1/tenant/payment-methods` để kiểm tra cấu hình PayOS của làng nghề.
+   - Thêm trạng thái tải phương thức `fetchingMethods` hiển thị micro-loader và xử lý disable cổng thanh toán PayOS bằng viền đứt `dashed border`, làm mờ nhạt và hiển thị popover hướng dẫn chủ làng nghề cấu hình key.
+   - Tích hợp `GET /api/v1/products` và `GET /api/v1/experiences` khi drawer mở ra, tự động đối chiếu tên Catalog tĩnh của trang landing với dữ liệu thật trong Database để trích xuất `matchedId`, tránh lỗi crash 404 khi gửi đơn đặt hàng.
+   - Gửi yêu cầu thật qua `POST /api/v1/orders` (đối với Sản phẩm) và `POST /api/v1/bookings` (đối với Trải nghiệm/Workshop), tự động xử lý chuyển hướng `window.location.href = res.data.data.checkoutUrl` an toàn và mượt mà.
+2. **Local Tenant Resolution Enhancement**:
+   - Thay đổi trong [api.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/lib/api.ts).
+   - Bổ sung cơ chế fallback cho interceptor: trích xuất động slug từ pathname URL dạng `/tenant/[slug]` khi không sử dụng local subdomains, đảm bảo toàn bộ các request API trong quá trình kiểm thử E2E cục bộ tự động đính kèm header `x-tenant-slug` chuẩn xác.
+
+---
+
+### [2026-06-01] 100% Zero-Hardcoded i18n Localization for Checkout Module
+
+#### Tác vụ hoàn thành
+- Quốc tế hóa song ngữ toàn diện (Bilingual Elegance) cho toàn bộ phân hệ Checkout trong hệ thống HoaLang.
+- Loại bỏ hoàn toàn các chuỗi hiển thị tĩnh (hardcoded strings) cũng như các logic rẽ nhánh ngôn ngữ thủ công (`locale === 'vi' ? ... : ...`) trong giao diện người dùng, tuân thủ nghiêm ngặt Quy tắc i18n số 12 của HoaLang UI Rule.
+- Khắc phục lỗi cú pháp dư thừa dấu đóng ngoặc nhọn ở cuối các file dịch quốc tế `vi.json` và `en.json`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Checkout Translation Namespace**:
+   - Thay đổi trong [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json) và [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json).
+   - Thiết lập block ngôn ngữ `"checkout"` chứa toàn bộ 38 khóa biên dịch cho nhãn (labels), tiêu đề đơn đặt hàng, mô tả chi tiết phương thức COD/PayOS, các thông điệp cảnh báo vô hiệu hóa, thông báo trạng thái giao dịch (toasts), biên nhận di sản (invoice), chỉ dẫn thanh toán thủ công và toàn bộ các placeholder trường nhập liệu động.
+   - Sửa đổi cú pháp JSON: Loại bỏ dấu ngoặc nhọn thừa `}` ở dòng cuối cùng của cả hai file, phục hồi tính toàn vẹn cú pháp 100% cho cấu trúc tệp dịch.
+2. **Checkout i18n Refactoring**:
+   - Thay đổi trong [CheckoutDrawer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/CheckoutDrawer.tsx).
+   - Tích hợp hook `useTranslations('checkout')` của `next-intl` để quản lý tập trung hóa dữ liệu ngôn ngữ.
+   - Thay thế toàn bộ nhãn giao diện tĩnh, placeholder của các trường nhập liệu (`fullName`, `address`, `date`), toasts khởi tạo/kết nối PayOS sandbox và nội dung thông báo lỗi kết nối database bằng cú pháp dịch động `t('key')`.
+
+---
+
+### [2026-06-01] Desktop Full-Screen Frame Sizing, Smooth Scrolling & E2E Responsiveness Audit
+
+#### Tác vụ hoàn thành
+- Nâng cấp toàn diện giao diện trang chủ chính để mỗi phân hệ chính (`Bản đồ`, `Làng nghề`, `AI Lịch trình`, `Cửa hàng`, `Trải nghiệm`, và `Đăng ký nghệ nhân`) chiếm trọn vẹn **đúng 1 khung hình hiển thị (1 Viewport Height / 100vh)** khi hiển thị trên màn hình Desktop lớn, tạo cảm xúc tạp chí văn hóa siêu cao cấp.
+- Thiết kế hệ thống tự động co giãn và thích ứng 100% (Responsiveness Audit) cho tất cả các thiết bị: Cho phép các phân hệ dàn trải tự nhiên theo chiều dọc (`min-h-screen py-12 sm:py-16`) trên thiết bị Tablet/Mobile để triệt tiêu hoàn toàn lỗi chồng chữ hoặc tràn khung chứa.
+- Tích hợp cơ chế cuộn mượt tự động (Scroll Smooth) tăng tốc phần cứng trình duyệt khi du khách nhấn điều hướng trên thanh Header di sản.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Root Layout Smooth Scroll**:
+   - Sửa đổi trong [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/layout.tsx).
+   - Bổ sung class utility `scroll-smooth` vào thẻ root `<html>` để hỗ trợ cơ chế cuộn mượt tự nhiên của Next.js và trình duyệt.
+2. **Anchor smooth navigation links**:
+   - Sửa đổi trong [Header.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/layout/Header.tsx).
+   - Thay đổi định hướng liên kết của nút "BẢN ĐỒ" trong `navLinks` từ `/map` (trang atlas riêng) thành `/#map` (định danh neo tới phân vùng bản đồ trên trang chủ), giúp cả 5 nút điều hướng chính đồng bộ hóa cuộn mượt tới từng khung hình tương ứng.
+3. **Viewport Frame Landing Page Redesign**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/page.tsx).
+   - Cấu hình lại các thẻ `<section>` di sản (`#map`, `#villages`, `#itinerary`, `#shop`, `#experience`, `#artisan-registration`) sang cấu trúc khung hiển thị chuẩn `min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 relative overflow-hidden`.
+   - Điều chỉnh chiều cao của hộp chứa Mapbox Map sang dạng `lg:h-[460px] lg:max-h-[52vh]` và các hộp chứa mỹ thuật của Cửa hàng, Trải nghiệm sang `lg:h-[380px] lg:max-h-[45vh]` để tối ưu hóa không gian hiển thị, loại bỏ 100% nguy cơ tràn chiều cao màn hình trên Laptop 13-15 inches.
+    - Thử nghiệm và biên dịch thành công 100% bằng câu lệnh `npm run build` trên Front-end mà không gặp bất kỳ lỗi logic hay cảnh báo nghiêm trọng nào.
+
+---
+
+### [2026-06-02] Craft Villages Gallery Page & Multilingual Filter Integration
+
+#### Tác vụ hoàn thành
+- Phát triển thành công trang trưng bày và tìm kiếm tất cả các Làng Nghề (`/villages`) đáp ứng đầy đủ triết lý luxury editorial và thiết kế cao cấp của HoaLang.
+- Tích hợp tính năng lọc đa năng (thanh tìm kiếm văn bản theo tên/tỉnh thành, bộ lọc dropdown Tỉnh thành, bộ lọc dropdown Ngành nghề sản xuất, và chốt chặn lọc các Làng Nghề "Đã xác minh" thiết kế hộp chọn ✦ dạng kim cương sang trọng).
+- Cập nhật liên kết điều hướng trên thanh Header để mục "LÀNG NGHỀ" (Villages) chuyển từ liên kết neo cục bộ `/#villages` sang trang `/villages` chuyên biệt.
+- Tích hợp dịch thuật đa ngôn ngữ 100% không hardcode chuỗi hiển thị cho cả 5 file cấu hình quốc tế hóa (`vi.json`, `en.json`, `ja.json`, `ko.json`, `zh.json`), tích hợp tự động phân giải tên Tỉnh thành và Nhãn ngành nghề sang ngôn ngữ tương ứng của du khách.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Types & Services**:
+   - Thêm mới [types/village.ts](file:///d:/HoaLang/HoaLang_FE/types/village.ts): Định nghĩa kiểu dữ liệu `Village` bảo mật, đồng bộ 100% với Schema của Backend MongoDB.
+   - Thêm mới [villageService.ts](file:///d:/HoaLang/HoaLang_FE/lib/services/villageService.ts): Quản lý các endpoint API gọi dữ liệu làng nghề thông qua Axios instance `api` tập trung.
+2. **Nav Links**:
+   - Sửa đổi [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx): Cập nhật href của liên kết Làng nghề từ `/#villages` thành `/villages`.
+3. **i18n Configuration**:
+   - Bổ sung namespace `"villagesList"` vào [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json), [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json), [ja.json](file:///d:/HoaLang/HoaLang_FE/messages/ja.json), [ko.json](file:///d:/HoaLang/HoaLang_FE/messages/ko.json), và [zh.json](file:///d:/HoaLang/HoaLang_FE/messages/zh.json).
+4. **Villages Gallery Page**:
+   - Sửa đổi [villages/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/villages/page.tsx): Triển khai toàn diện giao diện trang theo phong cách tạp chí nghệ thuật cao cấp. Sử dụng `PageHeader` bọc grain và organic gold gradient, chi tiết tìm kiếm có focus màu bronze, và lưới `VillageCard` áp dụng staggered offset (`lg:translate-y-8` trên cột thứ hai) để phá lưới visual.
+   - Tích hợp cơ chế fallback dữ liệu ngoại tuyến (`MOCK_FALLBACK_VILLAGES`) an toàn giúp giao diện hiển thị mượt mà ngay cả khi backend phản hồi chậm hoặc ngoại tuyến.
+
+---
+
+### [2026-06-02] User Profile Page & Avatar Dropdown Navigation Integration
+
+#### Tác vụ hoàn thành
+- Tích hợp liên kết điều hướng từ khối chi tiết tài khoản người dùng tại Header dropdown (cả bản Desktop và bản Mobile hamburger menu) chuyển đến trang hồ sơ cá nhân `/profile`.
+- Triển khai trang thông tin cá nhân `/profile` theo triết lý luxury editorial của HoaLang: hiển thị đầy đủ thông tin chi tiết của người dùng như họ tên, địa chỉ email, số điện thoại, vai trò quyền hạn và số dư ví đồng hành.
+- Hỗ trợ đa ngôn ngữ 100% không hardcode chuỗi hiển thị cho cả 5 file cấu hình quốc tế hóa (`vi.json`, `en.json`, `ja.json`, `ko.json`, `zh.json`), hiển thị vai trò người dùng được badged có phong cách tương thích.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Header Component**:
+   - Sửa đổi [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx): Bọc khối thông tin chi tiết người dùng (`user?.name` và `user?.email`) trong thẻ `<Link href="/profile">` trên cả Desktop dropdown và Mobile menu, kết hợp hover effect (`hover:bg-parchment/60 hover:text-lacquer` trên Desktop) tăng trải nghiệm người dùng.
+2. **i18n Configuration**:
+   - Bổ sung namespace `"profile"` vào [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json), [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json), [ja.json](file:///d:/HoaLang/HoaLang_FE/messages/ja.json), [ko.json](file:///d:/HoaLang/HoaLang_FE/messages/ko.json), và [zh.json](file:///d:/HoaLang/HoaLang_FE/messages/zh.json).
+3. **Profile Page Layout**:
+   - Thêm mới [profile/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/page.tsx): Triển khai giao diện hiển thị thông tin hồ sơ di sản sử dụng `PageHeader` (variant="light" nền giấy dó), các khung viền kim cương góc vàng truyền thống, bảng thông tin dạng grid tỉ mỉ, hiển thị trạng thái số dư ví định dạng theo locale hiện tại, và nút đăng xuất tài khoản đồng bộ.
+   - Quản lý trạng thái xác thực và bảo mật trang: tự động chuyển hướng người dùng chưa đăng nhập về trang `/auth/login` khi cố gắng truy cập trang `/profile`.

@@ -60,5 +60,50 @@
     "title": "准备好开启您的文化之旅了吗？",
     "subtitle": "让 HoaLang 伴您同行，踏上追寻越南手艺与非遗文化的旅程。",
     "button": "立即定制行程"
+  },
+  "villagesList": {
+    "title": "非遗文化之旅",
+    "subtitle": "探访越南各地的传统手工艺村落，领略代代相传的手工艺术魅力与民族之魂。",
+    "searchPlaceholder": "搜索传统手作村或省份...",
+    "allProvinces": "所有省份",
+    "allCategories": "所有类别",
+    "noResults": "未找到符合过滤条件的手工作坊或手艺村。",
+    "backHome": "返回首页",
+    "breadcrumb": "传统手艺村",
+    "allVillages": "全部",
+    "filterVerified": "仅看已认证"
+  },
+  "shopList": {
+    "title": "非遗手作精品店",
+    "subtitle": "直接与越南顶级的传统手工作坊交易，支持地方经济与文化传承。",
+    "breadcrumb": "商城",
+    "searchPlaceholder": "搜索店铺或传统手艺...",
+    "visitShop": "进入店铺",
+    "allShops": "所有店铺",
+    "noResults": "未找到符合过滤条件的店铺。",
+    "verifiedBoutique": "已认证店铺"
+  },
+  "profile": {
+    "title": "非遗个人中心",
+    "subtitle": "查看您的非遗账户信息，管理与手艺师傅的同行合作活动。",
+    "breadcrumb": "个人中心",
+    "fullName": "姓名",
+    "email": "电子邮箱",
+    "phone": "手机号码",
+    "role": "系统角色",
+    "walletBalance": "同行钱包余额",
+    "notAvailable": "暂无",
+    "loading": "正在同步个人中心...",
+    "roleAdmin": "系统管理员",
+    "roleOwner": "手工村庄业主",
+    "roleUser": "文化旅人",
+    "btnEdit": "编辑个人信息",
+    "btnSave": "保存修改",
+    "btnCancel": "取消",
+    "saving": "正在保存...",
+    "updateSuccess": "个人信息已成功更新！",
+    "updateFailed": "更新失败，请重试。",
+    "phoneError": "手机号码必须为10位数字。",
+    "nameError": "姓名至少需要2个字符。"
   }
 }

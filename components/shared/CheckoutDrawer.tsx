@@ -3,21 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { create } from 'zustand';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   X,
   ShoppingBag,
   Calendar,
   CheckCircle,
   CreditCard,
-  Compass,
   ArrowRight,
   ShieldCheck,
   User,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  HelpCircle
 } from 'lucide-react';
+
+interface DBItem {
+  _id: string;
+  name?: { vi: string; en?: string };
+  title?: { vi: string; en?: string };
+}
+import { toast } from 'sonner';
+import api from '@/lib/api';
 
 export interface CheckoutItem {
   name: string;
@@ -44,6 +52,7 @@ export const useCheckoutStore = create<CheckoutStore>((set) => ({
 
 export default function CheckoutDrawer() {
   const locale = useLocale() as 'vi' | 'en';
+  const t = useTranslations('checkout');
   const { isOpen, item, closeCheckout } = useCheckoutStore();
 
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form');
@@ -53,10 +62,17 @@ export default function CheckoutDrawer() {
     email: '',
     addressOrDate: '',
     quantity: 1,
-    paymentMethod: 'bank_transfer',
+    paymentMethod: 'COD',
   });
 
-  // Reset steps on open
+  const [paymentMethods, setPaymentMethods] = useState<{ cod: boolean; payos: boolean }>({
+    cod: true,
+    payos: false,
+  });
+  const [fetchingMethods, setFetchingMethods] = useState(false);
+  const [dbItems, setDbItems] = useState<DBItem[]>([]);
+
+  // Fetch dynamic payment methods and DB items when open
   useEffect(() => {
     if (isOpen) {
       setStep('form');
@@ -66,10 +82,50 @@ export default function CheckoutDrawer() {
         email: '',
         addressOrDate: '',
         quantity: 1,
-        paymentMethod: 'bank_transfer',
+        paymentMethod: 'COD',
       });
+
+      const fetchConfigAndItems = async () => {
+        try {
+          setFetchingMethods(true);
+          
+          // 1. Fetch dynamic payment choices
+          const resMethods = await api.get('/tenant/payment-methods');
+          if (resMethods.data && resMethods.data.success) {
+            setPaymentMethods(resMethods.data.data);
+            setFormData(prev => ({
+              ...prev,
+              paymentMethod: resMethods.data.data.payos ? 'PAYOS' : 'COD',
+            }));
+          }
+
+          // 2. Fetch DB items for ID resolving
+          if (item) {
+            if (item.type === 'product') {
+              const resItems = await api.get('/products');
+              if (resItems.data && resItems.data.success) {
+                setDbItems(resItems.data.data);
+              }
+            } else {
+              const resItems = await api.get('/experiences');
+              if (resItems.data && resItems.data.success) {
+                setDbItems(resItems.data.data);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch tenant configuration or items:', err);
+          // Muted fallback
+          setPaymentMethods({ cod: true, payos: false });
+          setFormData(prev => ({ ...prev, paymentMethod: 'COD' }));
+        } finally {
+          setFetchingMethods(false);
+        }
+      };
+
+      fetchConfigAndItems();
     }
-  }, [isOpen]);
+  }, [isOpen, item]);
 
   if (!isOpen || !item) return null;
 
@@ -88,42 +144,102 @@ export default function CheckoutDrawer() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.phone || !formData.addressOrDate) {
-      alert(locale === 'vi' ? 'Vui lòng điền đầy đủ thông tin bắt buộc.' : 'Please fill in all required fields.');
+      toast.error(t('errorRequired'));
       return;
     }
 
     setStep('processing');
-    
-    // Simulate transaction validation sequence
-    setTimeout(() => {
-      setStep('success');
-    }, 1800);
-  };
 
-  const t = {
-    titleProduct: locale === 'vi' ? 'Đơn Đặt Hàng Di Sản' : 'Heritage Craft Order',
-    titleWorkshop: locale === 'vi' ? 'Đặt Lịch Trải Nghiệm' : 'Workshop Reservation',
-    summary: locale === 'vi' ? 'Tóm tắt đơn hàng' : 'Order Summary',
-    quantity: locale === 'vi' ? 'Số lượng' : 'Quantity',
-    guests: locale === 'vi' ? 'Số khách tham gia' : 'Number of Guests',
-    fullName: locale === 'vi' ? 'Họ và tên khách hàng *' : 'Full Name *',
-    phone: locale === 'vi' ? 'Số điện thoại liên hệ *' : 'Phone Number *',
-    email: locale === 'vi' ? 'Địa chỉ Email' : 'Email Address',
-    deliveryAddress: locale === 'vi' ? 'Địa chỉ nhận hàng *' : 'Delivery Address *',
-    workshopDate: locale === 'vi' ? 'Ngày tham gia dự kiến *' : 'Scheduled Experience Date *',
-    paymentMethod: locale === 'vi' ? 'Phương thức thanh toán' : 'Payment Method',
-    payBank: locale === 'vi' ? 'Chuyển khoản Ngân hàng (Simulated QR)' : 'Simulated Bank QR Transfer',
-    payCard: locale === 'vi' ? 'Thanh toán qua thẻ (Sandbox)' : 'Mock Credit Card Sandbox',
-    btnConfirm: locale === 'vi' ? 'Xác Nhận Đơn Đặt & Thanh Toán' : 'Confirm Order & Checkout',
-    processing: locale === 'vi' ? 'Đang mã hóa giao dịch an toàn...' : 'Securing transaction gateway...',
-    successTitle: locale === 'vi' ? 'Giao Dịch Thành Công!' : 'Transaction Approved!',
-    successSub: locale === 'vi' ? '🎉 Cảm ơn bạn đã đồng hành cùng di sản thủ công Việt Nam!' : '🎉 Thank you for supporting traditional Vietnamese heritage!',
-    txId: locale === 'vi' ? 'Mã giao dịch' : 'Transaction ID',
-    completed: locale === 'vi' ? 'Hoàn Tất & Đóng' : 'Complete & Close',
-    invoiceTitle: locale === 'vi' ? 'HÓA ĐƠN DI SẢN / HERITAGE RECEIPT' : 'HERITAGE RECEIPT',
+    try {
+      // Find matching item ID in seeded DB collections
+      let matchedId = '';
+      if (item.type === 'product') {
+        const matched = dbItems.find(p => 
+          (p.name?.vi && p.name.vi.toLowerCase() === item.name.toLowerCase()) ||
+          (p.name?.en && p.name.en.toLowerCase() === item.name.toLowerCase())
+        );
+        if (matched) {
+          matchedId = matched._id;
+        } else if (dbItems.length > 0) {
+          matchedId = dbItems[0]._id;
+        }
+      } else {
+        const matched = dbItems.find(e => 
+          (e.title?.vi && e.title.vi.toLowerCase() === item.name.toLowerCase()) ||
+          (e.title?.en && e.title.en.toLowerCase() === item.name.toLowerCase())
+        );
+        if (matched) {
+          matchedId = matched._id;
+        } else if (dbItems.length > 0) {
+          matchedId = dbItems[0]._id;
+        }
+      }
+
+      if (!matchedId) {
+        throw new Error(t('errorDatabase'));
+      }
+
+      if (item.type === 'product') {
+        // Create order
+        const res = await api.post('/orders', {
+          items: [{ productId: matchedId, qty: formData.quantity }],
+          shippingAddress: {
+            fullName: formData.fullName,
+            phone: formData.phone,
+            address: formData.addressOrDate,
+            city: 'Hà Nội',
+            province: 'Hà Nội'
+          },
+          paymentMethod: formData.paymentMethod
+        });
+
+        if (res.data && res.data.success) {
+          if (formData.paymentMethod === 'PAYOS') {
+            toast.success(t('initPayos'));
+            setTimeout(() => {
+              window.location.href = res.data.data.checkoutUrl;
+            }, 1200);
+          } else {
+            setStep('success');
+          }
+        }
+      } else {
+        // Create booking
+        let bookingDate = new Date(formData.addressOrDate);
+        if (isNaN(bookingDate.getTime())) {
+          bookingDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // default to 3 days later if input is organic string
+        }
+
+        const res = await api.post('/bookings', {
+          experienceId: matchedId,
+          date: bookingDate.toISOString(),
+          guests: formData.quantity,
+          notes: 'Đặt trải nghiệm di sản HoaLang',
+          paymentMethod: formData.paymentMethod
+        });
+
+        if (res.data && res.data.success) {
+          if (formData.paymentMethod === 'PAYOS') {
+            toast.success(t('connectPayos'));
+            setTimeout(() => {
+              window.location.href = res.data.data.checkoutUrl;
+            }, 1200);
+          } else {
+            setStep('success');
+          }
+        }
+      }
+    } catch (err: unknown) {
+      console.error('Checkout failed:', err);
+      const axiosError = err as { response?: { data?: { message?: string } }; message?: string };
+      toast.error(t('errorTx'), {
+        description: axiosError.response?.data?.message || axiosError.message || t('errorTxDesc')
+      });
+      setStep('form');
+    }
   };
 
   return (
@@ -144,7 +260,7 @@ export default function CheckoutDrawer() {
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-          className="relative w-full max-w-md h-full bg-parchment border-l border-stone shadow-2xl flex flex-col justify-between overflow-hidden text-left font-sans"
+          className="relative w-full max-w-md h-full bg-parchment border-l border-stone shadow-2xl flex flex-col justify-between overflow-hidden text-left font-sans animate-ease-out"
         >
           {/* Organic grain texture overlay */}
           <div className="absolute inset-0 bg-grain pointer-events-none opacity-30 z-0" />
@@ -153,7 +269,7 @@ export default function CheckoutDrawer() {
           <div className="relative z-10 p-5 border-b border-stone/30 flex items-center justify-between bg-cream">
             <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-gold flex items-center gap-1">
               {item.type === 'product' ? <ShoppingBag className="w-3.5 h-3.5" /> : <Calendar className="w-3.5 h-3.5" />}
-              {item.type === 'product' ? t.titleProduct : t.titleWorkshop}
+              {item.type === 'product' ? t('titleProduct') : t('titleWorkshop')}
             </span>
             <button
               onClick={closeCheckout}
@@ -194,7 +310,7 @@ export default function CheckoutDrawer() {
                 {/* Quantity or Guest Selectors */}
                 <div className="flex items-center justify-between border-y border-stone/30 py-3">
                   <span className="text-xs font-semibold text-charcoal font-sans">
-                    {item.type === 'product' ? t.quantity : t.guests}
+                    {item.type === 'product' ? t('quantity') : t('guests')}
                   </span>
                   <div className="flex items-center gap-3">
                     <button
@@ -226,7 +342,7 @@ export default function CheckoutDrawer() {
                   {/* Full Name */}
                   <div className="space-y-1">
                     <label className="text-[10px] font-semibold text-ash block">
-                      {t.fullName}
+                      {t('fullName')}
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/60" />
@@ -236,7 +352,7 @@ export default function CheckoutDrawer() {
                         required
                         value={formData.fullName}
                         onChange={handleFormChange}
-                        placeholder={locale === 'vi' ? 'Nguyễn Văn A' : 'John Doe'}
+                        placeholder={t('placeholderFullName')}
                         className="w-full bg-cream border border-stone rounded-sm pl-9 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-bronze font-sans"
                       />
                     </div>
@@ -245,7 +361,7 @@ export default function CheckoutDrawer() {
                   {/* Phone */}
                   <div className="space-y-1">
                     <label className="text-[10px] font-semibold text-ash block">
-                      {t.phone}
+                      {t('phone')}
                     </label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/60" />
@@ -264,7 +380,7 @@ export default function CheckoutDrawer() {
                   {/* Email */}
                   <div className="space-y-1">
                     <label className="text-[10px] font-semibold text-ash block">
-                      {t.email}
+                      {t('email')}
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/60" />
@@ -282,7 +398,7 @@ export default function CheckoutDrawer() {
                   {/* Context Address or Date */}
                   <div className="space-y-1">
                     <label className="text-[10px] font-semibold text-ash block font-sans">
-                      {item.type === 'product' ? t.deliveryAddress : t.workshopDate}
+                      {item.type === 'product' ? t('deliveryAddress') : t('workshopDate')}
                     </label>
                     <div className="relative">
                       {item.type === 'product' ? (
@@ -298,8 +414,8 @@ export default function CheckoutDrawer() {
                         onChange={handleFormChange}
                         placeholder={
                           item.type === 'product'
-                            ? (locale === 'vi' ? 'Số 123 Đường Trần Hưng Đạo, Quận 1, TP. HCM' : '123 Wall St, NY')
-                            : (locale === 'vi' ? 'Ngày 29/05/2026 lúc 14:00' : 'May 29, 2026 at 2 PM')
+                            ? t('placeholderAddress')
+                            : t('placeholderDate')
                         }
                         className="w-full bg-cream border border-stone rounded-sm pl-9 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-bronze font-sans"
                       />
@@ -307,56 +423,99 @@ export default function CheckoutDrawer() {
                   </div>
                 </div>
 
-                {/* Mock Payment Selector */}
+                {/* Dynamic Payment Selector */}
                 <div className="space-y-2.5">
                   <span className="text-[9px] font-bold uppercase tracking-widest text-gold block">
-                    {t.paymentMethod}
+                    {t('paymentMethod')}
                   </span>
-                  <div className="grid grid-cols-1 gap-2">
-                    <label className={`p-3.5 border rounded-sm flex items-center justify-between cursor-pointer transition-all ${
-                      formData.paymentMethod === 'bank_transfer'
-                        ? 'border-lacquer bg-lacquer/5 text-ink'
-                        : 'border-stone hover:border-bronze bg-transparent'
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="bank_transfer"
-                          checked={formData.paymentMethod === 'bank_transfer'}
-                          onChange={handleFormChange}
-                          className="accent-lacquer"
-                        />
-                        <span className="text-xs font-semibold font-sans">{t.payBank}</span>
-                      </div>
-                      <ShieldCheck className="w-4 h-4 text-gold" />
-                    </label>
+                  
+                  {fetchingMethods ? (
+                    <div className="py-4 text-center text-xs text-ash">
+                      {t('loadingMethods')}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-2">
+                      {/* COD Option */}
+                      <label className={`p-3.5 border rounded-sm flex items-start justify-between cursor-pointer transition-all ${
+                        formData.paymentMethod === 'COD'
+                          ? 'border-lacquer bg-lacquer/5 text-ink'
+                          : 'border-stone hover:border-bronze bg-transparent'
+                      }`}>
+                        <div className="flex items-start gap-3">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="COD"
+                            checked={formData.paymentMethod === 'COD'}
+                            onChange={handleFormChange}
+                            className="accent-lacquer mt-0.5"
+                          />
+                          <div className="space-y-0.5 text-left">
+                            <span className="text-xs font-semibold font-sans block">{t('payCod')}</span>
+                            <span className="text-[10px] text-ash font-light block leading-normal">
+                              {t('payCodDesc')}
+                            </span>
+                          </div>
+                        </div>
+                        <ShieldCheck className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                      </label>
 
-                    <label className={`p-3.5 border rounded-sm flex items-center justify-between cursor-pointer transition-all ${
-                      formData.paymentMethod === 'credit_card'
-                        ? 'border-lacquer bg-lacquer/5 text-ink'
-                        : 'border-stone hover:border-bronze bg-transparent'
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="credit_card"
-                          checked={formData.paymentMethod === 'credit_card'}
-                          onChange={handleFormChange}
-                          className="accent-lacquer"
-                        />
-                        <span className="text-xs font-semibold font-sans">{t.payCard}</span>
-                      </div>
-                      <CreditCard className="w-4 h-4 text-ash/80" />
-                    </label>
-                  </div>
+                      {/* PayOS Option */}
+                      {paymentMethods.payos ? (
+                        <label className={`p-3.5 border rounded-sm flex items-start justify-between cursor-pointer transition-all ${
+                          formData.paymentMethod === 'PAYOS'
+                            ? 'border-lacquer bg-lacquer/5 text-ink'
+                            : 'border-stone hover:border-bronze bg-transparent'
+                        }`}>
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="radio"
+                              name="paymentMethod"
+                              value="PAYOS"
+                              checked={formData.paymentMethod === 'PAYOS'}
+                              onChange={handleFormChange}
+                              className="accent-lacquer mt-0.5"
+                            />
+                            <div className="space-y-0.5 text-left">
+                              <span className="text-xs font-semibold font-sans block">{t('payPayos')}</span>
+                              <span className="text-[10px] text-ash font-light block leading-normal">
+                                {t('payPayosDesc')}
+                              </span>
+                            </div>
+                          </div>
+                          <CreditCard className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                        </label>
+                      ) : (
+                        <div className="p-3.5 border border-dashed border-stone/50 bg-stone/5 text-ash rounded-sm flex items-start justify-between select-none relative group">
+                          <div className="flex items-start gap-3 opacity-60">
+                            <input
+                              type="radio"
+                              disabled
+                              className="accent-lacquer mt-0.5"
+                            />
+                            <div className="space-y-0.5 text-left">
+                              <span className="text-xs font-semibold font-sans block flex items-center gap-1.5 text-ash">
+                                {t('payPayosDisabled')}
+                              </span>
+                              <span className="text-[10px] text-ash font-light block leading-normal">
+                                {t('payPayosDisabledDesc')}
+                              </span>
+                            </div>
+                          </div>
+                          <HelpCircle className="w-4 h-4 text-ash/60 shrink-0 mt-0.5 cursor-help" />
+                          <div className="absolute left-1/2 bottom-full -translate-x-1/2 mb-2 w-64 bg-charcoal text-cream text-[10px] p-2 rounded-xs opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 shadow-md leading-normal text-center z-20">
+                            {t('payPayosTooltip')}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom billing computation and button */}
                 <div className="border-t border-stone/30 pt-4 space-y-4">
                   <div className="flex justify-between items-center text-xs font-semibold font-sans">
-                    <span className="text-ash">{locale === 'vi' ? 'Tổng thanh toán' : 'Grand Total'}</span>
+                    <span className="text-ash">{t('grandTotal')}</span>
                     <span className="text-lg font-bold text-lacquer">{totalPrice.toLocaleString('vi-VN')}đ</span>
                   </div>
 
@@ -364,7 +523,7 @@ export default function CheckoutDrawer() {
                     type="submit"
                     className="w-full flex items-center justify-center gap-2 bg-lacquer text-cream font-sans font-semibold uppercase tracking-widest text-[12px] py-4 rounded-sm hover:brightness-110 shadow-sm transition-all active:scale-[0.98]"
                   >
-                    <span>{t.btnConfirm}</span>
+                    <span>{t('btnConfirm')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -379,8 +538,8 @@ export default function CheckoutDrawer() {
                 className="h-full flex flex-col items-center justify-center text-center space-y-4"
               >
                 <div className="w-12 h-12 rounded-full border-2 border-lacquer/20 border-t-lacquer animate-spin flex items-center justify-center" />
-                <span className="text-xs font-semibold text-charcoal font-sans">
-                  {t.processing}
+                <span className="text-xs font-semibold text-charcoal font-sans animate-pulse">
+                  {t('processing')}
                 </span>
                 <span className="text-[10px] text-ash font-light">
                   TLS 1.3 Secure • RSA 2048 Sandbox Encryption
@@ -400,10 +559,10 @@ export default function CheckoutDrawer() {
                     <CheckCircle className="w-6 h-6" />
                   </div>
                   <h3 className="font-heading text-2xl font-bold italic text-charcoal">
-                    {t.successTitle}
+                    {t('successTitle')}
                   </h3>
                   <p className="font-sans text-[11px] text-ash font-light leading-relaxed">
-                    {t.successSub}
+                    {t('successSub')}
                   </p>
                 </div>
 
@@ -415,63 +574,51 @@ export default function CheckoutDrawer() {
                   
                   <div className="text-center border-b border-stone/30 pb-3">
                     <span className="font-heading text-md font-bold italic text-charcoal tracking-widest block">
-                      {t.invoiceTitle}
+                      {t('invoiceTitle')}
                     </span>
                     <span className="text-[9px] text-ash uppercase tracking-wider block mt-0.5">
-                      {t.txId}: HL-TX-{Math.floor(100000 + Math.random() * 900000)}
+                      {t('txId')}: HL-COD-{Math.floor(100000 + Math.random() * 900000)}
                     </span>
                   </div>
 
                   <div className="space-y-2.5 text-left border-b border-stone/30 pb-4">
                     <div className="flex justify-between">
-                      <span className="text-ash">{locale === 'vi' ? 'Sản phẩm/Khóa học' : 'Item Name'}</span>
+                      <span className="text-ash">{t('itemName')}</span>
                       <span className="font-semibold text-charcoal max-w-[200px] text-right truncate">{item.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ash">{locale === 'vi' ? 'Khách hàng' : 'Purchaser'}</span>
+                      <span className="text-ash">{t('purchaser')}</span>
                       <span className="font-semibold text-charcoal">{formData.fullName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ash">{locale === 'vi' ? 'Liên hệ' : 'Contact'}</span>
+                      <span className="text-ash">{t('contact')}</span>
                       <span className="font-semibold text-charcoal">{formData.phone}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ash">{item.type === 'product' ? t.deliveryAddress : t.workshopDate}</span>
+                      <span className="text-ash">{item.type === 'product' ? t('deliveryAddress') : t('workshopDate')}</span>
                       <span className="font-semibold text-charcoal max-w-[180px] text-right truncate">{formData.addressOrDate}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-ash">{locale === 'vi' ? 'Số lượng' : 'Quantity/Guests'}</span>
+                      <span className="text-ash">{t('quantity')}</span>
                       <span className="font-semibold text-charcoal">{formData.quantity}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-ash">{t('method')}</span>
+                      <span className="font-semibold text-charcoal">{t('payCod')}</span>
                     </div>
                   </div>
 
-                  {/* QR code mock or bank transfer placeholder */}
-                  {formData.paymentMethod === 'bank_transfer' && (
-                    <div className="bg-parchment/60 border border-stone/40 p-4 rounded-xs text-center space-y-3">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-lacquer block">
-                        {locale === 'vi' ? 'Chuyển Khoản Trực Tiếp Cho Hộ Tác Nghệ Nhân' : 'Direct Payment to Master Artisan'}
-                      </span>
-                      
-                      {/* Simple Mock QR graphic representation */}
-                      <div className="w-32 h-32 border border-stone bg-cream flex items-center justify-center mx-auto relative p-2 shadow-xs">
-                        <div className="w-full h-full bg-charcoal opacity-15" style={{ backgroundImage: 'radial-gradient(var(--color-ink) 20%, transparent 20%)', backgroundSize: '6px 6px' }} />
-                        <div className="absolute inset-4 bg-cream border border-stone flex items-center justify-center">
-                          <Compass className="w-10 h-10 text-gold animate-spin duration-[4000ms]" />
-                        </div>
-                      </div>
-                      
-                      <div className="text-[10px] space-y-1 text-ash leading-normal">
-                        <div>{locale === 'vi' ? 'Ngân hàng: BIDV • Số tài khoản: 12010000xxxxx' : 'Bank: BIDV • Acc Num: 12010000xxxxx'}</div>
-                        <div>{locale === 'vi' ? 'Chủ tài khoản: BAN QUAN LY DI SAN HOALANG' : 'Acc Holder: HOALANG HERITAGE BOARD'}</div>
-                        <div className="font-bold text-lacquer text-[11px] mt-1">
-                          {locale === 'vi' ? `Nội dung: HL_${formData.phone}` : `Memo: HL_${formData.phone}`}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <div className="bg-parchment/60 border border-stone/40 p-4 rounded-xs text-center space-y-2.5">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-lacquer block">
+                      {t('instructionsTitle')}
+                    </span>
+                    <p className="text-[10px] text-ash leading-normal text-left">
+                      {t('instructionsDesc')}
+                    </p>
+                  </div>
 
                   <div className="flex justify-between items-center text-xs font-semibold font-sans pt-1">
-                    <span className="text-ash">{locale === 'vi' ? 'Số tiền thanh toán' : 'Payment Amount'}</span>
+                    <span className="text-ash">{t('paymentAmount')}</span>
                     <span className="text-md font-bold text-lacquer">{totalPrice.toLocaleString('vi-VN')}đ</span>
                   </div>
                 </div>
@@ -480,7 +627,7 @@ export default function CheckoutDrawer() {
                   onClick={closeCheckout}
                   className="w-full flex items-center justify-center gap-2 bg-charcoal text-cream font-sans font-semibold uppercase tracking-widest text-[11px] py-4 rounded-sm hover:brightness-115 shadow-sm transition-all"
                 >
-                  <span>{t.completed}</span>
+                  <span>{t('completed')}</span>
                 </button>
               </motion.div>
             )}

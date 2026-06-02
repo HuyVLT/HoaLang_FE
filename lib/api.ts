@@ -46,7 +46,13 @@ api.interceptors.request.use(
 
     // 2. Strip Content-Type for FormData to let browser set boundary (crucial for uploads!)
     if (config.data instanceof FormData) {
-      delete config.headers['Content-Type'];
+      if (config.headers && typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type');
+        config.headers.delete('content-type');
+      } else {
+        delete config.headers['Content-Type'];
+        delete config.headers['content-type'];
+      }
     }
 
     // 3. Dynamically inject the x-tenant-slug based on the client subdomain
@@ -66,13 +72,24 @@ api.interceptors.request.use(
         }
       }
 
+      let slug = '';
       if (subdomain) {
         const map: Record<string, string> = {
           'battrang': 'bat-trang',
           'vanphuc': 'van-phuc',
           'nonnuoc': 'non-nuoc',
         };
-        const slug = map[subdomain] || subdomain;
+        slug = map[subdomain] || subdomain;
+      } else {
+        // Fallback: Parse tenant slug from URL pathname (e.g. /tenant/bat-trang or /vi/tenant/bat-trang)
+        const pathParts = window.location.pathname.split('/');
+        const tenantIndex = pathParts.indexOf('tenant');
+        if (tenantIndex !== -1 && pathParts[tenantIndex + 1]) {
+          slug = pathParts[tenantIndex + 1];
+        }
+      }
+
+      if (slug) {
         config.headers['x-tenant-slug'] = slug;
       }
     }

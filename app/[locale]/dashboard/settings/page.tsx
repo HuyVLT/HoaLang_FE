@@ -17,6 +17,7 @@ const stagger = {
 };
 
 export default function SettingsPanel() {
+  const [tenantSlug, setTenantSlug] = useState('bat-trang');
   const [tenantName, setTenantName] = useState('Làng Gốm Bát Tràng');
   const [customDomain, setCustomDomain] = useState('');
   const [hotline, setHotline] = useState('+84 24 3874 0123');
@@ -26,6 +27,7 @@ export default function SettingsPanel() {
     const savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
     const savedName = sessionStorage.getItem('hoalang_tenant_name');
     if (savedSlug) {
+      setTenantSlug(savedSlug);
       setCustomDomain(`${savedSlug}.hoalang.vn`);
       setEmail(`contact@${savedSlug}.hoalang.vn`);
     }
@@ -50,11 +52,29 @@ export default function SettingsPanel() {
         className="max-w-2xl w-full mx-auto space-y-6 relative z-10 text-left"
       >
         {/* Header toolbar */}
-        <motion.div variants={fadeUp} className="border-b border-stone/30 pb-6 mb-4">
+        <motion.div variants={fadeUp} className="border-b border-stone/30 pb-4 mb-2">
           <SectionLabel label="Cấu hình hệ thống / Config" />
           <h2 className="font-heading text-3xl font-semibold italic text-charcoal leading-tight">
             Thiết Lập Không Gian Di Sản
           </h2>
+        </motion.div>
+
+        {/* Sub-navigation tabs */}
+        <motion.div variants={fadeUp} className="flex gap-4 border-b border-stone/20 pb-2 mb-2 select-none">
+          <button 
+            type="button" 
+            onClick={() => window.location.href = `/vi/dashboard/settings?slug=${tenantSlug}`}
+            className="text-xs font-semibold uppercase tracking-wider text-charcoal border-b-2 border-lacquer pb-2 px-1"
+          >
+            Thông tin cơ bản
+          </button>
+          <button 
+            type="button" 
+            onClick={() => window.location.href = `/vi/dashboard/settings/payment?slug=${tenantSlug}`}
+            className="text-xs font-semibold uppercase tracking-wider text-ash hover:text-charcoal pb-2 px-1"
+          >
+            Cổng thanh toán (PayOS)
+          </button>
         </motion.div>
 
         {/* Form controls */}

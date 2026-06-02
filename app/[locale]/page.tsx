@@ -464,17 +464,16 @@ export default function LandingPage() {
       ════════════════════════════════════════════ */}
       <section
         id="map"
-        className="bg-cream border-b border-stone/30"
+        className="min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 bg-cream border-b border-stone/30 relative overflow-hidden"
         style={{
-          paddingBlock: 'clamp(80px, 9vw, 130px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
         }}
       >
-        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+        <div className="max-w-content mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center text-left">
           {/* Left Column: Text Showcase */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-5 sm:space-y-6">
             <SectionLabel label={locale === 'vi' ? bilingualContent.mapLabel.vi : bilingualContent.mapLabel.en} />
-            <h2 className="font-heading text-charcoal italic" style={{ fontSize: 'clamp(32px, 4vw, 48px)', lineHeight: 1.15 }}>
+            <h2 className="font-heading text-charcoal italic" style={{ fontSize: 'clamp(32px, 3.5vw, 48px)', lineHeight: 1.15 }}>
               <LocaleText content={bilingualContent.mapTitle} />
             </h2>
             <p className="font-sans text-xs text-ash leading-relaxed font-light">
@@ -494,7 +493,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right: Mapbox Interactive Map */}
-          <div className="lg:col-span-7 h-[400px] relative overflow-hidden rounded-sm border border-stone">
+          <div className="lg:col-span-7 h-[300px] sm:h-[400px] lg:h-[460px] lg:max-h-[52vh] w-full relative overflow-hidden rounded-sm border border-stone">
             <MapboxMap
               villages={mapVillages}
               selectedVillage={selectedVillage}
@@ -511,13 +510,12 @@ export default function LandingPage() {
       ════════════════════════════════════════════ */}
       <section
         id="villages"
-        className="bg-parchment border-b border-stone/30"
+        className="min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 bg-parchment border-b border-stone/30 relative overflow-hidden"
         style={{
-          paddingBlock: 'clamp(80px, 9vw, 130px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
         }}
       >
-        <div className="max-w-content mx-auto">
+        <div className="max-w-content mx-auto w-full">
           {/* Header row */}
           <motion.div
             initial="hidden"
@@ -581,13 +579,12 @@ export default function LandingPage() {
       ════════════════════════════════════════════ */}
       <section
         id="itinerary"
-        className="bg-charcoal text-cream border-b border-gold/20"
+        className="min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 bg-charcoal text-cream border-b border-gold/20 relative overflow-hidden"
         style={{
-          paddingBlock: 'clamp(80px, 9vw, 130px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
         }}
       >
-        <div className="max-w-content mx-auto">
+        <div className="max-w-content mx-auto w-full">
           {/* Header */}
           <motion.div
             initial="hidden"
@@ -651,15 +648,14 @@ export default function LandingPage() {
       ════════════════════════════════════════════ */}
       <section
         id="shop"
-        className="bg-cream border-b border-stone/30"
+        className="min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 bg-cream border-b border-stone/30 relative overflow-hidden"
         style={{
-          paddingBlock: 'clamp(80px, 9vw, 130px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
         }}
       >
-        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+        <div className="max-w-content mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center text-left">
           {/* Left Column: Visual Mockup */}
-          <div className="lg:col-span-7 bg-parchment border border-stone p-8 rounded-sm relative shadow-xs h-[340px] flex flex-col justify-between overflow-hidden">
+          <div className="lg:col-span-7 bg-parchment border border-stone p-6 sm:p-8 rounded-sm relative shadow-xs h-[300px] sm:h-[340px] lg:h-[380px] lg:max-h-[45vh] flex flex-col justify-between overflow-hidden">
             <div className="absolute inset-0 bg-grain pointer-events-none opacity-40" />
             <div className="flex items-center justify-between border-b border-stone/30 pb-4">
               <span className="font-heading text-[15px] font-bold italic text-charcoal">
@@ -719,13 +715,12 @@ export default function LandingPage() {
       ════════════════════════════════════════════ */}
       <section
         id="experience"
-        className="bg-parchment border-b border-stone/30"
+        className="min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 bg-parchment border-b border-stone/30 relative overflow-hidden"
         style={{
-          paddingBlock: 'clamp(80px, 9vw, 130px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
         }}
       >
-        <div className="max-w-content mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
+        <div className="max-w-content mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center text-left">
           {/* Left Column: Text Showcase */}
           <div className="lg:col-span-5 space-y-6">
             <SectionLabel label={locale === 'vi' ? bilingualContent.expLabel.vi : bilingualContent.expLabel.en} />
@@ -749,7 +744,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right Column: Visual Mockup */}
-          <div className="lg:col-span-7 bg-cream border border-stone p-8 rounded-sm relative shadow-xs h-[340px] flex flex-col justify-between overflow-hidden">
+          <div className="lg:col-span-7 bg-cream border border-stone p-6 sm:p-8 rounded-sm relative shadow-xs h-[300px] sm:h-[340px] lg:h-[380px] lg:max-h-[45vh] flex flex-col justify-between overflow-hidden">
             <div className="absolute inset-0 bg-grain pointer-events-none opacity-40" />
             <div className="flex items-center justify-between border-b border-stone/30 pb-4">
               <span className="font-heading text-[15px] font-bold italic text-charcoal">
@@ -838,9 +833,8 @@ export default function LandingPage() {
       ════════════════════════════════════════════ */}
       <section
         id="artisan-registration"
-        className="bg-charcoal text-cream relative overflow-hidden"
+        className="min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-0 bg-charcoal text-cream relative overflow-hidden"
         style={{
-          paddingBlock: 'clamp(80px, 9vw, 140px)',
           paddingInline: 'clamp(20px, 5vw, 80px)',
           borderTop: '1px solid rgba(196, 149, 42, 0.2)',
         }}
