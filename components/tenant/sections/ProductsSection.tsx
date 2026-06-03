@@ -7,6 +7,7 @@ import { ProductsSection as ProductsSectionType } from '@/types/tenant';
 import { SectionLabel, LocaleText, CraftCard, useCheckoutStore } from '@/components/shared';
 import { useTenantTheme } from '../TenantThemeProvider';
 import { fadeUp, stagger } from './motion';
+import api from '@/lib/api';
 
 // Realistic mock products for Bát Tràng, Vạn Phúc, and general craft
 const MOCK_PRODUCTS_MAP: Record<
@@ -81,8 +82,31 @@ export default function ProductsSection({ section }: { section: ProductsSectionT
   const openCheckout = useCheckoutStore(state => state.openCheckout);
   const tenantId = theme.logo ? (theme.logo.includes('van-phuc') || heading.vi.includes('Lụa') ? 'van-phuc' : 'bat-trang') : 'bat-trang';
 
-  // Get matching mock products or fallback to bat-trang
-  const products = MOCK_PRODUCTS_MAP[tenantId] || MOCK_PRODUCTS_MAP['bat-trang'];
+  const [products, setProducts] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products');
+        if (res.data && res.data.success && res.data.data && res.data.data.length > 0) {
+          const mapped = res.data.data.map((p: any) => ({
+            name: p.name,
+            price: p.price,
+            coverImage: p.images?.[0] || 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&h=600&fit=crop&q=80',
+            villageName: heading.vi.includes('Lụa') ? 'Làng Lụa Vạn Phúc' : 'Làng Gốm Bát Tràng',
+            stock: p.stock ?? 10
+          }));
+          setProducts(mapped);
+        } else {
+          setProducts(MOCK_PRODUCTS_MAP[tenantId] || MOCK_PRODUCTS_MAP['bat-trang']);
+        }
+      } catch (err) {
+        console.error('Failed to load products from DB, falling back to mock:', err);
+        setProducts(MOCK_PRODUCTS_MAP[tenantId] || MOCK_PRODUCTS_MAP['bat-trang']);
+      }
+    };
+    fetchProducts();
+  }, [tenantId, heading.vi]);
 
   return (
     <section

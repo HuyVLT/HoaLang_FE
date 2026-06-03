@@ -7,6 +7,7 @@ export interface User {
   name: string;
   role: string;
   avatar?: string;
+  tenants?: Array<{ slug: string; name: string; role: string }>;
 }
 
 interface AuthState {

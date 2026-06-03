@@ -9,7 +9,8 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "vouchers": "Discount Codes"
+    "vouchers": "Discount Codes",
+    "orders": "Order History"
   },
   "common": {
     "search": "Search craft villages...",
@@ -232,7 +233,27 @@
     "updateSuccess": "Profile updated successfully!",
     "updateFailed": "Update failed. Please try again.",
     "phoneError": "Phone number must be exactly 10 digits.",
-    "nameError": "Full name must be at least 2 characters."
+    "nameError": "Full name must be at least 2 characters.",
+    "ordersTitle": "Transaction History",
+    "ordersSubtitle": "Review your journey supporting craft heritage through purchased items and registered workshops.",
+    "ordersBreadcrumb": "Transactions",
+    "emptyOrders": "You have not made any transactions yet.",
+    "productOrder": "Product Order",
+    "bookingOrder": "Heritage Workshop",
+    "orderDate": "Transaction Date",
+    "totalAmount": "Total Value",
+    "paymentStatus": "Payment",
+    "orderStatus": "Status",
+    "itemsCount": "{count} products",
+    "guestsCount": "{count} participants",
+    "paid": "Paid",
+    "pending": "Pending",
+    "failed": "Failed",
+    "cancelled": "Cancelled",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "confirmed": "Confirmed",
+    "completed": "Completed"
   },
   "vouchers": {
     "title": "Heritage Vouchers",
@@ -247,5 +268,19 @@
     "copied": "Copied voucher {code}!",
     "validUntil": "Valid until: {date}",
     "btnBackProfile": "Back to Profile"
+  },
+  "payment": {
+    "successTitle": "Payment Successful",
+    "successSubtitle": "Thank you for supporting Vietnamese craft heritage!",
+    "cancelTitle": "Payment Cancelled",
+    "cancelSubtitle": "The online payment transaction has been cancelled by the user.",
+    "orderCode": "Order Code",
+    "amount": "Amount",
+    "status": "Status",
+    "btnBack": "Back to Home",
+    "btnDashboard": "Go to Dashboard",
+    "checking": "Verifying transaction details...",
+    "verified": "Verified",
+    "cancelled": "Cancelled"
   }
 }

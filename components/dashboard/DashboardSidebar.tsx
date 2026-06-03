@@ -59,11 +59,20 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
     setMounted(true);
     
     // Read session storage values from onboarding completed state if present
-    const savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
-    const savedName = sessionStorage.getItem('hoalang_tenant_name');
+    let savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
+    let savedName = sessionStorage.getItem('hoalang_tenant_name');
+
+    // Fallback: If not in sessionStorage but user has tenants populated in authStore
+    if (!savedSlug && user && user.tenants && user.tenants.length > 0) {
+      savedSlug = user.tenants[0].slug;
+      savedName = user.tenants[0].name;
+      if (savedSlug) sessionStorage.setItem('hoalang_tenant_slug', savedSlug);
+      if (savedName) sessionStorage.setItem('hoalang_tenant_name', savedName || '');
+    }
+
     if (savedSlug) setTenantSlug(savedSlug);
     if (savedName) setTenantName(savedName);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (mounted) {

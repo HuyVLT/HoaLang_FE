@@ -9,7 +9,8 @@
     "login": "ログイン",
     "register": "会員登録",
     "logout": "ログアウト",
-    "vouchers": "割引コード"
+    "vouchers": "割引コード",
+    "orders": "注文履歴"
   },
   "common": {
     "search": "工芸村を検索...",
@@ -105,7 +106,27 @@
     "updateSuccess": "プロフィールが更新されました！",
     "updateFailed": "更新に失敗しました。再試行してください。",
     "phoneError": "電話番号は正確に10桁である必要があります。",
-    "nameError": "名前は少なくとも2文字以上である必要があります。"
+    "nameError": "名前は少なくとも2文字以上である必要があります。",
+    "ordersTitle": "取引履歴",
+    "ordersSubtitle": "購入した商品や登録したワークショップなど、伝統工芸支援の歩みを確認できます。",
+    "ordersBreadcrumb": "取引履歴",
+    "emptyOrders": "まだ取引はありません。",
+    "productOrder": "注文商品",
+    "bookingOrder": "体験ワークショップ",
+    "orderDate": "取引日",
+    "totalAmount": "総額",
+    "paymentStatus": "決済",
+    "orderStatus": "ステータス",
+    "itemsCount": "{count} 個の商品",
+    "guestsCount": "{count} 人の参加者",
+    "paid": "支払い済み",
+    "pending": "保留中",
+    "failed": "失敗",
+    "cancelled": "キャンセル済み",
+    "shipped": "発送済み",
+    "delivered": "配達済み",
+    "confirmed": "確定済み",
+    "completed": "完了"
   },
   "vouchers": {
     "title": "遺産割引コード",
@@ -120,5 +141,19 @@
     "copied": "割引コード {code} をコピーしました！",
     "validUntil": "有効期限: {date}",
     "btnBackProfile": "プロフィールに戻る"
+  },
+  "payment": {
+    "successTitle": "決済完了",
+    "successSubtitle": "ベトナムの伝統工芸へのご支援、ありがとうございます！",
+    "cancelTitle": "決済キャンセル",
+    "cancelSubtitle": "オンライン決済はユーザーによってキャンセルされました。",
+    "orderCode": "注文コード",
+    "amount": "金額",
+    "status": "ステータス",
+    "btnBack": "ホームに戻る",
+    "btnDashboard": "ダッシュボードへ",
+    "checking": "取引情報を検証中...",
+    "verified": "検証済み",
+    "cancelled": "キャンセル済み"
   }
 }

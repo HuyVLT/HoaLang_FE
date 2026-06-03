@@ -42,6 +42,19 @@ export const authService = {
       return null;
     }
   },
+
+  getOrders: async (): Promise<any[] | null> => {
+    try {
+      const res = await api.get('/auth/orders');
+      if (res.data && res.data.success) {
+        return res.data.data;
+      }
+      return null;
+    } catch (error) {
+      console.warn('[authService] Failed to fetch orders:', error);
+      return null;
+    }
+  },
 };
 
 export default authService;
