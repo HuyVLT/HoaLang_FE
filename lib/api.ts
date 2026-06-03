@@ -16,9 +16,8 @@ const getInitialBaseUrl = (): string => {
     return 'http://localhost:5000/api/v1';
   }
 
-  // Client-side: Always use relative path to preserve the hostname (subdomain)
-  // e.g. battrang.hoalang.site/api/v1/...
-  return '/api/v1';
+  // Client-side: Use absolute backend API URL from environment variables to connect directly
+  return process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 };
 
 const api = axios.create({
