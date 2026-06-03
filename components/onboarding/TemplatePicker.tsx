@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Eye, X } from 'lucide-react';
+import { Check, Eye, X, Maximize2, Minimize2 } from 'lucide-react';
 
 interface TemplateOption {
   id: string;
@@ -288,6 +288,7 @@ export default function TemplatePicker({
   onSelect,
 }: TemplatePickerProps) {
   const [previewTemplate, setPreviewTemplate] = useState<TemplateOption | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
     <div className="space-y-6 text-left select-none">
@@ -413,23 +414,44 @@ export default function TemplatePicker({
             className="fixed inset-0 bg-ink-70 flex items-center justify-center p-6 z-50 backdrop-blur-xs"
           >
             <motion.div
-              initial={{ scale: 0.95, y: 15 }}
+              initial={isFullscreen ? { scale: 1, y: 0 } : { scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
+              exit={isFullscreen ? { scale: 1, y: 0 } : { scale: 0.95, y: 15 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="bg-parchment rounded-md shadow-lg max-w-3xl w-full border border-stone overflow-hidden relative flex flex-col max-h-[90vh]"
+              className={`bg-parchment border-stone overflow-hidden relative flex flex-col transition-all duration-300 ${
+                isFullscreen 
+                  ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-none z-50' 
+                  : 'bg-parchment rounded-md shadow-lg max-w-3xl w-full border max-h-[90vh]'
+              }`}
             >
-              {/* Close header button */}
-              <button
-                onClick={() => setPreviewTemplate(null)}
-                className="absolute top-4 right-4 p-2 bg-cream hover:bg-stone/20 text-charcoal hover:text-primary rounded-full transition-colors z-50 shadow-sm"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {/* Fullscreen & Close header buttons */}
+              <div className="absolute top-4 right-4 flex items-center gap-2 z-50">
+                <button
+                  type="button"
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                  className="p-2 bg-cream hover:bg-stone/20 text-charcoal hover:text-primary rounded-full transition-colors shadow-sm"
+                  title={isFullscreen ? 'Thu nhỏ / Exit Fullscreen' : 'Phóng to / Fullscreen'}
+                >
+                  {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewTemplate(null);
+                    setIsFullscreen(false);
+                  }}
+                  className="p-2 bg-cream hover:bg-stone/20 text-charcoal hover:text-primary rounded-full transition-colors shadow-sm"
+                  title="Đóng / Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
               {/* Modal Cover preview scrollable */}
-              <div className="p-6 md:p-8 flex flex-col overflow-hidden max-h-[90vh]">
-                <div className="text-center mb-5 shrink-0">
+              <div className={`p-6 md:p-8 flex flex-col overflow-hidden transition-all duration-300 ${
+                isFullscreen ? 'h-full max-h-none' : 'max-h-[90vh]'
+              }`}>
+                <div className="text-center mb-5 shrink-0 pr-16 pl-16">
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-gold font-sans block mb-1">
                     Bản Phác Thảo Giao Diện / Live Mockup
                   </span>
@@ -456,23 +478,31 @@ export default function TemplatePicker({
                   </div>
                   
                   {/* Scrollable live preview container */}
-                  <div className="overflow-y-auto max-h-[45vh] bg-stone/5 relative scrollbar-thin">
+                  <div className={`overflow-y-auto bg-stone/5 relative scrollbar-thin flex-grow transition-all duration-300 ${
+                    isFullscreen ? 'max-h-none' : 'max-h-[45vh]'
+                  }`}>
                     <TemplateLivePreview templateId={previewTemplate.id} />
                   </div>
                 </div>
 
                 <div className="flex justify-center gap-3 pt-6 shrink-0 select-none">
                   <button
+                    type="button"
                     onClick={() => {
                       onSelect(previewTemplate.id);
                       setPreviewTemplate(null);
+                      setIsFullscreen(false);
                     }}
                     className="bg-primary text-primary-foreground font-sans font-semibold uppercase tracking-wider text-[11px] px-8 py-3.5 rounded-sm hover:brightness-110 shadow-sm transition-all animate-ease-out"
                   >
                     Lựa chọn bản này / Apply Template
                   </button>
                   <button
-                    onClick={() => setPreviewTemplate(null)}
+                    type="button"
+                    onClick={() => {
+                      setPreviewTemplate(null);
+                      setIsFullscreen(false);
+                    }}
                     className="bg-transparent border border-stone text-charcoal font-sans font-semibold uppercase tracking-wider text-[11px] px-8 py-3.5 rounded-sm hover:bg-stone/10 transition-all"
                   >
                     Đóng / Close

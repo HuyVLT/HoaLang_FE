@@ -27,6 +27,22 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
+### [2026-06-03] Starter Design Template Fullscreen Preview Toggle
+
+#### Tác vụ hoàn thành
+- Phát triển thêm tùy chọn xem thử toàn màn hình (Fullscreen Toggle) trong hộp thoại xem trước (Modal Preview) của bộ chọn mẫu thiết kế Starter (`TemplatePicker.tsx`).
+- Cho phép phóng to khung trình duyệt mô phỏng chiếm trọn toàn bộ viewport (screen width và height) giúp chủ làng nghề quan sát giao diện mẫu rõ ràng và chi tiết nhất.
+- Bổ sung nút phóng to/thu nhỏ động (Maximize2/Minimize2) kết hợp với các hiệu ứng chuyển đổi CSS mượt mà (`transition-all duration-300`).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Template Selection Modal Fullscreen Toggle**:
+   - Sửa đổi trong [TemplatePicker.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/onboarding/TemplatePicker.tsx).
+   - Thêm trạng thái `isFullscreen` kiểu boolean.
+   - Thêm nút chuyển đổi và biểu tượng thu phóng động từ `lucide-react`.
+   - Cải tiến bố cục flexbox và chiều cao tự co giãn (`flex-grow` và `max-h-none` thay thế giới hạn `max-h-[45vh]`) để tương thích hoàn hảo cả khi phóng to lẫn khi ở trạng thái cửa sổ mặc định.
+
+---
+
 ### [2026-06-03] Map Pin Drag-and-Drop Coordinates Selector
 
 #### Tác vụ hoàn thành
