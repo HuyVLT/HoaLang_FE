@@ -37,13 +37,15 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 - Bổ sung Huy hiệu trạng thái độ chính xác (Accuracy Status Badge): hiển thị "Tự động / Automatic" (OSM Geocoded) khi dùng địa chỉ chuẩn, và chuyển sang "Thủ công / Manual" (Map Pinned) khi người dùng tự kéo ghim/sửa tọa độ.
 - Tích hợp đa ngôn ngữ (i18n) hoàn toàn cho phân hệ cấu hình qua namespace `dashboardSettings` trong `messages/vi.json` và `messages/en.json`.
 - Thiết kế giao diện fallback ngoại tuyến (offline fallback banner) thân thiện nếu biến `NEXT_PUBLIC_MAPBOX_TOKEN` chưa được thiết lập, đảm bảo trang thiết lập hoạt động bình thường, các trường nhập liệu số vẫn chỉnh sửa được.
+- Khắc phục lỗi kích chọn địa chỉ gợi ý hai lần (Double-click Suggestion Selection Bug): khi click chọn địa chỉ, dropdown menu tự động mở lại do `query` cập nhật kích hoạt hàm tìm kiếm debounced. Đã giải quyết bằng cờ hiệu `isSelectingRef` và kiểm tra tiêu điểm `document.activeElement === inputRef.current`.
 
 #### Chi tiết kỹ thuật & File thay đổi
-1. **Autocomplete Coordinates Integration**:
+1. **Autocomplete Coordinates & Interaction Refinement**:
    - Sửa đổi trong [AddressAutocomplete.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/AddressAutocomplete.tsx).
    - Mở rộng kiểu dữ liệu `PlaceSuggestion` hỗ trợ thêm vĩ độ `lat` và kinh độ `lng`.
    - Bổ sung sự kiện callback `onCoordinatesSelect` trong props của component.
    - Trả ra tọa độ lấy từ Nominatim API và preset tọa độ thực cho các gợi ý làng nghề mặc định trong hệ thống.
+   - Thêm `inputRef` và `isSelectingRef` để kiểm soát hành vi mở dropdown và gửi API fetch chỉ khi người dùng thực sự tập trung gõ (active typing) thay vì khi tự động cập nhật hoặc sau khi click lựa chọn.
 2. **Dashboard Settings Map Selector**:
    - Thay đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/dashboard/settings/page.tsx).
    - Xây dựng component `SettingsPanel` quản lý trạng thái địa chỉ đầy đủ bao gồm `address`, `province`, `districtWard`, `latitude`, `longitude` và `isCoordinatesManual`.

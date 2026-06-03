@@ -186,6 +186,8 @@ export default function AddressAutocomplete({
 }: AddressAutocompleteProps) {
   const locale = useLocale() as 'vi' | 'en';
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isSelectingRef = useRef(false);
   const [query, setQuery] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -210,6 +212,17 @@ export default function AddressAutocomplete({
 
   // Live real-time debounced query fetch reacting to search query updates!
   useEffect(() => {
+    // If the change was initiated by selecting a suggestion, ignore and reset flag
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
+
+    // Only fetch suggestions if input is active/focused (prevents triggering on external value sync)
+    if (typeof document !== 'undefined' && document.activeElement !== inputRef.current) {
+      return;
+    }
+
     if (query.trim().length < 3) {
       setResults([]);
       setIsOpen(false);
@@ -312,11 +325,13 @@ export default function AddressAutocomplete({
   // Keystroke typing update handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
+    isSelectingRef.current = false;
     setQuery(val);
     onChange(val);
   };
 
   const handleSelect = (item: PlaceSuggestion) => {
+    isSelectingRef.current = true;
     setQuery(item.description);
     onChange(item.description);
     onProvinceSelect(item.province);
@@ -348,6 +363,7 @@ export default function AddressAutocomplete({
       <div className="flex items-center gap-2 border-b border-stone py-2 relative">
         <Search className="w-4 h-4 text-ash/60 shrink-0" />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={handleInputChange}
@@ -386,6 +402,7 @@ export default function AddressAutocomplete({
                     <button
                       type="button"
                       onClick={() => {
+                        isSelectingRef.current = true;
                         onChange(query);
                         setIsOpen(false);
                       }}
