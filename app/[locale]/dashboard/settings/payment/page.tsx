@@ -60,6 +60,8 @@ export default function MerchantPaymentSettings() {
   // Show/hide password states
   const [showApiKey, setShowApiKey] = useState(false);
   const [showChecksumKey, setShowChecksumKey] = useState(false);
+  
+  const [tenantSlug, setTenantSlug] = useState('bat-trang');
 
   const fetchConfig = async () => {
     try {
@@ -80,6 +82,10 @@ export default function MerchantPaymentSettings() {
 
   useEffect(() => {
     fetchConfig();
+    const savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
+    if (savedSlug) {
+      setTenantSlug(savedSlug);
+    }
   }, []);
 
   const handleSaveConfig = async (e: React.FormEvent) => {
@@ -185,6 +191,24 @@ export default function MerchantPaymentSettings() {
             {t('title')}
           </h2>
           <p className="text-xs text-ash mt-1">{t('subtitle')}</p>
+        </motion.div>
+
+        {/* Sub-navigation tabs */}
+        <motion.div variants={fadeUp} className="flex gap-4 border-b border-stone/20 pb-2 mb-4 select-none">
+          <button 
+            type="button" 
+            onClick={() => window.location.href = `/vi/dashboard/settings?slug=${tenantSlug}`}
+            className="text-xs font-semibold uppercase tracking-wider text-ash hover:text-charcoal pb-2 px-1 transition-colors"
+          >
+            Thông tin cơ bản
+          </button>
+          <button 
+            type="button" 
+            onClick={() => window.location.href = `/vi/dashboard/settings/payment?slug=${tenantSlug}`}
+            className="text-xs font-semibold uppercase tracking-wider text-charcoal border-b-2 border-lacquer pb-2 px-1"
+          >
+            Cổng thanh toán (PayOS)
+          </button>
         </motion.div>
 
         {loading ? (
