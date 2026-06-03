@@ -81,11 +81,22 @@ api.interceptors.request.use(
         };
         slug = map[subdomain] || subdomain;
       } else {
-        // Fallback: Parse tenant slug from URL pathname (e.g. /tenant/bat-trang or /vi/tenant/bat-trang)
+        // Fallback 1: Parse tenant slug from URL pathname (e.g. /tenant/bat-trang or /vi/tenant/bat-trang)
         const pathParts = window.location.pathname.split('/');
         const tenantIndex = pathParts.indexOf('tenant');
         if (tenantIndex !== -1 && pathParts[tenantIndex + 1]) {
           slug = pathParts[tenantIndex + 1];
+        }
+
+        // Fallback 2: Parse tenant slug from URL query parameters (e.g. ?slug=bat-trang or ?tenant=bat-trang)
+        if (!slug) {
+          const urlParams = new URLSearchParams(window.location.search);
+          slug = urlParams.get('slug') || urlParams.get('tenant') || '';
+        }
+
+        // Fallback 3: Retrieve from sessionStorage (saved during onboarding/login)
+        if (!slug) {
+          slug = sessionStorage.getItem('hoalang_tenant_slug') || '';
         }
       }
 

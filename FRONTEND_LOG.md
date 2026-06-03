@@ -29,6 +29,31 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-03] Order & Booking History Feature Implementation
+
+#### Tác vụ hoàn thành
+- Phát triển tính năng xem Lịch sử giao dịch (bao gồm Đơn đặt sản phẩm thủ công và Vé trải nghiệm workshop) dành cho khách du lịch.
+- Tích hợp thêm liên kết truy cập nhanh "Lịch sử đặt hàng / Order History" vào thanh Menu Avatar của người dùng ở thanh Navigation chính (cả bản Desktop và Mobile Drawer).
+- Đảm bảo thiết kế đồng bộ với cẩm nang thiết kế nghệ thuật cao cấp HoaLang (sử dụng parchment background, cream card, lacquer/gold/stone badges và micro-animations từ Framer Motion).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **User Dropdown Navigation Update**:
+   - Sửa đổi trong [Header.tsx](file:///d:/HoaLang/HoaLang_FE/components/layout/Header.tsx).
+   - Thêm nút liên kết động `/profile/orders` vào menu dropdown của avatar (phía trên mục Mã giảm giá) ở cả giao diện Desktop và giao diện Mobile Drawer (Sheet).
+2. **Translation & Localization Keys**:
+   - Sửa đổi trong các tệp ngôn ngữ: [vi.json](file:///d:/HoaLang/HoaLang_FE/messages/vi.json), [en.json](file:///d:/HoaLang/HoaLang_FE/messages/en.json), [ja.json](file:///d:/HoaLang/HoaLang_FE/messages/ja.json), [ko.json](file:///d:/HoaLang/HoaLang_FE/messages/ko.json), và [zh.json](file:///d:/HoaLang/HoaLang_FE/messages/zh.json).
+   - Thêm dịch thuật song ngữ cho chuỗi khóa `"orders"` trong phần `nav` và các mô tả, tiêu đề, trạng thái đơn hàng (paid, pending, cancelled, items count, guests count...) trong block `profile`.
+3. **Frontend Auth Service Update**:
+   - Sửa đổi trong [authService.ts](file:///d:/HoaLang/HoaLang_FE/lib/services/authService.ts).
+   - Thêm phương thức API helper `getOrders()` để fetch lịch sử giao dịch của người dùng từ endpoint `/auth/orders`.
+4. **Orders History Page Creation**:
+   - Thêm mới [orders/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/orders/page.tsx).
+   - Thiết kế giao diện danh sách giao dịch sang trọng, phân loại theo bộ lọc tab (Tất cả, Đơn sản phẩm, Workshop di sản).
+   - Hiển thị danh mục chi tiết sản phẩm đã mua (kèm ảnh sản phẩm), hoặc workshop đã đặt chỗ (kèm ảnh bìa workshop, thời gian tham gia, số khách).
+   - Hiển thị chi tiết trạng thái thanh toán (PAYOS / COD, Đã thanh toán / Chờ xử lý) và trạng thái giao nhận trực quan thông qua `TagBadge`.
+
+---
+
 ### [2026-06-02] Remove Artisan Owner tab in Registration Page
 
 #### Tác vụ hoàn thành
@@ -812,6 +837,28 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 4. **Vouchers Page Layout**:
    - Thêm mới [profile/vouchers/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/vouchers/page.tsx): Triển khai trang hiển thị danh sách ưu đãi. Thiết kế coupon card có răng cưa lượn sóng bên rìa, nền `cream` border `stone` cực mỏng, hover chuyển động `translateY(-5px)` + bóng đổ mịn `shadow-hover`, font display Cormorant Garamond và body Be Vietnam Pro. Hỗ trợ nút sao chép thông minh, Suspense & Route Guard bảo mật (tự động đẩy khách chưa đăng nhập về trang login).
 
+---
+
+### [2026-06-03] Fix PayOS Config Tenant Resolution & Dashboard State Sync
+
+#### Tác vụ hoàn thành
+- Khắc phục triệt để lỗi mất đồng bộ ngữ cảnh Tenant (x-tenant-slug) khi Owner truy cập các trang cài đặt/cổng thanh toán bên trong Bảng điều khiển quản trị (`/dashboard`).
+- Hỗ trợ kế thừa và dự phòng thông tin Tenant tự động trong Axios Request Interceptor từ query parameter hoặc `sessionStorage` để đính kèm header `x-tenant-slug` chuẩn xác.
+- Tự động lưu trữ thông tin Tenant đầu tiên của Owner vào `sessionStorage` ngay sau khi đăng nhập thành công.
+- Đồng bộ hóa Sidebar Bảng quản trị (`DashboardSidebar`) tự động tải và khởi tạo lại `sessionStorage` từ dữ liệu user đã xác thực trong Zustand Store khi refresh trình duyệt.
+- Tích hợp kết xuất sản phẩm động từ cơ sở dữ liệu MongoDB thay cho cơ chế hiển thị 100% tĩnh trước kia, kèm theo cơ chế dự phòng (mock fallback) an toàn.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Zustand Auth Store**:
+   - Sửa đổi [authStore.ts](file:///d:/HoaLang/HoaLang_FE/lib/store/authStore.ts): Cập nhật kiểu `User` interface để chứa thêm mảng thông tin `tenants` (bao gồm `slug`, `name`, `role`).
+2. **Login Redirect Handler**:
+   - Sửa đổi [login/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/auth/login/page.tsx): Ánh xạ (map) thuộc tính `tenants` từ payload backend trả về sang Zustand Store. Nếu vai trò là `VILLAGE_OWNER` và có danh sách tenant liên kết, tự động ghi nhận tenant đầu tiên vào `sessionStorage` (`hoalang_tenant_slug` và `hoalang_tenant_name`).
+3. **Dashboard Sidebar**:
+   - Sửa đổi [DashboardSidebar.tsx](file:///d:/HoaLang/HoaLang_FE/components/dashboard/DashboardSidebar.tsx): Cải tiến useEffect mount để nếu `sessionStorage` trống nhưng user store có chứa thông tin `tenants`, tự động khôi phục ngữ cảnh tenant trở lại `sessionStorage` và sidebar state.
+4. **Axios Client Interceptor**:
+   - Sửa đổi [api.ts](file:///d:/HoaLang/HoaLang_FE/lib/api.ts): Mở rộng cơ chế phân giải `x-tenant-slug` trong request interceptor để kiểm tra thêm query string `?slug=...` và `sessionStorage` trước khi bỏ cuộc, đảm bảo mọi request từ client-side dashboard luôn đính kèm tenant-slug chính xác.
+5. **Dynamic Products Section**:
+   - Sửa đổi [ProductsSection.tsx](file:///d:/HoaLang/HoaLang_FE/components/tenant/sections/ProductsSection.tsx): Chuyển đổi component sang lấy sản phẩm động từ MongoDB (`GET /api/v1/products`) thông qua Axios client có tự động phân giải tenant. Tích hợp mock data fallback nếu cơ sở dữ liệu trống hoặc API bị lỗi.
 ### [2026-06-03] Merchant Settings Sub-navigation Tabs Implementation
 
 #### Tác vụ hoàn thành

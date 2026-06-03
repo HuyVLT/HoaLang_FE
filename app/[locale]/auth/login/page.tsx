@@ -53,7 +53,13 @@ export default function LoginPage() {
           name: user.fullName || user.name,
           role: user.role.toLowerCase(), // Store roles in lowercase for consistency
           avatar: user.avatar,
+          tenants: user.tenants,
         };
+
+        if (user.role === 'VILLAGE_OWNER' && user.tenants && user.tenants.length > 0) {
+          sessionStorage.setItem('hoalang_tenant_slug', user.tenants[0].slug);
+          sessionStorage.setItem('hoalang_tenant_name', user.tenants[0].name);
+        }
 
         login(mappedUser, accessToken, refreshToken);
         toast.success('Đăng nhập hệ thống thành công!');

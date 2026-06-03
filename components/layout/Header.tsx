@@ -276,6 +276,13 @@ export default function Header() {
 
                         <div className="border-b border-stone/40 py-1">
                           <Link
+                            href="/profile/orders"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex w-full px-4 py-2 text-left font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal hover:bg-parchment hover:text-lacquer transition-colors cursor-pointer"
+                          >
+                            {t('orders')}
+                          </Link>
+                          <Link
                             href="/profile/vouchers"
                             onClick={() => setDropdownOpen(false)}
                             className="flex w-full px-4 py-2 text-left font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal hover:bg-parchment hover:text-lacquer transition-colors cursor-pointer"
@@ -424,6 +431,12 @@ export default function Header() {
                         )}
 
                         <div className="flex flex-col gap-1 border-b border-stone/30 py-2 mb-1">
+                          <Link
+                            href="/profile/orders"
+                            className="font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal py-2 text-left"
+                          >
+                            {t('orders')}
+                          </Link>
                           <Link
                             href="/profile/vouchers"
                             className="font-sans text-[11px] font-semibold uppercase tracking-wider text-charcoal py-2 text-left"

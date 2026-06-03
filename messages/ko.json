@@ -9,7 +9,8 @@
     "login": "로그인",
     "register": "회원가입",
     "logout": "로그아웃",
-    "vouchers": "할인 코드"
+    "vouchers": "할인 코드",
+    "orders": "주문 내역"
   },
   "common": {
     "search": "전통 공예 마을 검색...",
@@ -105,7 +106,27 @@
     "updateSuccess": "프로필이 성공적으로 업데이트되었습니다!",
     "updateFailed": "업데이트에 실패했습니다. 다시 시도해 주세요.",
     "phoneError": "전화번호는 정확히 10자리여야 합니다.",
-    "nameError": "이름은 최소 2글자 이상이어야 합니다."
+    "nameError": "이름은 최소 2글자 이상이어야 합니다.",
+    "ordersTitle": "거래 내역",
+    "ordersSubtitle": "구매하신 공예품과 신청하신 체험 워크숍 등 전통 문화 동행 내역을 확인하세요.",
+    "ordersBreadcrumb": "거래 내역",
+    "emptyOrders": "아직 거래 내역이 없습니다.",
+    "productOrder": "상품 주문",
+    "bookingOrder": "체험 워크숍",
+    "orderDate": "신청일",
+    "totalAmount": "총 결제 금액",
+    "paymentStatus": "결제",
+    "orderStatus": "상태",
+    "itemsCount": "{count}개 상품",
+    "guestsCount": "{count}명 참가",
+    "paid": "결제 완료",
+    "pending": "대기 중",
+    "failed": "결제 실패",
+    "cancelled": "취소됨",
+    "shipped": "배송 중",
+    "delivered": "배송 완료",
+    "confirmed": "예약 확정",
+    "completed": "체험 완료"
   },
   "vouchers": {
     "title": "헤리티지 할인 코드",
@@ -120,5 +141,19 @@
     "copied": "할인 코드 {code} 복사 완료!",
     "validUntil": "유효기간: {date}",
     "btnBackProfile": "프로필로 돌아가기"
+  },
+  "payment": {
+    "successTitle": "결제 완료",
+    "successSubtitle": "베트남 전통 공예 유산을 지원해 주셔서 감사합니다!",
+    "cancelTitle": "결제 취소됨",
+    "cancelSubtitle": "온라인 결제가 사용자에 의해 취소되었습니다.",
+    "orderCode": "주문 코드",
+    "amount": "결제 금액",
+    "status": "상태",
+    "btnBack": "홈으로 돌아가기",
+    "btnDashboard": "대시보드로 이동",
+    "checking": "거래 정보 확인 중...",
+    "verified": "확인됨",
+    "cancelled": "취소됨"
   }
 }
