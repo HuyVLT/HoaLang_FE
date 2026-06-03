@@ -204,21 +204,21 @@ function PotteryTemplatePreview() {
           </div>
           <div className="col-span-4 aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
             <img 
-              src="https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=400&q=80" 
+              src="https://images.unsplash.com/photo-1520408222757-6f9f95d87d5d?w=400&q=80" 
               alt="Gallery 2" 
               className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
             />
           </div>
           <div className="col-span-4 aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
             <img 
-              src="https://images.unsplash.com/photo-1565192647048-f997ded879ab?w=400&q=80" 
+              src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&q=80" 
               alt="Gallery 3" 
               className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
             />
           </div>
           <div className="col-span-8 aspect-[4/3] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
             <img 
-              src="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=600&q=80" 
+              src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&q=80" 
               alt="Gallery 4" 
               className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
             />
@@ -309,7 +309,7 @@ function SilkTemplatePreview() {
           {/* Alternating Product 1: Image Left, Text Right */}
           <div className="flex flex-col sm:flex-row gap-6 items-center border-b border-stone/20 pb-6">
             <div className="w-full sm:w-1/3 aspect-square bg-stone/15 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80" alt="Silk product 1" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1606744824163-985d376605aa?w=400&q=80" alt="Silk product 1" className="w-full h-full object-cover" />
             </div>
             <div className="w-full sm:w-2/3 space-y-2">
               <h4 className="font-heading text-md text-charcoal font-semibold">Khăn Lụa Hà Đông Thêu Sen</h4>
@@ -324,7 +324,7 @@ function SilkTemplatePreview() {
           {/* Alternating Product 2: Text Left, Image Right */}
           <div className="flex flex-col sm:flex-row-reverse gap-6 items-center">
             <div className="w-full sm:w-1/3 aspect-square bg-stone/15 overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80" alt="Silk product 2" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=400&q=80" alt="Silk product 2" className="w-full h-full object-cover" />
             </div>
             <div className="w-full sm:w-2/3 space-y-2">
               <h4 className="font-heading text-md text-charcoal font-semibold">Áo Dài Gấm Vạn Phúc</h4>
@@ -373,21 +373,21 @@ function SilkTemplatePreview() {
         <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto items-center pb-6">
           <div className="aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-none">
             <img 
-              src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80" 
+              src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?w=400&q=80" 
               alt="Silk Gallery 1" 
               className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
             />
           </div>
           <div className="aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-none translate-y-3">
             <img 
-              src="https://images.unsplash.com/photo-1601921004897-b7d582836990?w=400&q=80" 
+              src="https://images.unsplash.com/photo-1574169208507-84376144848b?w=400&q=80" 
               alt="Silk Gallery 2" 
               className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
             />
           </div>
           <div className="aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-none">
             <img 
-              src="https://images.unsplash.com/photo-1528154291023-a6525fabb5b0?w=400&q=80" 
+              src="https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&q=80" 
               alt="Silk Gallery 3" 
               className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
             />
