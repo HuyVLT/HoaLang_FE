@@ -21,15 +21,15 @@ export default function SettingsPanel() {
   const [tenantName, setTenantName] = useState('Làng Gốm Bát Tràng');
   const [customDomain, setCustomDomain] = useState('');
   const [hotline, setHotline] = useState('+84 24 3874 0123');
-  const [email, setEmail] = useState('contact@battrang.hoalang.vn');
+  const [email, setEmail] = useState('contact@battrang.hoalang.site');
 
   useEffect(() => {
     const savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
     const savedName = sessionStorage.getItem('hoalang_tenant_name');
     if (savedSlug) {
       setTenantSlug(savedSlug);
-      setCustomDomain(`${savedSlug}.hoalang.vn`);
-      setEmail(`contact@${savedSlug}.hoalang.vn`);
+      setCustomDomain(`${savedSlug}.hoalang.site`);
+      setEmail(`contact@${savedSlug}.hoalang.site`);
     }
     if (savedName) setTenantName(savedName);
   }, []);

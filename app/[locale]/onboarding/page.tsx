@@ -252,7 +252,7 @@ export default function OnboardingWizard() {
                           placeholder="bat-trang"
                           className="bg-transparent text-ink focus:outline-none text-sm font-semibold flex-grow max-w-[150px]"
                         />
-                        <span className="text-xs text-ash/80 font-medium">.hoalang.vn</span>
+                        <span className="text-xs text-ash/80 font-medium">.hoalang.site</span>
                       </div>
                       <p className="text-[10px] text-ash italic tracking-wide">
                         * Địa chỉ truy cập website độc bản của làng nghề.
