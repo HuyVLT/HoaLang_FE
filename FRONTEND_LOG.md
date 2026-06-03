@@ -873,4 +873,18 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 2. **Build Verification**:
    - Thực hiện build kiểm thử frontend (`pnpm build`) hoàn thành thành công và không ghi nhận bất cứ lỗi biên dịch hay cảnh báo kiểu dữ liệu nào.
 
+---
+
+### [2026-06-03] Absolute Backend API URL Mapping & Package-lock Cleanup
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi đăng nhập thất bại (404 Not Found từ Vercel) trên môi trường Production bằng cách đồng bộ hoá và sử dụng trực tiếp địa chỉ Backend URL tuyệt đối (`NEXT_PUBLIC_API_URL`) thay cho đường dẫn tương đối `/api/v1` ở phía client-side.
+- Loại bỏ hoàn toàn tệp khóa xung đột `package-lock.json` và cấu hình chặn trong `.gitignore` để Vercel tự động nhận diện và sử dụng chính xác trình quản lý gói `pnpm` (`pnpm-lock.yaml`) khi deploy.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **API Client Configuration**:
+   - Sửa đổi [api.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/lib/api.ts): Cập nhật hàm `getInitialBaseUrl()` để ở môi trường production phía client-side, Axios client sẽ trả về trực tiếp giá trị của `process.env.NEXT_PUBLIC_API_URL` (nạp từ Vercel Dashboard) thay vì rơi về đường dẫn tương đối `/api/v1`. Giải quyết triệt để lỗi gọi API bị Next.js / Vercel chặn trả về trang 404 HTML.
+2. **Lockfiles Clean Up**:
+   - Xóa bỏ tệp `package-lock.json` khỏi Git tracking và thêm vào [.gitignore](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/.gitignore).
+
 
