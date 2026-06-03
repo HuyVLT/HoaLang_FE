@@ -27,19 +27,24 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
-### [2026-06-03] Starter Design Template Fullscreen Preview Toggle
+### [2026-06-03] Starter Design Template Fullscreen Preview & Distinct Layouts
 
 #### Tác vụ hoàn thành
-- Phát triển thêm tùy chọn xem thử toàn màn hình (Fullscreen Toggle) trong hộp thoại xem trước (Modal Preview) của bộ chọn mẫu thiết kế Starter (`TemplatePicker.tsx`).
-- Cho phép phóng to khung trình duyệt mô phỏng chiếm trọn toàn bộ viewport (screen width và height) giúp chủ làng nghề quan sát giao diện mẫu rõ ràng và chi tiết nhất.
-- Bổ sung nút phóng to/thu nhỏ động (Maximize2/Minimize2) kết hợp với các hiệu ứng chuyển đổi CSS mượt mà (`transition-all duration-300`).
+- Tái cấu trúc bộ chọn mẫu thiết kế Starter (`TemplatePicker.tsx`), thiết kế **3 cấu trúc bố cục (layouts) và cách dàn trang hoàn toàn khác biệt rõ rệt** cho 3 Starter Templates để giúp chủ xưởng dễ dàng so sánh và đưa ra lựa chọn:
+  1. **Gốm Sứ (Bát Tràng)**: Bố cục Asymmetric Grid Split độc đáo (Hero chia đôi màn hình bất đối xứng), sản phẩm phân bổ so le nghệ thuật kiểu tạp chí và các hộp trải nghiệm đánh số `01`, `02` nổi bật.
+  2. **Dệt Lụa (Vạn Phúc)**: Bố cục Magazine cao cấp sang trọng với Hero căn giữa có khung viền vàng óng ánh trên nền phủ mờ, danh sách sản phẩm dàn hàng đan xen (alternating rows) và menu các lớp học di sản kiểu thẻ bảng giá tinh tế.
+  3. **Tranh Điệp (Đông Hồ - Dó)**: Bố cục tối giản (Zen Minimalist typography-first) với Hero thuần phông chữ trên nền giấy dó mịn màng không sử dụng ảnh nền, kể chuyện dạng cột văn bản dọc tập trung và hộp nhận tin gọn gàng với nét kẻ dưới chân.
+- Phát triển tùy chọn xem thử toàn màn hình (Fullscreen Toggle) trong hộp thoại xem trước (Modal Preview). Cho phép phóng to khung trình duyệt mô phỏng chiếm trọn toàn bộ viewport (screen width và height) giúp quan sát giao diện mẫu chi tiết nhất.
+- Khắc phục lỗi bảo mật ESLint về ký tự ngoặc kép chưa escape bằng cách chuyển đổi `"..."` thành các thực thể JSX `&quot;...&quot;`.
 
 #### Chi tiết kỹ thuật & File thay đổi
-1. **Template Selection Modal Fullscreen Toggle**:
+1. **Multi-Layout Live Previews Development**:
    - Sửa đổi trong [TemplatePicker.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/onboarding/TemplatePicker.tsx).
-   - Thêm trạng thái `isFullscreen` kiểu boolean.
-   - Thêm nút chuyển đổi và biểu tượng thu phóng động từ `lucide-react`.
-   - Cải tiến bố cục flexbox và chiều cao tự co giãn (`flex-grow` và `max-h-none` thay thế giới hạn `max-h-[45vh]`) để tương thích hoàn hảo cả khi phóng to lẫn khi ở trạng thái cửa sổ mặc định.
+   - Tạo mới các sub-components độc lập: `PotteryTemplatePreview`, `SilkTemplatePreview`, và `MinimalTemplatePreview`.
+   - Mỗi component tự định nghĩa cấu trúc JSX riêng, font chữ tương ứng và cách chia lưới Tailwind CSS hoàn toàn độc bản.
+2. **Template Selection Modal Fullscreen Toggle**:
+   - Thêm trạng thái `isFullscreen` kiểu boolean và tích hợp các biểu tượng điều hướng.
+   - Cải tiến bố cục flexbox của modal và chiều cao tự co giãn (`flex-grow` và `max-h-none` thay thế giới hạn `max-h-[45vh]`) để tự động mở rộng theo kích thước khung hình.
 
 ---
 

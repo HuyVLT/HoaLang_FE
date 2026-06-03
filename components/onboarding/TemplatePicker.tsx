@@ -52,230 +52,400 @@ const TEMPLATE_OPTIONS: TemplateOption[] = [
   },
 ];
 
-function TemplateLivePreview({ templateId }: { templateId: string }) {
-  // Define styling configurations for each template
-  const configs: Record<string, {
-    fontFamily: string;
-    primaryColor: string;
-    accentColor: string;
-    bgColor: string;
-    cardBg: string;
-    title: string;
-    subtitle: string;
-    heroImage: string;
-    storyTitle: string;
-    storyText: string;
-    artisan: string;
-    products: { name: string; price: string; image: string }[];
-    hasExperiences: boolean;
-    experiences: { title: string; desc: string; price: string }[];
-  }> = {
-    'pottery-template': {
-      fontFamily: "'Cormorant Garamond', Georgia, serif",
-      primaryColor: '#8B5A2B',
-      accentColor: '#C4952A',
-      bgColor: '#F5F0E8', // Parchment
-      cardBg: '#FAF7F2', // Cream
-      title: 'Hồn Đất Gia Lâm Gốm Sứ Bát Tràng',
-      subtitle: 'Nơi lưu giữ nét đẹp tinh xảo hơn 700 năm của nghệ thuật nhào nặn đất sét và lửa men rạn trứ danh.',
-      heroImage: '/images/village-bat-trang.png',
-      storyTitle: 'Hành Trình Tinh Tế Của Đất & Lửa',
-      storyText: 'Để làm nên một tác phẩm gốm Bát Tràng trứ danh, người nghệ nhân phải trải qua quy trình nghiêm ngặt từ chọn đất tràng sét, lắng lọc bùn mịn, xoay chuốt trên bàn xoay thủ công và nung lò đạt tới 1200 độ C.',
-      artisan: 'Nghệ nhân ưu tú Nguyễn Văn Minh',
-      products: [
-        { name: 'Bình Hút Lộc Vẽ Vàng', price: '1.850.000 ₫', image: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400&q=80' },
-        { name: 'Bộ Ấm Trà Men Rạn Cổ', price: '950.000 ₫', image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&q=80' }
-      ],
-      hasExperiences: true,
-      experiences: [
-        { title: 'Xoay Gốm Trên Bàn Xoay', desc: 'Đích thân nhào nặn đất sét dưới sự kèm cặp từ truyền nhân làng nghề Bát Tràng.', price: '250.000 ₫' }
-      ]
-    },
-    'silk-template': {
-      fontFamily: "'Playfair Display', Georgia, serif",
-      primaryColor: '#8B1A1A',
-      accentColor: '#C4952A',
-      bgColor: '#FAF7F2', // Cream
-      cardBg: '#F5F0E8', // Parchment
-      title: 'Vương Triều Tơ Tằm Lụa Vạn Phúc',
-      subtitle: 'Lộng lẫy tơ tằm óng ả đậm hơi thở cung đình, mang hồn cốt nghìn năm đất kinh kỳ.',
-      heroImage: '/images/village-van-phuc.png',
-      storyTitle: 'Kiến Tạo Kiệt Tác Tơ Tằm Hà Đông',
-      storyText: 'Từng tấm lụa Hà Đông tơ tằm nguyên bản được dệt tay khéo léo trên các khung gỗ cổ truyền, trải qua công đoạn nhuộm tự nhiên và phơi nắng tạo nên độ óng mịn hoàn hảo.',
-      artisan: 'Nghệ nhân nhân dân Triệu Văn Mão',
-      products: [
-        { name: 'Khăn Lụa Hà Đông Thêu Sen', price: '450.000 ₫', image: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80' },
-        { name: 'Áo Dài Gấm Vạn Phúc Hoa Điệp', price: '2.800.000 ₫', image: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80' }
-      ],
-      hasExperiences: true,
-      experiences: [
-        { title: 'Nhuộm Lụa Tự Nhiên', desc: 'Học cách sử dụng lá cây rừng và củ nâu nhuộm màu truyền thống trên lụa tơ tằm.', price: '420.000 ₫' }
-      ]
-    },
-    'minimal-template': {
-      fontFamily: "'Cormorant Garamond', Georgia, serif",
-      primaryColor: '#2E2318',
-      accentColor: '#7A5C2E',
-      bgColor: '#FAF7F2', // Cream
-      cardBg: '#FAF7F2',
-      title: 'Nghệ Thuật Tranh Đông Hồ - Điệp Giấy Dó',
-      subtitle: 'Sự tinh giản mộc mạc lưu giữ hồn cội nguồn văn hóa Việt trên nền điệp óng ánh dệt từ vỏ sò.',
-      heroImage: '/images/village-dong-ho.png',
-      storyTitle: 'Khắc Họa Linh Hồn Việt Trên Điệp Dó',
-      storyText: 'Mỗi bức tranh Đông Hồ tự hào chắt chiu từ năm màu tự nhiên mộc mạc: màu đen óng than lá tre, đỏ sỏi đồi nung gạch, vàng hạt dành dành, xanh lục chàm và trắng điệp sò.',
-      artisan: 'Nghệ nhân ưu tú Nguyễn Hữu Quả',
-      products: [
-        { name: 'Tranh Đàn Lợn Âm Dương', price: '320.000 ₫', image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80' },
-        { name: 'Tranh Vinh Hoa Phú Quý', price: '320.000 ₫', image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80' }
-      ],
-      hasExperiences: false,
-      experiences: []
-    }
-  };
-
-  const current = configs[templateId] || configs['pottery-template'];
-
+function PotteryTemplatePreview() {
   const vars = {
-    '--primary-color': current.primaryColor,
-    '--accent-color': current.accentColor,
-    fontFamily: current.fontFamily,
+    '--primary-color': '#8B5A2B',
+    '--accent-color': '#C4952A',
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
   } as React.CSSProperties;
 
   return (
-    <div style={vars} className="w-full text-ink text-left bg-parchment leading-relaxed font-sans overflow-hidden">
-      {/* Dynamic Nav Header */}
-      <div className="border-b border-stone/30 py-3 px-6 flex items-center justify-between bg-cream shrink-0 text-xs font-semibold uppercase tracking-wider">
-        <span className="font-heading text-lg font-bold text-charcoal select-none italic" style={{ color: current.primaryColor }}>
-          HoaLang
+    <div style={vars} className="w-full text-ink text-left bg-[#F5F0E8] leading-relaxed font-sans overflow-hidden">
+      {/* Nav */}
+      <div className="border-b border-stone/30 py-3 px-6 flex items-center justify-between bg-[#FAF7F2] text-xs font-semibold uppercase tracking-wider">
+        <span className="font-heading text-lg font-bold select-none italic text-[#8B5A2B]">
+          Bát Tràng Cổ Nghệ
         </span>
         <div className="flex gap-4 text-[10px] text-ash">
-          <span className="hover:text-ink">Sản phẩm</span>
-          {current.hasExperiences && <span className="hover:text-ink">Trải nghiệm</span>}
-          <span className="hover:text-ink">Câu chuyện</span>
+          <span className="hover:text-ink">Bộ Sưu Tập</span>
+          <span className="hover:text-ink">Trải Nghiệm Đất Sét</span>
+          <span className="hover:text-ink">Về Làng Nghề</span>
         </div>
       </div>
 
-      {/* Dynamic Hero Section */}
-      <div className="relative border-b border-stone/20 overflow-hidden flex flex-col justify-between py-12 px-6 min-h-[220px] bg-charcoal text-cream">
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25" style={{ backgroundImage: `url(${current.heroImage})` }} />
-        <div className="relative z-10 max-w-lg space-y-3">
-          <span className="text-[9px] font-semibold uppercase tracking-widest text-gold" style={{ color: current.accentColor }}>
-            BẢN MẪU KHỞI TẠO / STARTER TEMPLATE
+      {/* Hero: Asymmetric Grid Split */}
+      <div className="grid grid-cols-1 md:grid-cols-12 border-b border-stone/20">
+        <div className="md:col-span-7 p-8 md:p-12 flex flex-col justify-center space-y-4 bg-[#F5F0E8]">
+          <span className="text-[9px] font-semibold uppercase tracking-widest text-[#C4952A]">
+            DI SẢN TRÀNG AN / HERITAGE
           </span>
-          <h1 className="font-heading text-2xl md:text-3xl font-light italic text-cream leading-tight">
-            {current.title}
+          <h1 className="font-heading text-2xl md:text-3xl font-light italic text-charcoal leading-tight">
+            Hồn Đất Gia Lâm <br/> Gốm Sứ Bát Tràng
           </h1>
-          <p className="text-[11px] text-cream/70 leading-relaxed font-light">
-            {current.subtitle}
+          <p className="text-[11px] text-ash leading-relaxed font-light max-w-sm">
+            Nơi lưu giữ nét đẹp tinh xảo hơn 700 năm của nghệ thuật nhào nặn đất sét và lửa men rạn trứ danh.
           </p>
-          <div className="pt-2 flex gap-3 select-none">
-            <button type="button" className="px-4 py-2 text-[9px] font-semibold uppercase tracking-wider rounded-xs text-cream bg-lacquer hover:brightness-110" style={{ backgroundColor: current.primaryColor }}>
+          <div className="pt-2">
+            <button type="button" className="px-5 py-2.5 text-[9px] font-semibold uppercase tracking-wider rounded-xs text-cream bg-[#8B5A2B] hover:brightness-110 shadow-sm">
               Khám phá sản phẩm
             </button>
           </div>
         </div>
+        <div className="md:col-span-5 aspect-[4/3] md:aspect-auto min-h-[220px] bg-stone/20 relative">
+          <img src="/images/village-bat-trang.png" alt="Pottery Hero" className="absolute inset-0 w-full h-full object-cover" />
+        </div>
       </div>
 
-      {/* Dynamic Story Section */}
-      <div className="py-10 px-6 border-b border-stone/20 bg-cream">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+      {/* Story: Asymmetric Side-by-Side */}
+      <div className="py-12 px-6 bg-[#FAF7F2] border-b border-stone/20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="space-y-3">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-gold" style={{ color: current.accentColor }}>
-              CÂU CHUYỆN DI SẢN / HISTORY
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+              TINH HOA CHẾ TÁC / ARTISTRY
             </span>
             <h2 className="font-heading text-xl font-semibold text-charcoal italic leading-tight">
-              {current.storyTitle}
+              Hành Trình Tinh Tế Của Đất & Lửa
             </h2>
             <p className="text-xs text-ash font-light leading-relaxed">
-              {current.storyText}
+              Để làm nên một tác phẩm gốm Bát Tràng trứ danh, người nghệ nhân phải trải qua quy trình nghiêm ngặt từ chọn đất tràng sét, lắng lọc bùn mịn, xoay chuốt trên bàn xoay thủ công và nung lò đạt tới 1200 độ C.
             </p>
-            <div className="border-l border-stone/50 pl-3 py-1 font-heading text-xs italic text-charcoal">
-              {`"${current.artisan}"`}
+            <div className="border-l-2 border-[#8B5A2B] pl-3 py-1 font-heading text-xs italic text-charcoal">
+              &quot;Mỗi chiếc bình gốm là một bài thơ về đất.&quot;<br/>
+              <span className="text-[10px] text-ash not-italic font-sans font-medium block mt-1">— Nghệ nhân Nguyễn Văn Minh</span>
             </div>
           </div>
-          <div className="aspect-[4/3] rounded-xs overflow-hidden border border-stone/40 bg-stone/10 relative">
-            <img src={current.heroImage} alt="Artisan work" className="w-full h-full object-cover" />
+          <div className="aspect-[4/3] rounded-sm overflow-hidden border border-stone/40 bg-stone/10">
+            <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&q=80" alt="Pottery Story" className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
 
-      {/* Dynamic Products Grid Section */}
-      <div className="py-10 px-6 border-b border-stone/20 bg-parchment">
-        <div className="text-center mb-8 space-y-1.5">
-          <span className="text-[9px] font-semibold uppercase tracking-wider text-gold" style={{ color: current.accentColor }}>
-            TRƯNG BÀY SẢN PHẨM / SHOWCASE
+      {/* Products: Asymmetrical Grid */}
+      <div className="py-12 px-6 border-b border-stone/20 bg-[#F5F0E8]">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            BỘ SƯU TẬP / COLLECTIONS
           </span>
           <h2 className="font-heading text-xl font-semibold text-charcoal italic">
             Kiệt Tác Nghệ Thuật Độc Bản
           </h2>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          {current.products.map((prod, idx) => (
-            <div key={idx} className="bg-cream border border-stone/40 rounded-xs overflow-hidden flex flex-col p-3 space-y-2">
-              <div className="aspect-[4/3] w-full bg-stone/15 rounded-xs overflow-hidden">
-                <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-[#FAF7F2] border border-stone/40 rounded-sm p-4 space-y-3">
+            <div className="aspect-[16/10] w-full bg-stone/15 rounded-xs overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400&q=80" alt="Product 1" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-heading text-sm text-charcoal font-semibold italic">Bình Hút Lộc Vẽ Vàng</h4>
+                <span className="text-[10px] text-ash">Men lam rạn cổ, vàng 24K</span>
               </div>
-              <h4 className="font-heading text-sm text-charcoal italic font-medium truncate">
-                {prod.name}
-              </h4>
-              <div className="flex justify-between items-center pt-1 border-t border-stone/20">
-                <span className="text-xs font-semibold text-lacquer" style={{ color: current.primaryColor }}>
-                  {prod.price}
-                </span>
-                <span className="text-[8px] uppercase tracking-wider font-semibold bg-stone/15 text-ash px-1 py-0.5 rounded-xs">
-                  Xem chi tiết
-                </span>
+              <span className="text-xs font-bold text-[#8B5A2B] shrink-0">1.850.000 ₫</span>
+            </div>
+          </div>
+          <div className="bg-[#FAF7F2] border border-stone/40 rounded-sm p-4 space-y-3 md:translate-y-4">
+            <div className="aspect-[16/10] w-full bg-stone/15 rounded-xs overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&q=80" alt="Product 2" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-heading text-sm text-charcoal font-semibold italic">Bộ Ấm Trà Cổ Điển</h4>
+                <span className="text-[10px] text-ash">Họa tiết trúc lâm thất hiền</span>
+              </div>
+              <span className="text-xs font-bold text-[#8B5A2B] shrink-0">950.000 ₫</span>
+            </div>
+          </div>
+        </div>
+        <div className="h-6 md:h-10" />
+      </div>
+
+      {/* Experiences: Step list Cards */}
+      <div className="py-12 px-6 bg-[#FAF7F2] border-b border-stone/20">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            HÀNH TRÌNH TRẢI NGHIỆM / WORKSHOPS
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Học Cách Nặn Gốm Bát Tràng
+          </h2>
+        </div>
+        <div className="space-y-4 max-w-xl mx-auto">
+          <div className="flex gap-4 p-4 border border-stone/40 rounded-sm bg-[#F5F0E8]">
+            <span className="font-heading text-2xl font-bold text-[#C4952A] shrink-0 select-none">01</span>
+            <div className="space-y-1">
+              <h4 className="font-heading text-sm font-semibold text-charcoal italic">Tạo Hình Trên Bàn Xoay</h4>
+              <p className="text-[10px] text-ash leading-relaxed">Đích thân nhào nặn đất sét dưới sự kèm cặp từ truyền nhân làng nghề Bát Tràng.</p>
+              <div className="pt-1 flex items-center justify-between">
+                <span className="text-xs font-bold text-[#8B5A2B]">250.000 ₫</span>
+                <span className="text-[8px] font-semibold uppercase tracking-widest text-[#8B5A2B] border-b border-[#8B5A2B] pb-0.5">Đặt Chỗ Trực Tiếp</span>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
-      {/* Dynamic Experiences Section */}
-      {current.hasExperiences && (
-        <div className="py-10 px-6 border-b border-stone/20 bg-cream">
-          <div className="text-center mb-8 space-y-1.5">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-gold" style={{ color: current.accentColor }}>
-              TRẢI NGHIỆM THỦ CÔNG / WORKSHOPS
-            </span>
-            <h2 className="font-heading text-xl font-semibold text-charcoal italic">
-              Đăng Ký Khóa Học Di Sản
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {current.experiences.map((exp, idx) => (
-              <div key={idx} className="border border-stone/40 rounded-xs p-4 flex justify-between items-center bg-parchment">
-                <div className="space-y-1 pr-4">
-                  <h4 className="font-heading text-sm font-semibold text-charcoal italic">
-                    {exp.title}
-                  </h4>
-                  <p className="text-[10px] text-ash font-light leading-relaxed max-w-sm">
-                    {exp.desc}
-                  </p>
-                </div>
-                <div className="text-right shrink-0">
-                  <span className="text-xs font-semibold block text-lacquer" style={{ color: current.primaryColor }}>
-                    {exp.price}
-                  </span>
-                  <button type="button" className="mt-1 px-3 py-1 bg-lacquer text-cream text-[8px] font-semibold uppercase tracking-wider rounded-xs" style={{ backgroundColor: current.primaryColor }}>
-                    Đặt chỗ
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Dynamic Footer */}
-      <div className="py-8 px-6 bg-charcoal text-cream/60 text-center text-[10px] border-t border-stone/10 select-none">
-        <p className="font-heading text-xs italic text-cream font-medium mb-1">
-          HoaLang Platform
-        </p>
-        <p>Kiến tạo Không gian Mỹ nghệ số độc bản</p>
+      {/* Footer */}
+      <div className="py-6 px-6 bg-charcoal text-cream/50 text-center text-[10px]">
+        <p className="font-heading text-xs italic text-cream font-medium mb-1">Gốm Sứ Bát Tràng</p>
+        <p>© 2026 HoaLang Heritage Atlas. All rights reserved.</p>
       </div>
     </div>
   );
+}
+
+function SilkTemplatePreview() {
+  const vars = {
+    '--primary-color': '#8B1A1A',
+    '--accent-color': '#C4952A',
+    fontFamily: "'Playfair Display', Georgia, serif",
+  } as React.CSSProperties;
+
+  return (
+    <div style={vars} className="w-full text-ink text-left bg-[#FAF7F2] leading-relaxed font-sans overflow-hidden">
+      {/* Nav: Centered logo and stacked navigation */}
+      <div className="border-b border-stone/30 py-4 px-6 flex flex-col items-center gap-2 bg-[#FAF7F2] text-xs font-semibold uppercase tracking-wider">
+        <span className="font-heading text-xl font-bold select-none tracking-widest text-[#8B1A1A]">
+          VẠN PHÚC SILK
+        </span>
+        <div className="flex gap-6 text-[9px] text-ash tracking-widest">
+          <span className="hover:text-ink">LỤA QUÝ</span>
+          <span className="hover:text-ink">TRẢI NGHIỆM NHUỘM</span>
+          <span className="hover:text-ink">HÀNH TRÌNH TƠ TẰM</span>
+        </div>
+      </div>
+
+      {/* Hero: Framed Center Box inside dark overlay */}
+      <div className="relative border-b border-stone/20 overflow-hidden flex items-center justify-center p-8 min-h-[300px] bg-charcoal text-cream">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" style={{ backgroundImage: "url('/images/village-van-phuc.png')" }} />
+        <div className="relative z-10 max-w-md w-full border border-[#C4952A]/60 bg-charcoal/80 p-6 md:p-8 text-center space-y-3">
+          <span className="text-[9px] font-semibold uppercase tracking-widest text-gold text-[#C4952A]">
+            KIỆT TÁC KINH KỲ / LUXURY HERITAGE
+          </span>
+          <h1 className="font-heading text-xl md:text-2xl font-light text-cream leading-tight">
+            Vương Triều Tơ Tằm <br/> Lụa Vạn Phúc
+          </h1>
+          <div className="w-12 h-[1px] bg-[#C4952A] mx-auto my-2" />
+          <p className="text-[10px] text-cream/70 leading-relaxed font-light">
+            Lộng lẫy tơ tằm óng ả đậm hơi thở cung đình, mang hồn cốt nghìn năm đất kinh kỳ văn hiến.
+          </p>
+          <div className="pt-2 select-none">
+            <button type="button" className="px-6 py-2.5 text-[8px] font-semibold uppercase tracking-widest rounded-none text-cream bg-[#8B1A1A] hover:brightness-110 shadow-sm border border-[#8B1A1A]">
+              KHÁM PHÁ CÁC MẪU LỤA
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Story: Full width Quote & Wide Editorial Image */}
+      <div className="py-12 px-6 bg-[#F5F0E8] border-b border-stone/20 text-center space-y-6">
+        <div className="max-w-lg mx-auto space-y-3">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            NGUỒN CỘI LỤA LÀ / HISTORICAL TEXTURE
+          </span>
+          <h2 className="font-heading text-lg font-bold text-charcoal italic leading-relaxed">
+            &quot;Từng tấm lụa Hà Đông tơ tằm nguyên bản được dệt tay khéo léo trên các khung gỗ cổ truyền, trải qua công đoạn nhuộm tự nhiên và phơi nắng tạo nên độ óng mịn hoàn hảo.&quot;
+          </h2>
+          <span className="text-[10px] text-ash font-sans block mt-1">— Nghệ nhân nhân dân Triệu Văn Mão</span>
+        </div>
+        <div className="aspect-[16/9] w-full max-w-xl mx-auto rounded-none overflow-hidden border border-stone/40 bg-stone/10">
+          <img src="/images/village-van-phuc.png" alt="Silk Story" className="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      {/* Products: Alternating Rows List */}
+      <div className="py-12 px-6 border-b border-stone/20 bg-[#FAF7F2]">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            SẢN VẬT HOÀNG GIA / PREMIUM PRODUCTS
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Giao Thương Trực Tiếp Nghệ Nhân
+          </h2>
+        </div>
+        
+        <div className="space-y-8 max-w-xl mx-auto">
+          {/* Alternating Product 1: Image Left, Text Right */}
+          <div className="flex flex-col sm:flex-row gap-6 items-center border-b border-stone/20 pb-6">
+            <div className="w-full sm:w-1/3 aspect-square bg-stone/15 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80" alt="Silk product 1" className="w-full h-full object-cover" />
+            </div>
+            <div className="w-full sm:w-2/3 space-y-2">
+              <h4 className="font-heading text-md text-charcoal font-semibold">Khăn Lụa Hà Đông Thêu Sen</h4>
+              <p className="text-[10px] text-ash font-light leading-relaxed">Khăn lụa tơ tằm dệt tay truyền thống, thêu tay họa tiết hoa sen đầm ấm đậm chất Việt Nam.</p>
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-xs font-bold text-[#8B1A1A]">450.000 ₫</span>
+                <span className="text-[9px] uppercase tracking-widest text-gold text-[#C4952A] font-semibold">Chi tiết ↗</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Alternating Product 2: Text Left, Image Right */}
+          <div className="flex flex-col sm:flex-row-reverse gap-6 items-center">
+            <div className="w-full sm:w-1/3 aspect-square bg-stone/15 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80" alt="Silk product 2" className="w-full h-full object-cover" />
+            </div>
+            <div className="w-full sm:w-2/3 space-y-2">
+              <h4 className="font-heading text-md text-charcoal font-semibold">Áo Dài Gấm Vạn Phúc</h4>
+              <p className="text-[10px] text-ash font-light leading-relaxed">Thiết kế áo dài cổ điển từ gấm Vạn Phúc loại thượng hạng, hoa văn ẩn lấp lánh sang trọng.</p>
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-xs font-bold text-[#8B1A1A]">2.800.000 ₫</span>
+                <span className="text-[9px] uppercase tracking-widest text-gold text-[#C4952A] font-semibold">Chi tiết ↗</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Experiences: Menu Layout */}
+      <div className="py-12 px-6 bg-[#F5F0E8] border-b border-stone/20">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            THỂ NGHIỆM NGHỆ THUẬT / SERVICES
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Trải Nghiệm Độc Bản Tại Làng Nghề
+          </h2>
+        </div>
+        <div className="max-w-xl mx-auto p-6 border-2 border-double border-[#C4952A]/40 bg-[#FAF7F2] space-y-4">
+          <div className="flex justify-between items-baseline gap-2">
+            <span className="font-heading text-sm font-semibold text-charcoal">Học Nhuộm Lụa Tự Nhiên</span>
+            <span className="flex-grow border-b border-dashed border-stone" />
+            <span className="text-xs font-bold text-[#8B1A1A]">420.000 ₫</span>
+          </div>
+          <p className="text-[10px] text-ash font-light leading-relaxed max-w-md -mt-2">
+            Học cách sử dụng lá cây rừng, củ nâu nhuộm màu truyền thống trên nền vải lụa tơ tằm nguyên chất.
+          </p>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="py-8 px-6 bg-charcoal text-cream/40 text-center text-[9px] uppercase tracking-widest">
+        <p className="font-heading text-xs italic text-[#C4952A] font-medium mb-1">Vạn Phúc Silk Gallery</p>
+        <p>© 2026 HoaLang Digital Atlas</p>
+      </div>
+    </div>
+  );
+}
+
+function MinimalTemplatePreview() {
+  const vars = {
+    '--primary-color': '#2E2318',
+    '--accent-color': '#7A5C2E',
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+  } as React.CSSProperties;
+
+  return (
+    <div style={vars} className="w-full text-ink text-left bg-[#FAF7F2] leading-relaxed font-sans overflow-hidden">
+      {/* Nav: Minimal inline text */}
+      <div className="py-4 px-6 flex items-center justify-between bg-[#FAF7F2] text-[9px] font-semibold uppercase tracking-widest text-ash">
+        <span className="font-heading text-base font-bold select-none text-[#2E2318]">
+          ĐÔNG HỒ / DÓ
+        </span>
+        <div className="flex gap-4">
+          <span className="hover:text-ink">Tranh cổ</span>
+          <span className="hover:text-ink">Quy trình</span>
+        </div>
+      </div>
+
+      {/* Hero: Typographical Zen Hero (No background image!) */}
+      <div className="border-b border-stone/20 py-16 px-6 bg-[#FAF7F2] text-center space-y-4">
+        <span className="text-[8px] font-semibold uppercase tracking-widest text-[#7A5C2E]">
+          TRUYỀN THUYẾT DÂN GIAN / DONG HO ART
+        </span>
+        <h1 className="font-heading text-3xl md:text-4xl font-light text-[#2E2318] leading-tight">
+          Nghệ Thuật Tranh Đông Hồ <br/> & Điệp Giấy Dó
+        </h1>
+        <div className="flex items-center justify-center gap-2 text-stone">
+          <span>◆</span>
+          <span className="w-16 h-[1px] bg-stone/60" />
+          <span>◆</span>
+        </div>
+        <p className="text-[10px] text-ash max-w-sm mx-auto leading-relaxed font-light">
+          Sự tinh giản mộc mạc lưu giữ hồn cội nguồn văn hóa Việt trên nền điệp óng ánh dệt từ vỏ điệp sò biển khơi.
+        </p>
+        <div className="pt-2">
+          <button type="button" className="px-6 py-2 border border-charcoal text-[#2E2318] text-[9px] font-semibold uppercase tracking-wider hover:bg-charcoal hover:text-cream transition-colors">
+            Xem Các Bản Tranh
+          </button>
+        </div>
+      </div>
+
+      {/* Story: Single Column Typography-First */}
+      <div className="py-12 px-6 bg-[#FAF7F2] border-b border-stone/20">
+        <div className="max-w-md mx-auto space-y-4 text-center">
+          <span className="text-[8px] font-semibold uppercase tracking-wider text-[#7A5C2E]">
+            MÀU SẮC TỰ NHIÊN / ORGANIC MATERIALS
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Khắc Họa Linh Hồn Việt Trên Điệp Dó
+          </h2>
+          <p className="text-xs text-ash font-light leading-relaxed text-justify">
+            Mỗi bức tranh Đông Hồ tự hào chắt chiu từ năm màu tự nhiên mộc mạc: màu đen óng từ than lá tre, đỏ từ sỏi đồi nung gạch, vàng từ hạt dành dành, xanh lục từ chàm rừng và trắng từ điệp sò nghiền mịn quét lên giấy dó dẻo dai.
+          </p>
+          <div className="aspect-[4/3] w-48 mx-auto rounded-none overflow-hidden border border-stone/30 bg-stone/5 mt-4">
+            <img src="/images/village-dong-ho.png" alt="Dong Ho Story" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+
+      {/* Products: Simple Minimalist 2-column Grid */}
+      <div className="py-12 px-6 border-b border-stone/20 bg-[#FAF7F2]">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[8px] font-semibold uppercase tracking-wider text-[#7A5C2E]">
+            GIAO THƯƠNG / BOUTIQUE
+          </span>
+          <h2 className="font-heading text-lg font-semibold text-charcoal italic">
+            Ấn Phẩm Tranh Khắc Gỗ
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-6 max-w-lg mx-auto">
+          <div className="space-y-2 text-center">
+            <div className="aspect-[1/1] w-full bg-stone/5 border border-stone/30 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80" alt="Minimal product 1" className="w-full h-full object-cover filter grayscale contrast-125" />
+            </div>
+            <h4 className="font-heading text-xs text-charcoal font-semibold">Tranh Đàn Lợn Âm Dương</h4>
+            <span className="text-[10px] text-ash font-light block">320.000 ₫</span>
+          </div>
+
+          <div className="space-y-2 text-center">
+            <div className="aspect-[1/1] w-full bg-stone/5 border border-stone/30 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80" alt="Minimal product 2" className="w-full h-full object-cover filter grayscale contrast-125" />
+            </div>
+            <h4 className="font-heading text-xs text-charcoal font-semibold">Tranh Vinh Hoa Phú Quý</h4>
+            <span className="text-[10px] text-ash font-light block">320.000 ₫</span>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA: Underline input signup */}
+      <div className="py-12 px-6 bg-[#FAF7F2] text-center border-b border-stone/20">
+        <div className="max-w-xs mx-auto space-y-3">
+          <h4 className="font-heading text-md font-semibold text-charcoal italic">Đồng hành cùng di sản</h4>
+          <p className="text-[9px] text-ash leading-relaxed">Để lại email để nhận thông tin về các buổi triển lãm tranh dó truyền thống.</p>
+          <div className="flex border-b border-stone py-1">
+            <input type="email" placeholder="Địa chỉ email..." className="w-full bg-transparent text-[10px] text-ink focus:outline-none placeholder:text-ash/50 placeholder:font-light" />
+            <button type="button" className="text-[9px] uppercase tracking-wider font-semibold text-[#7A5C2E]">Gửi</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="py-6 px-6 bg-[#FAF7F2] text-ash text-center text-[9px]">
+        <p className="font-heading text-xs italic text-[#2E2318] font-medium mb-1">Mực nghiên Điệp dó</p>
+        <p>© 2026 HoaLang Platform</p>
+      </div>
+    </div>
+  );
+}
+
+function TemplateLivePreview({ templateId }: { templateId: string }) {
+  if (templateId === 'pottery-template') {
+    return <PotteryTemplatePreview />;
+  }
+  if (templateId === 'silk-template') {
+    return <SilkTemplatePreview />;
+  }
+  return <MinimalTemplatePreview />;
 }
 
 interface TemplatePickerProps {
