@@ -95,6 +95,12 @@ interface NominatimAddress {
   city_district?: string;
   city?: string;
   state?: string;
+  county?: string;
+  district?: string;
+  town?: string;
+  village?: string;
+  quarter?: string;
+  province?: string;
 }
 
 interface NominatimResult {
@@ -210,23 +216,33 @@ export default function AddressAutocomplete({
           {
             signal: ctrl.signal,
             headers: {
-              'Accept-Language': 'vi',
-              'User-Agent': 'HoaLang-Heritage-SaaS-Portal'
+              'Accept-Language': 'vi'
             }
           }
         );
+
+        if (!response.ok) {
+          throw new Error(`Nominatim HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
 
-        const liveMatches = data.map((item: NominatimResult) => {
+        const liveMatches = (Array.isArray(data) ? data : []).map((item: NominatimResult) => {
           const rawMain = item.name || item.display_name.split(',')[0];
           const prefix = getPrependPrefix(query, rawMain);
           const mainText = prefix + rawMain;
           const cleanAddress = prefix + formatSuggestion(item);
           const secondaryText = item.display_name.split(',').slice(1).join(',').trim();
           
-          // Map predicted provinces for onboarding SaaS setups
-          const province = item.address.state || item.address.city || 'Hà Nội';
-          const districtWard = item.address.suburb || item.address.city_district || '';
+          // Map predicted provinces for onboarding SaaS setups with robust fallbacks
+          const province = item.address.state || item.address.city || item.address.state || item.address.county || 'Hà Nội';
+          const districtWard = item.address.suburb || 
+                               item.address.city_district || 
+                               item.address.district || 
+                               item.address.town || 
+                               item.address.village || 
+                               item.address.quarter || 
+                               '';
 
           return {
             description: cleanAddress,
@@ -288,7 +304,7 @@ export default function AddressAutocomplete({
     searchPlaceholder: locale === 'vi' ? 'Nhập địa chỉ lò/xưởng hoặc địa điểm...' : 'Enter workshop address or location...',
     poweredByGoogle: locale === 'vi' ? 'Sử dụng Google Places API' : 'Powered by Google Places API',
     searching: locale === 'vi' ? 'Đang truy vấn địa chỉ...' : 'Querying Places API index...',
-    noResults: locale === 'vi' ? 'Không tìm thấy địa điểm di sản khớp' : 'No matching heritage place found',
+    noResults: locale === 'vi' ? 'Không tìm thấy địa chỉ khớp' : 'No matching address found',
     provinceLabel: locale === 'vi' ? 'ĐỊA CHỈ THỰC ĐỊA / WORKSHOP ADDRESS' : 'CULTURAL WORKSHOP ADDRESS',
   };
 
@@ -334,31 +350,59 @@ export default function AddressAutocomplete({
                   <Compass className="w-4 h-4 text-gold animate-spin" />
                   <span>{t.searching}</span>
                 </div>
-              ) : results.length > 0 ? (
-                /* Search prediction list */
-                results.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleSelect(item)}
-                    className="w-full p-3 flex gap-3 text-left hover:bg-parchment/80 transition-colors border-b border-stone/20 last:border-b-0"
-                  >
-                    <MapPin className="w-4 h-4 text-lacquer shrink-0 mt-0.5" />
-                    <div className="space-y-0.5">
-                      <span className="text-xs font-bold text-charcoal block leading-none">
-                        {item.mainText}
-                      </span>
-                      <span className="text-[10px] text-ash block leading-relaxed">
-                        {item.secondaryText}
-                      </span>
-                    </div>
-                  </button>
-                ))
               ) : (
-                /* Fallback if no matching standard coordinates found */
-                <div className="p-4 text-center text-xs text-ash font-light italic">
-                  {t.noResults}
-                </div>
+                <>
+                  {/* Option to use the typed text directly */}
+                  {query.trim().length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChange(query);
+                        setIsOpen(false);
+                      }}
+                      className="w-full p-3 flex gap-3 text-left hover:bg-parchment/80 transition-colors border-b border-stone/20"
+                    >
+                      <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <span className="text-xs font-bold text-charcoal block leading-none">
+                          {locale === 'vi' ? 'Sử dụng địa chỉ đã nhập' : 'Use entered address'}
+                        </span>
+                        <span className="text-[10px] text-ash block leading-relaxed italic">
+                          &quot;{query}&quot;
+                        </span>
+                      </div>
+                    </button>
+                  )}
+
+                  {results.length > 0 ? (
+                    /* Search prediction list */
+                    results.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelect(item)}
+                        className="w-full p-3 flex gap-3 text-left hover:bg-parchment/80 transition-colors border-b border-stone/20 last:border-b-0"
+                      >
+                        <MapPin className="w-4 h-4 text-lacquer shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <span className="text-xs font-bold text-charcoal block leading-none">
+                            {item.mainText}
+                          </span>
+                          <span className="text-[10px] text-ash block leading-relaxed">
+                            {item.secondaryText}
+                          </span>
+                        </div>
+                      </button>
+                    ))
+                  ) : (
+                    /* If no suggestions found, show a small notice below the "use entered address" button */
+                    query.trim().length >= 3 && (
+                      <div className="p-4 text-center text-[10px] text-ash font-light italic border-t border-stone/20">
+                        {t.noResults}
+                      </div>
+                    )
+                  )}
+                </>
               )}
             </div>
 

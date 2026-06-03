@@ -158,6 +158,11 @@ export default function VnAddressSelect({
 
     setProvinceCode(matchedProvince.code);
 
+    // Sync official province name back to parent state if it has a prefix mismatch (e.g. Thành phố Đà Nẵng vs Đà Nẵng)
+    if (matchedProvince.name !== cityValue) {
+      onCityChange(matchedProvince.name);
+    }
+
     const loadWards = async () => {
       let nextWards = wardsCache.get(matchedProvince!.code) || [];
       if (!nextWards.length) {
@@ -177,10 +182,29 @@ export default function VnAddressSelect({
       }
 
       setWards(nextWards);
+
+      // Normalization check for districtWardValue to match the official ward dropdown options list!
+      if (districtWardValue) {
+        const wardName = String(districtWardValue).trim();
+        let matchedWard = nextWards.find(
+          (w) => w.name.toLowerCase() === wardName.toLowerCase()
+        );
+
+        if (!matchedWard) {
+          const cleanInput = wardName.toLowerCase().replace(/^(phường|xã|quận|huyện|thị xã|thị trấn)\s+/i, '').trim();
+          matchedWard = nextWards.find(
+            (w) => w.name.toLowerCase().replace(/^(phường|xã|quận|huyện|thị xã|thị trấn)\s+/i, '').trim() === cleanInput
+          );
+        }
+
+        if (matchedWard && matchedWard.name !== districtWardValue) {
+          onDistrictWardChange(matchedWard.name);
+        }
+      }
     };
 
     loadWards();
-  }, [provinces, cityValue]);
+  }, [provinces, cityValue, districtWardValue, onCityChange, onDistrictWardChange]);
 
   const handleProvinceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;

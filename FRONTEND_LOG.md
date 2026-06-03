@@ -29,6 +29,27 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-03] Onboarding Address Autocomplete & Administrative Division Sync Fixes
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi geocoding API trên trình duyệt do thiết lập header forbidden `User-Agent` của Nominatim API khiến fetch bị lỗi TypeError.
+- Bổ sung nút lựa chọn linh hoạt "Sử dụng địa chỉ đã nhập / Use entered address" ở đầu dropdown danh sách gợi ý địa chỉ, giúp người dùng không bị tắc nghẽn nếu nhập các địa điểm tùy chỉnh/ngoài hệ thống hoặc API gặp sự cố.
+- Thiết lập cơ chế chuẩn hóa và đồng bộ hai chiều (bi-directional sync/normalization) tự động khớp các thông tin địa chỉ từ autocomplete vào hai ô chọn Tỉnh/Thành phố và Phường/Xã/Quận/Huyện tương ứng trong `VnAddressSelect` (loại bỏ các tiền tố hành chính khác biệt để highlight đúng giá trị trong danh sách dropdown).
+- Khắc phục hoàn toàn lỗi biên dịch ESLint liên quan đến unescaped double quotes (`"`) trong JSX.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Live Geocoding & Dropdown Option**:
+   - Sửa đổi trong [AddressAutocomplete.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/AddressAutocomplete.tsx).
+   - Gỡ bỏ header `User-Agent` để Nominatim fetch hoạt động chuẩn xác trên client-side.
+   - Thêm nút lựa chọn `Sử dụng địa chỉ đã nhập` hiển thị query hiện tại giúp người dùng chọn trực tiếp.
+   - Cập nhật thông tin thông báo khi không tìm thấy kết quả từ "địa điểm di sản" thành "địa chỉ".
+2. **Catalog Dropdowns Selection Normalization**:
+   - Sửa đổi trong [VnAddressSelect.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/VnAddressSelect.tsx).
+   - Khi có dữ liệu `cityValue` hoặc `districtWardValue` do autocomplete đẩy về, tiến hành so khớp chuẩn hóa bằng cách loại bỏ các tiền tố "Tỉnh", "Thành phố", "Phường", "Xã", "Quận", "Huyện"... và cập nhật lại trạng thái cha khớp với tên chính thức trong dropdown để được highlight chính xác.
+   - Khai báo đầy đủ các dependencies (`onCityChange`, `onDistrictWardChange`) để đạt chuẩn 100% Zero Warnings của ESLint.
+
+---
+
 ### [2026-06-03] Starter Design Template Previews Enhancement
 
 #### Tác vụ hoàn thành
