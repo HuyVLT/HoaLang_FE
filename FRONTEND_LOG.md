@@ -29,6 +29,24 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-03] Fix Broken Image Links in Heritage Villages Curation Gallery
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi hiển thị ảnh bị hỏng (broken image 404) trên trang chi tiết Làng nghề Bát Tràng (`/villages/bat-trang`).
+- Khắc phục lỗi hiển thị ảnh bìa bị hỏng (broken cover image 404) trên trang chi tiết Làng đá Non Nước (`/villages/non-nuoc`).
+- Cập nhật và làm đẹp thư viện trưng bày của Làng Tranh Đông Hồ với các ảnh chủ đề hội họa/in ấn thực tế thay vì dùng ảnh gốm sứ tạm thời.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Heritage Villages Detail Page**:
+   - Sửa đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/villages/[slug]/page.tsx).
+   - Thay thế liên kết ảnh hỏng `photo-1525974160448-038cbe672e7d` tại thư viện ảnh Bát Tràng bằng ảnh bàn tay nặn gốm xoay chất lượng cao `photo-1578749556568-bc2c40e68b61`.
+   - Thay thế liên kết ảnh `photo-1605721911519-3dfeb3be25e7` tại thư viện ảnh Bát Tràng bằng ảnh sản phẩm cốc gốm mỹ nghệ sắc nét `photo-1565193566173-7a0ee3dbe261`.
+   - Thay thế liên kết ảnh bìa hỏng `photo-1599809275671-b5941cabc7a5` tại Làng đá Non Nước bằng ảnh tượng điêu khắc cẩm thạch trắng trong triển lãm nghệ thuật sang trọng `photo-1580136579312-94651dfd596d`.
+   - Thay thế liên kết ảnh phong cảnh và ảnh placeholder cũ trong thư viện ảnh Làng đá Non Nước bằng các hình ảnh điêu khắc đá nghệ thuật tinh xảo (`photo-1542856391-010fb87dcfed` và `photo-1576016770956-debb63d90029`).
+   - Cập nhật thư viện ảnh Đông Hồ bằng ba hình ảnh hội họa/tác phẩm in ấn nghệ thuật khác nhau (`photo-1579783902614-a3fb3927b6a5`, `photo-1513364776144-60967b0f800f`, `photo-1579783900882-c0d3dad7b119`).
+
+---
+
 ### [2026-06-03] Order & Booking History Feature Implementation
 
 #### Tác vụ hoàn thành
@@ -872,5 +890,19 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
    - Thêm phần kết xuất HTML/JSX đại diện cho sub-navigation tabs bên dưới phần tiêu đề chính, sử dụng đúng cấu trúc màu chữ và trạng thái hoạt ảnh chuyển hướng của cẩm nang giao diện.
 2. **Build Verification**:
    - Thực hiện build kiểm thử frontend (`pnpm build`) hoàn thành thành công và không ghi nhận bất cứ lỗi biên dịch hay cảnh báo kiểu dữ liệu nào.
+
+---
+
+### [2026-06-03] Absolute Backend API URL Mapping & Package-lock Cleanup
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi đăng nhập thất bại (404 Not Found từ Vercel) trên môi trường Production bằng cách đồng bộ hoá và sử dụng trực tiếp địa chỉ Backend URL tuyệt đối (`NEXT_PUBLIC_API_URL`) thay cho đường dẫn tương đối `/api/v1` ở phía client-side.
+- Loại bỏ hoàn toàn tệp khóa xung đột `package-lock.json` và cấu hình chặn trong `.gitignore` để Vercel tự động nhận diện và sử dụng chính xác trình quản lý gói `pnpm` (`pnpm-lock.yaml`) khi deploy.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **API Client Configuration**:
+   - Sửa đổi [api.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/lib/api.ts): Cập nhật hàm `getInitialBaseUrl()` để ở môi trường production phía client-side, Axios client sẽ trả về trực tiếp giá trị của `process.env.NEXT_PUBLIC_API_URL` (nạp từ Vercel Dashboard) thay vì rơi về đường dẫn tương đối `/api/v1`. Giải quyết triệt để lỗi gọi API bị Next.js / Vercel chặn trả về trang 404 HTML.
+2. **Lockfiles Clean Up**:
+   - Xóa bỏ tệp `package-lock.json` khỏi Git tracking và thêm vào [.gitignore](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/.gitignore).
 
 
