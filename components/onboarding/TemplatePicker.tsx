@@ -184,6 +184,48 @@ function PotteryTemplatePreview() {
         </div>
       </div>
 
+      {/* Gallery: Asymmetric 4-image grid */}
+      <div className="py-12 px-6 bg-[#F5F0E8] border-b border-stone/20">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            KHOẢNH KHẮC DI SẢN / GALLERY
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Góc Nhìn Nghệ Thuật Làng Gốm
+          </h2>
+        </div>
+        <div className="grid grid-cols-12 gap-4 max-w-xl mx-auto">
+          <div className="col-span-8 aspect-[4/3] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
+            <img 
+              src="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600&q=80" 
+              alt="Gallery 1" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+          <div className="col-span-4 aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
+            <img 
+              src="https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=400&q=80" 
+              alt="Gallery 2" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+          <div className="col-span-4 aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
+            <img 
+              src="https://images.unsplash.com/photo-1565192647048-f997ded879ab?w=400&q=80" 
+              alt="Gallery 3" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+          <div className="col-span-8 aspect-[4/3] overflow-hidden border border-stone/40 bg-stone/10 rounded-sm">
+            <img 
+              src="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=600&q=80" 
+              alt="Gallery 4" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
       <div className="py-6 px-6 bg-charcoal text-cream/50 text-center text-[10px]">
         <p className="font-heading text-xs italic text-cream font-medium mb-1">Gốm Sứ Bát Tràng</p>
@@ -197,7 +239,7 @@ function SilkTemplatePreview() {
   const vars = {
     '--primary-color': '#8B1A1A',
     '--accent-color': '#C4952A',
-    fontFamily: "'Playfair Display', Georgia, serif",
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
   } as React.CSSProperties;
 
   return (
@@ -318,6 +360,41 @@ function SilkTemplatePreview() {
         </div>
       </div>
 
+      {/* Gallery: 3-column with middle item translated down */}
+      <div className="py-12 px-6 bg-[#FAF7F2] border-b border-stone/20">
+        <div className="text-center mb-10 space-y-1">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-[#C4952A]">
+            DÒNG CHẢY TƠ TẰM / VISUAL JOURNAL
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Góc Nhỏ Của Nghệ Thuật Dệt Thủ Công
+          </h2>
+        </div>
+        <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto items-center pb-6">
+          <div className="aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-none">
+            <img 
+              src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80" 
+              alt="Silk Gallery 1" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+          <div className="aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-none translate-y-3">
+            <img 
+              src="https://images.unsplash.com/photo-1601921004897-b7d582836990?w=400&q=80" 
+              alt="Silk Gallery 2" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+          <div className="aspect-[3/4] overflow-hidden border border-stone/40 bg-stone/10 rounded-none">
+            <img 
+              src="https://images.unsplash.com/photo-1528154291023-a6525fabb5b0?w=400&q=80" 
+              alt="Silk Gallery 3" 
+              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500" 
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
       <div className="py-8 px-6 bg-charcoal text-cream/40 text-center text-[9px] uppercase tracking-widest">
         <p className="font-heading text-xs italic text-[#C4952A] font-medium mb-1">Vạn Phúc Silk Gallery</p>
@@ -413,6 +490,41 @@ function MinimalTemplatePreview() {
             </div>
             <h4 className="font-heading text-xs text-charcoal font-semibold">Tranh Vinh Hoa Phú Quý</h4>
             <span className="text-[10px] text-ash font-light block">320.000 ₫</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Gallery: 3-column grayscale grid */}
+      <div className="py-12 px-6 border-b border-stone/20 bg-[#FAF7F2]">
+        <div className="text-center mb-8 space-y-1">
+          <span className="text-[8px] font-semibold uppercase tracking-wider text-[#7A5C2E]">
+            DI SẢN TRỰC QUAN / MINIMAL JOURNAL
+          </span>
+          <h2 className="font-heading text-lg font-semibold text-charcoal italic">
+            Nét Khắc Thời Gian
+          </h2>
+        </div>
+        <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto">
+          <div className="aspect-[1/1] overflow-hidden border border-stone/30 bg-stone/5 filter grayscale contrast-125 hover:grayscale-0 hover:contrast-100 transition-all duration-500">
+            <img 
+              src="https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80" 
+              alt="Dong Ho Gallery 1" 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+          <div className="aspect-[1/1] overflow-hidden border border-stone/30 bg-stone/5 filter grayscale contrast-125 hover:grayscale-0 hover:contrast-100 transition-all duration-500">
+            <img 
+              src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=400&q=80" 
+              alt="Dong Ho Gallery 2" 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+          <div className="aspect-[1/1] overflow-hidden border border-stone/30 bg-stone/5 filter grayscale contrast-125 hover:grayscale-0 hover:contrast-100 transition-all duration-500">
+            <img 
+              src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=400&q=80" 
+              alt="Dong Ho Gallery 3" 
+              className="w-full h-full object-cover" 
+            />
           </div>
         </div>
       </div>

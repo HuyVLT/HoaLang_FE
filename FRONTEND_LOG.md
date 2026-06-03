@@ -27,6 +27,25 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
+### [2026-06-03] Starter Design Template Themed Galleries & Font Normalization
+
+#### Tác vụ hoàn thành
+- Bổ sung các khu vực trưng bày hình ảnh di sản (Visual Galleries) riêng biệt cho cả 3 mẫu thiết kế Starter (`TemplatePicker.tsx`) để tạo điểm nhấn nghệ thuật và cân bằng mức độ chi tiết giữa các mẫu, đảm bảo không mẫu nào trông kém thu hút (lép vế):
+  1. **Gốm Sứ (Bát Tràng)**: Thiết kế thư viện ảnh bất đối xứng (Heritage Gallery) gồm 4 ảnh gốm sứ xen kẽ tỉ lệ khung hình 4:3 và 3:4 sử dụng lưới 12 cột.
+  2. **Dệt Lụa (Vạn Phúc)**: Thiết kế thư viện ảnh tạp chí dệt lụa (Visual Journal) gồm 3 ảnh tơ tằm xếp cạnh nhau với ảnh giữa được dịch chuyển xuống dưới (`translate-y-3`) tạo độ lệch nhịp nhàng tinh tế.
+  3. **Tranh Điệp (Đông Hồ)**: Thiết kế thư viện ảnh tối giản (Minimal Journal) gồm 3 bức ảnh đen trắng (grayscale) tự động chuyển màu sắc tự nhiên khi di chuột qua (hover transition).
+- Chuẩn hóa phông chữ hiển thị cho giao diện xem trước Dệt Lụa (Silk Template Preview): chuyển đổi từ phông chưa đăng ký cấu hình `Playfair Display` sang phông chữ chính thức `Cormorant Garamond` theo đúng tinh thần và điều lệ của HoaLang UI Rule v1.0, ngăn ngừa các lỗi hiển thị phông chữ hệ thống.
+- Thực hiện kiểm tra, escape ký tự chuỗi JSX và xác minh biên dịch thành công 100% không cảnh báo lỗi nghiêm trọng.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Themed Image Galleries & Font Fixes**:
+   - Sửa đổi trong [TemplatePicker.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/onboarding/TemplatePicker.tsx).
+   - Cập nhật các hàm `PotteryTemplatePreview`, `SilkTemplatePreview`, và `MinimalTemplatePreview` để chèn các cấu trúc gallery HTML5/Tailwind phù hợp và thay đổi `fontFamily` trong object `vars` của Silk.
+2. **Build pipeline validation**:
+   - Chạy `npm run build` thành công, tạo ra các trang tĩnh tối ưu hóa.
+
+---
+
 ### [2026-06-03] Starter Design Template Fullscreen Preview & Distinct Layouts
 
 #### Tác vụ hoàn thành
