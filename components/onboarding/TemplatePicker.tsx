@@ -52,6 +52,232 @@ const TEMPLATE_OPTIONS: TemplateOption[] = [
   },
 ];
 
+function TemplateLivePreview({ templateId }: { templateId: string }) {
+  // Define styling configurations for each template
+  const configs: Record<string, {
+    fontFamily: string;
+    primaryColor: string;
+    accentColor: string;
+    bgColor: string;
+    cardBg: string;
+    title: string;
+    subtitle: string;
+    heroImage: string;
+    storyTitle: string;
+    storyText: string;
+    artisan: string;
+    products: { name: string; price: string; image: string }[];
+    hasExperiences: boolean;
+    experiences: { title: string; desc: string; price: string }[];
+  }> = {
+    'pottery-template': {
+      fontFamily: "'Cormorant Garamond', Georgia, serif",
+      primaryColor: '#8B5A2B',
+      accentColor: '#C4952A',
+      bgColor: '#F5F0E8', // Parchment
+      cardBg: '#FAF7F2', // Cream
+      title: 'Hồn Đất Gia Lâm Gốm Sứ Bát Tràng',
+      subtitle: 'Nơi lưu giữ nét đẹp tinh xảo hơn 700 năm của nghệ thuật nhào nặn đất sét và lửa men rạn trứ danh.',
+      heroImage: '/images/village-bat-trang.png',
+      storyTitle: 'Hành Trình Tinh Tế Của Đất & Lửa',
+      storyText: 'Để làm nên một tác phẩm gốm Bát Tràng trứ danh, người nghệ nhân phải trải qua quy trình nghiêm ngặt từ chọn đất tràng sét, lắng lọc bùn mịn, xoay chuốt trên bàn xoay thủ công và nung lò đạt tới 1200 độ C.',
+      artisan: 'Nghệ nhân ưu tú Nguyễn Văn Minh',
+      products: [
+        { name: 'Bình Hút Lộc Vẽ Vàng', price: '1.850.000 ₫', image: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400&q=80' },
+        { name: 'Bộ Ấm Trà Men Rạn Cổ', price: '950.000 ₫', image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&q=80' }
+      ],
+      hasExperiences: true,
+      experiences: [
+        { title: 'Xoay Gốm Trên Bàn Xoay', desc: 'Đích thân nhào nặn đất sét dưới sự kèm cặp từ truyền nhân làng nghề Bát Tràng.', price: '250.000 ₫' }
+      ]
+    },
+    'silk-template': {
+      fontFamily: "'Playfair Display', Georgia, serif",
+      primaryColor: '#8B1A1A',
+      accentColor: '#C4952A',
+      bgColor: '#FAF7F2', // Cream
+      cardBg: '#F5F0E8', // Parchment
+      title: 'Vương Triều Tơ Tằm Lụa Vạn Phúc',
+      subtitle: 'Lộng lẫy tơ tằm óng ả đậm hơi thở cung đình, mang hồn cốt nghìn năm đất kinh kỳ.',
+      heroImage: '/images/village-van-phuc.png',
+      storyTitle: 'Kiến Tạo Kiệt Tác Tơ Tằm Hà Đông',
+      storyText: 'Từng tấm lụa Hà Đông tơ tằm nguyên bản được dệt tay khéo léo trên các khung gỗ cổ truyền, trải qua công đoạn nhuộm tự nhiên và phơi nắng tạo nên độ óng mịn hoàn hảo.',
+      artisan: 'Nghệ nhân nhân dân Triệu Văn Mão',
+      products: [
+        { name: 'Khăn Lụa Hà Đông Thêu Sen', price: '450.000 ₫', image: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80' },
+        { name: 'Áo Dài Gấm Vạn Phúc Hoa Điệp', price: '2.800.000 ₫', image: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80' }
+      ],
+      hasExperiences: true,
+      experiences: [
+        { title: 'Nhuộm Lụa Tự Nhiên', desc: 'Học cách sử dụng lá cây rừng và củ nâu nhuộm màu truyền thống trên lụa tơ tằm.', price: '420.000 ₫' }
+      ]
+    },
+    'minimal-template': {
+      fontFamily: "'Cormorant Garamond', Georgia, serif",
+      primaryColor: '#2E2318',
+      accentColor: '#7A5C2E',
+      bgColor: '#FAF7F2', // Cream
+      cardBg: '#FAF7F2',
+      title: 'Nghệ Thuật Tranh Đông Hồ - Điệp Giấy Dó',
+      subtitle: 'Sự tinh giản mộc mạc lưu giữ hồn cội nguồn văn hóa Việt trên nền điệp óng ánh dệt từ vỏ sò.',
+      heroImage: '/images/village-dong-ho.png',
+      storyTitle: 'Khắc Họa Linh Hồn Việt Trên Điệp Dó',
+      storyText: 'Mỗi bức tranh Đông Hồ tự hào chắt chiu từ năm màu tự nhiên mộc mạc: màu đen óng than lá tre, đỏ sỏi đồi nung gạch, vàng hạt dành dành, xanh lục chàm và trắng điệp sò.',
+      artisan: 'Nghệ nhân ưu tú Nguyễn Hữu Quả',
+      products: [
+        { name: 'Tranh Đàn Lợn Âm Dương', price: '320.000 ₫', image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80' },
+        { name: 'Tranh Vinh Hoa Phú Quý', price: '320.000 ₫', image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=400&q=80' }
+      ],
+      hasExperiences: false,
+      experiences: []
+    }
+  };
+
+  const current = configs[templateId] || configs['pottery-template'];
+
+  const vars = {
+    '--primary-color': current.primaryColor,
+    '--accent-color': current.accentColor,
+    fontFamily: current.fontFamily,
+  } as React.CSSProperties;
+
+  return (
+    <div style={vars} className="w-full text-ink text-left bg-parchment leading-relaxed font-sans overflow-hidden">
+      {/* Dynamic Nav Header */}
+      <div className="border-b border-stone/30 py-3 px-6 flex items-center justify-between bg-cream shrink-0 text-xs font-semibold uppercase tracking-wider">
+        <span className="font-heading text-lg font-bold text-charcoal select-none italic" style={{ color: current.primaryColor }}>
+          HoaLang
+        </span>
+        <div className="flex gap-4 text-[10px] text-ash">
+          <span className="hover:text-ink">Sản phẩm</span>
+          {current.hasExperiences && <span className="hover:text-ink">Trải nghiệm</span>}
+          <span className="hover:text-ink">Câu chuyện</span>
+        </div>
+      </div>
+
+      {/* Dynamic Hero Section */}
+      <div className="relative border-b border-stone/20 overflow-hidden flex flex-col justify-between py-12 px-6 min-h-[220px] bg-charcoal text-cream">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25" style={{ backgroundImage: `url(${current.heroImage})` }} />
+        <div className="relative z-10 max-w-lg space-y-3">
+          <span className="text-[9px] font-semibold uppercase tracking-widest text-gold" style={{ color: current.accentColor }}>
+            BẢN MẪU KHỞI TẠO / STARTER TEMPLATE
+          </span>
+          <h1 className="font-heading text-2xl md:text-3xl font-light italic text-cream leading-tight">
+            {current.title}
+          </h1>
+          <p className="text-[11px] text-cream/70 leading-relaxed font-light">
+            {current.subtitle}
+          </p>
+          <div className="pt-2 flex gap-3 select-none">
+            <button type="button" className="px-4 py-2 text-[9px] font-semibold uppercase tracking-wider rounded-xs text-cream bg-lacquer hover:brightness-110" style={{ backgroundColor: current.primaryColor }}>
+              Khám phá sản phẩm
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dynamic Story Section */}
+      <div className="py-10 px-6 border-b border-stone/20 bg-cream">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-3">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-gold" style={{ color: current.accentColor }}>
+              CÂU CHUYỆN DI SẢN / HISTORY
+            </span>
+            <h2 className="font-heading text-xl font-semibold text-charcoal italic leading-tight">
+              {current.storyTitle}
+            </h2>
+            <p className="text-xs text-ash font-light leading-relaxed">
+              {current.storyText}
+            </p>
+            <div className="border-l border-stone/50 pl-3 py-1 font-heading text-xs italic text-charcoal">
+              {`"${current.artisan}"`}
+            </div>
+          </div>
+          <div className="aspect-[4/3] rounded-xs overflow-hidden border border-stone/40 bg-stone/10 relative">
+            <img src={current.heroImage} alt="Artisan work" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+
+      {/* Dynamic Products Grid Section */}
+      <div className="py-10 px-6 border-b border-stone/20 bg-parchment">
+        <div className="text-center mb-8 space-y-1.5">
+          <span className="text-[9px] font-semibold uppercase tracking-wider text-gold" style={{ color: current.accentColor }}>
+            TRƯNG BÀY SẢN PHẨM / SHOWCASE
+          </span>
+          <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+            Kiệt Tác Nghệ Thuật Độc Bản
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {current.products.map((prod, idx) => (
+            <div key={idx} className="bg-cream border border-stone/40 rounded-xs overflow-hidden flex flex-col p-3 space-y-2">
+              <div className="aspect-[4/3] w-full bg-stone/15 rounded-xs overflow-hidden">
+                <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+              </div>
+              <h4 className="font-heading text-sm text-charcoal italic font-medium truncate">
+                {prod.name}
+              </h4>
+              <div className="flex justify-between items-center pt-1 border-t border-stone/20">
+                <span className="text-xs font-semibold text-lacquer" style={{ color: current.primaryColor }}>
+                  {prod.price}
+                </span>
+                <span className="text-[8px] uppercase tracking-wider font-semibold bg-stone/15 text-ash px-1 py-0.5 rounded-xs">
+                  Xem chi tiết
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Dynamic Experiences Section */}
+      {current.hasExperiences && (
+        <div className="py-10 px-6 border-b border-stone/20 bg-cream">
+          <div className="text-center mb-8 space-y-1.5">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-gold" style={{ color: current.accentColor }}>
+              TRẢI NGHIỆM THỦ CÔNG / WORKSHOPS
+            </span>
+            <h2 className="font-heading text-xl font-semibold text-charcoal italic">
+              Đăng Ký Khóa Học Di Sản
+            </h2>
+          </div>
+          <div className="space-y-4">
+            {current.experiences.map((exp, idx) => (
+              <div key={idx} className="border border-stone/40 rounded-xs p-4 flex justify-between items-center bg-parchment">
+                <div className="space-y-1 pr-4">
+                  <h4 className="font-heading text-sm font-semibold text-charcoal italic">
+                    {exp.title}
+                  </h4>
+                  <p className="text-[10px] text-ash font-light leading-relaxed max-w-sm">
+                    {exp.desc}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-xs font-semibold block text-lacquer" style={{ color: current.primaryColor }}>
+                    {exp.price}
+                  </span>
+                  <button type="button" className="mt-1 px-3 py-1 bg-lacquer text-cream text-[8px] font-semibold uppercase tracking-wider rounded-xs" style={{ backgroundColor: current.primaryColor }}>
+                    Đặt chỗ
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Dynamic Footer */}
+      <div className="py-8 px-6 bg-charcoal text-cream/60 text-center text-[10px] border-t border-stone/10 select-none">
+        <p className="font-heading text-xs italic text-cream font-medium mb-1">
+          HoaLang Platform
+        </p>
+        <p>Kiến tạo Không gian Mỹ nghệ số độc bản</p>
+      </div>
+    </div>
+  );
+}
+
 interface TemplatePickerProps {
   selectedId: string;
   onSelect: (id: string) => void;
@@ -229,13 +455,9 @@ export default function TemplatePicker({
                     </div>
                   </div>
                   
-                  {/* Scrollable screenshot container */}
-                  <div className="overflow-y-auto max-h-[45vh] bg-stone/5 select-none relative scrollbar-thin">
-                    <img
-                      src={previewTemplate.previewUrl}
-                      alt="Visual template screenshot"
-                      className="w-full h-auto object-contain block"
-                    />
+                  {/* Scrollable live preview container */}
+                  <div className="overflow-y-auto max-h-[45vh] bg-stone/5 relative scrollbar-thin">
+                    <TemplateLivePreview templateId={previewTemplate.id} />
                   </div>
                 </div>
 
