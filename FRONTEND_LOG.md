@@ -27,7 +27,21 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
-## 2. Nhật ký Thay đổi chi tiết (Changelog)
+### [2026-06-03] Onboarding Slug Dynamic Synchronization Bug Fix
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi stuck slug khi nhập tên làng nghề: trước đó logic `if (name && !slug)` chỉ kích hoạt sinh slug ở ký tự đầu tiên được gõ (ví dụ chữ "L" trong "Làng Gốm Bát Tràng" sinh ra slug "l") và dừng hoạt động ngay lập tức vì điều kiện `!slug` không còn thỏa mãn.
+- Bổ sung biến trạng thái kiểm soát `isSlugManual` để theo dõi khi nào người dùng tự thay đổi slug thủ công.
+- Cho phép slug cập nhật động theo từng ký tự gõ ở tên làng nghề và tự động xóa sạch slug khi người dùng xóa trống tên làng nghề (trừ khi họ đã tự chỉnh sửa slug thủ công).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Onboarding Slug Generator Refactoring**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/onboarding/page.tsx).
+   - Thêm state `isSlugManual` khởi tạo bằng `false`.
+   - Cải tiến hook `useEffect` phụ thuộc vào `[name, isSlugManual]` để sinh slug đầy đủ theo thời gian thực và dọn dẹp khi tên trống.
+   - Thêm hàm `setIsSlugManual(true)` tại trình lắng nghe `onChange` của ô nhập liệu slug.
+
+---
 
 ### [2026-06-03] Onboarding Address Autocomplete & Administrative Division Sync Fixes
 

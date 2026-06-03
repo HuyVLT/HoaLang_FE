@@ -43,6 +43,7 @@ export default function OnboardingWizard() {
   // Step 1: Basic Info States
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [isSlugManual, setIsSlugManual] = useState(false);
   const [category, setCategory] = useState('pottery');
   const [province, setProvince] = useState('Hà Nội');
   const [districtWard, setDistrictWard] = useState('');
@@ -67,19 +68,22 @@ export default function OnboardingWizard() {
   
   // Live Slug generation preview
   useEffect(() => {
-    if (name && !slug) {
-      // Auto-generate clean slug from name
-      const generated = name
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[đĐ]/g, 'd')
-        .replace(/[^a-z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-');
-      setSlug(generated);
+    if (!isSlugManual) {
+      if (!name) {
+        setSlug('');
+      } else {
+        const generated = name
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'd')
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-');
+        setSlug(generated);
+      }
     }
-  }, [name]);
+  }, [name, isSlugManual]);
  
   // Automatic timeout to clear custom notification toast
   useEffect(() => {
@@ -248,7 +252,10 @@ export default function OnboardingWizard() {
                           type="text"
                           required
                           value={slug}
-                          onChange={(e) => setSlug(e.target.value)}
+                          onChange={(e) => {
+                            setSlug(e.target.value);
+                            setIsSlugManual(true);
+                          }}
                           placeholder="bat-trang"
                           className="bg-transparent text-ink focus:outline-none text-sm font-semibold flex-grow max-w-[150px]"
                         />
