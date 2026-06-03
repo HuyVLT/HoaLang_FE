@@ -235,13 +235,13 @@ export default function AddressAutocomplete({
           const secondaryText = item.display_name.split(',').slice(1).join(',').trim();
           
           // Map predicted provinces for onboarding SaaS setups with robust fallbacks
-          const province = item.address.state || item.address.city || item.address.state || item.address.county || 'Hà Nội';
-          const districtWard = item.address.suburb || 
-                               item.address.city_district || 
-                               item.address.district || 
-                               item.address.town || 
-                               item.address.village || 
-                               item.address.quarter || 
+          const province = item.address?.state || item.address?.city || item.address?.province || item.address?.county || 'Hà Nội';
+          const districtWard = item.address?.suburb || 
+                               item.address?.city_district || 
+                               item.address?.district || 
+                               item.address?.town || 
+                               item.address?.village || 
+                               item.address?.quarter || 
                                '';
 
           return {
