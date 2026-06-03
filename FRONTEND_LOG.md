@@ -29,6 +29,25 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-03] Update Domain Suffix from .vn to .site in Pages and Footer
+
+#### Tác vụ hoàn thành
+- Khắc phục sự bất nhất về tên miền phụ của các Làng nghề: thay thế toàn bộ hậu tố `.hoalang.vn` bằng `.hoalang.site` trên các trang thiết lập và đăng ký mở chi nhánh mới.
+- Đồng bộ thông tin liên hệ email của hệ thống thành `contact@hoalang.site`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Onboarding Page Subdomain Preview**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/onboarding/page.tsx).
+   - Đổi nhãn hiển thị đuôi tên miền từ `.hoalang.vn` thành `.hoalang.site` tại dòng 255 để người dùng xem chính xác địa chỉ website của họ khi tạo chi nhánh mới.
+2. **Dashboard Settings Domain Resolution**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/dashboard/settings/page.tsx).
+   - Đổi email mặc định và cấu hình domain hiển thị trong panel cài đặt sử dụng hậu tố `.hoalang.site` thay vì `.hoalang.vn`.
+3. **Footer Contact Email**:
+   - Sửa đổi trong [Footer.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/layout/Footer.tsx).
+   - Thay đổi email liên hệ của nền tảng thành `contact@hoalang.site` ở phần liên hệ cuối trang.
+
+---
+
 ### [2026-06-03] Order & Booking History Feature Implementation
 
 #### Tác vụ hoàn thành
