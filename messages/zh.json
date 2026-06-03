@@ -9,7 +9,8 @@
     "login": "登录",
     "register": "注册",
     "logout": "注销",
-    "vouchers": "优惠券"
+    "vouchers": "优惠券",
+    "orders": "订单记录"
   },
   "common": {
     "search": "搜索传统手艺村...",
@@ -105,7 +106,27 @@
     "updateSuccess": "个人信息已成功更新！",
     "updateFailed": "更新失败，请重试。",
     "phoneError": "手机号码必须为10位数字。",
-    "nameError": "姓名至少需要2个字符。"
+    "nameError": "姓名至少需要2个字符。",
+    "ordersTitle": "交易记录",
+    "ordersSubtitle": "回顾您通过购买工艺品和注册体验工坊来支持传统文化遗产的旅程。",
+    "ordersBreadcrumb": "交易记录",
+    "emptyOrders": "您目前还没有任何交易。",
+    "productOrder": "商品订单",
+    "bookingOrder": "体验工坊",
+    "orderDate": "交易日期",
+    "totalAmount": "总金额",
+    "paymentStatus": "支付",
+    "orderStatus": "状态",
+    "itemsCount": "{count}件商品",
+    "guestsCount": "{count}位参与者",
+    "paid": "已支付",
+    "pending": "处理中",
+    "failed": "交易失败",
+    "cancelled": "已取消",
+    "shipped": "已发货",
+    "delivered": "已送达",
+    "confirmed": "预约成功",
+    "completed": "已完成"
   },
   "vouchers": {
     "title": "文化遗产优惠券",
@@ -120,5 +141,19 @@
     "copied": "优惠券码 {code} 已复制！",
     "validUntil": "有效期至: {date}",
     "btnBackProfile": "返回个人中心"
+  },
+  "payment": {
+    "successTitle": "支付成功",
+    "successSubtitle": "感谢您支持越南传统手工艺文化遗产！",
+    "cancelTitle": "支付已取消",
+    "cancelSubtitle": "在线支付交易已被用户取消。",
+    "orderCode": "订单号",
+    "amount": "支付金额",
+    "status": "状态",
+    "btnBack": "返回首页",
+    "btnDashboard": "进入控制台",
+    "checking": "正在验证交易信息...",
+    "verified": "已验证",
+    "cancelled": "已取消"
   }
 }

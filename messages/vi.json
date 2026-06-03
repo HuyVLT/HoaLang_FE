@@ -9,7 +9,8 @@
     "login": "Đăng nhập",
     "register": "Đăng ký",
     "logout": "Đăng xuất",
-    "vouchers": "Mã giảm giá"
+    "vouchers": "Mã giảm giá",
+    "orders": "Lịch sử đặt hàng"
   },
   "common": {
     "search": "Tìm kiếm làng nghề...",
@@ -232,7 +233,27 @@
     "updateSuccess": "Cập nhật hồ sơ thành công!",
     "updateFailed": "Cập nhật thất bại. Vui lòng kiểm tra lại.",
     "phoneError": "Số điện thoại phải gồm đúng 10 chữ số.",
-    "nameError": "Họ tên phải dài ít nhất 2 ký tự."
+    "nameError": "Họ tên phải dài ít nhất 2 ký tự.",
+    "ordersTitle": "Lịch sử giao dịch",
+    "ordersSubtitle": "Xem lại hành trình đồng hành cùng di sản qua các sản phẩm đã sở hữu và workshop đã đăng ký.",
+    "ordersBreadcrumb": "Lịch sử giao dịch",
+    "emptyOrders": "Bạn chưa thực hiện giao dịch nào.",
+    "productOrder": "Đơn sản phẩm",
+    "bookingOrder": "Workshop di sản",
+    "orderDate": "Ngày thực hiện",
+    "totalAmount": "Tổng giá trị",
+    "paymentStatus": "Thanh toán",
+    "orderStatus": "Trạng thái",
+    "itemsCount": "{count} sản phẩm",
+    "guestsCount": "{count} người tham gia",
+    "paid": "Đã thanh toán",
+    "pending": "Chờ xử lý",
+    "failed": "Lỗi giao dịch",
+    "cancelled": "Đã hủy",
+    "shipped": "Đang giao",
+    "delivered": "Đã giao",
+    "confirmed": "Đã xác nhận",
+    "completed": "Đã hoàn thành"
   },
   "vouchers": {
     "title": "Mã giảm giá di sản",
@@ -247,5 +268,19 @@
     "copied": "Đã sao chép mã {code}!",
     "validUntil": "Hạn dùng đến: {date}",
     "btnBackProfile": "Quay lại hồ sơ"
+  },
+  "payment": {
+    "successTitle": "Thanh Toán Thành Công",
+    "successSubtitle": "Cảm ơn bạn đã đồng hành cùng di sản thủ công Việt Nam!",
+    "cancelTitle": "Thanh Toán Đã Hủy",
+    "cancelSubtitle": "Giao dịch thanh toán trực tuyến đã bị hủy bởi người dùng.",
+    "orderCode": "Mã đơn hàng",
+    "amount": "Số tiền",
+    "status": "Trạng thái",
+    "btnBack": "Quay lại trang chủ",
+    "btnDashboard": "Vào Bảng quản trị",
+    "checking": "Đang xác thực thông tin giao dịch...",
+    "verified": "Đã xác thực",
+    "cancelled": "Đã hủy"
   }
 }
