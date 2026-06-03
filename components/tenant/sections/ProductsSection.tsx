@@ -75,6 +75,22 @@ const MOCK_PRODUCTS_MAP: Record<
   ],
 };
 
+interface ProductItem {
+  name: { vi: string; en: string };
+  price: number;
+  coverImage: string;
+  villageName: string;
+  stock: number;
+}
+
+interface DBProduct {
+  _id: string;
+  name: { vi: string; en: string };
+  price: number;
+  images?: string[];
+  stock?: number;
+}
+
 export default function ProductsSection({ section }: { section: ProductsSectionType }) {
   const { heading, subheading } = section;
   const { theme } = useTenantTheme();
@@ -82,14 +98,14 @@ export default function ProductsSection({ section }: { section: ProductsSectionT
   const openCheckout = useCheckoutStore(state => state.openCheckout);
   const tenantId = theme.logo ? (theme.logo.includes('van-phuc') || heading.vi.includes('Lụa') ? 'van-phuc' : 'bat-trang') : 'bat-trang';
 
-  const [products, setProducts] = React.useState<any[]>([]);
+  const [products, setProducts] = React.useState<ProductItem[]>([]);
 
   React.useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await api.get('/products');
         if (res.data && res.data.success && res.data.data && res.data.data.length > 0) {
-          const mapped = res.data.data.map((p: any) => ({
+          const mapped = res.data.data.map((p: DBProduct) => ({
             name: p.name,
             price: p.price,
             coverImage: p.images?.[0] || 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&h=600&fit=crop&q=80',

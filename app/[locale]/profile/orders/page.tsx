@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
-import { authService } from '@/lib/services/authService';
+import { authService, OrderHistoryItem } from '@/lib/services/authService';
 import { PageHeader, TagBadge } from '@/components/shared';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, ShoppingBag, Calendar, ArrowLeft, ClipboardList, Users, ShieldAlert, CreditCard } from 'lucide-react';
+import { Compass, ShoppingBag, Calendar, ArrowLeft, ClipboardList, Users, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 const fadeUp = {
@@ -32,7 +32,7 @@ export default function OrdersHistoryPage() {
   const locale = useLocale();
   const { isAuthenticated } = useAuthStore();
   
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [filter, setFilter] = useState<FilterType>('all');
@@ -100,7 +100,7 @@ export default function OrdersHistoryPage() {
     }
   };
 
-  const getStatusBadge = (status: string, orderType: 'product' | 'booking') => {
+  const getStatusBadge = (status: string) => {
     const s = status.toUpperCase();
     
     // Status translation keys mapping
@@ -267,7 +267,7 @@ export default function OrdersHistoryPage() {
                         {isProduct ? (
                           // Render Product Items List
                           <div className="space-y-4">
-                            {item.items?.map((prodItem: any, idx: number) => {
+                            {item.items?.map((prodItem, idx: number) => {
                               const imgUrl = prodItem.productId?.images?.[0] || null;
                               return (
                                 <div key={idx} className="flex gap-4 items-center">
@@ -320,7 +320,7 @@ export default function OrdersHistoryPage() {
                               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 font-sans text-xs text-ash">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="w-3.5 h-3.5 text-stone" />
-                                  {new Date(item.date).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
+                                  {item.date && new Date(item.date).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
                                     year: 'numeric',
                                     month: 'short',
                                     day: 'numeric',
@@ -328,7 +328,7 @@ export default function OrdersHistoryPage() {
                                 </span>
                                 <span className="flex items-center gap-1">
                                   <Users className="w-3.5 h-3.5 text-stone" />
-                                  {t('guestsCount', { count: item.guests })}
+                                  {t('guestsCount', { count: item.guests ?? 1 })}
                                 </span>
                               </div>
                             </div>
@@ -349,14 +349,14 @@ export default function OrdersHistoryPage() {
                               <CreditCard className="w-3.5 h-3.5 text-gold" />
                               <span>{item.payment?.method || 'N/A'}</span>
                             </span>
-                            {getStatusBadge(item.payment?.status || 'PENDING', item.type)}
+                            {getStatusBadge(item.payment?.status || 'PENDING')}
                           </div>
 
                           <div className="flex items-center gap-1.5 border-l border-stone/40 pl-4">
                             <span className="text-ash font-light uppercase tracking-wider text-[10px]">
                               {t('orderStatus')}:
                             </span>
-                            {getStatusBadge(item.status || 'PENDING', item.type)}
+                            {getStatusBadge(item.status || 'PENDING')}
                           </div>
                         </div>
 
