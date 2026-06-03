@@ -859,5 +859,18 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
    - Sửa đổi [api.ts](file:///d:/HoaLang/HoaLang_FE/lib/api.ts): Mở rộng cơ chế phân giải `x-tenant-slug` trong request interceptor để kiểm tra thêm query string `?slug=...` và `sessionStorage` trước khi bỏ cuộc, đảm bảo mọi request từ client-side dashboard luôn đính kèm tenant-slug chính xác.
 5. **Dynamic Products Section**:
    - Sửa đổi [ProductsSection.tsx](file:///d:/HoaLang/HoaLang_FE/components/tenant/sections/ProductsSection.tsx): Chuyển đổi component sang lấy sản phẩm động từ MongoDB (`GET /api/v1/products`) thông qua Axios client có tự động phân giải tenant. Tích hợp mock data fallback nếu cơ sở dữ liệu trống hoặc API bị lỗi.
+### [2026-06-03] Merchant Settings Sub-navigation Tabs Implementation
+
+#### Tác vụ hoàn thành
+- Tích hợp thanh chọn chuyển hướng phân vùng cấu hình (Settings Sub-navigation Tabs) vào trang Thiết lập cổng thanh toán PayOS (`settings/payment/page.tsx`), đồng bộ hoàn toàn với giao diện trang Thiết lập thông tin cơ bản (`settings/page.tsx`).
+- Cho phép chủ làng nghề (VILLAGE_OWNER) di chuyển qua lại dễ dàng giữa việc cập nhật thông tin làng nghề và cấu hình khóa kết nối PayOS.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Settings Navigation Synchronicity**:
+   - Sửa đổi [payment/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/dashboard/settings/payment/page.tsx).
+   - Thiết lập thêm trạng thái local `tenantSlug` cùng hook `useEffect` để giải mã và đồng bộ slug hiện tại từ `sessionStorage` tương tự trang thông tin cơ bản.
+   - Thêm phần kết xuất HTML/JSX đại diện cho sub-navigation tabs bên dưới phần tiêu đề chính, sử dụng đúng cấu trúc màu chữ và trạng thái hoạt ảnh chuyển hướng của cẩm nang giao diện.
+2. **Build Verification**:
+   - Thực hiện build kiểm thử frontend (`pnpm build`) hoàn thành thành công và không ghi nhận bất cứ lỗi biên dịch hay cảnh báo kiểu dữ liệu nào.
 
 
