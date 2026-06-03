@@ -25,8 +25,8 @@ const TEMPLATE_OPTIONS: TemplateOption[] = [
     accentColor: '#C4952A',
     fontHeading: 'Cormorant Garamond',
     sections: ['Hero', 'Story', 'Products', 'Experiences', 'Gallery', 'Testimonials', 'CTA', 'Map'],
-    mockImage: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&h=400&fit=crop&q=80',
-    previewUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=800&h=800&fit=crop&q=80',
+    mockImage: '/images/village-bat-trang.png',
+    previewUrl: '/images/village-bat-trang.png',
   },
   {
     id: 'silk-template',
@@ -36,8 +36,8 @@ const TEMPLATE_OPTIONS: TemplateOption[] = [
     accentColor: '#C4952A',
     fontHeading: 'Playfair Display',
     sections: ['Hero', 'Story', 'Products', 'Gallery', 'Experiences', 'Testimonials', 'CTA', 'Map'],
-    mockImage: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=600&h=400&fit=crop&q=80',
-    previewUrl: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=800&h=800&fit=crop&q=80',
+    mockImage: '/images/village-van-phuc.png',
+    previewUrl: '/images/village-van-phuc.png',
   },
   {
     id: 'minimal-template',
@@ -47,8 +47,8 @@ const TEMPLATE_OPTIONS: TemplateOption[] = [
     accentColor: '#7A5C2E',
     fontHeading: 'Cormorant Garamond',
     sections: ['Hero', 'Story', 'Products', 'Gallery', 'CTA'],
-    mockImage: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=600&h=400&fit=crop&q=80',
-    previewUrl: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=800&h=800&fit=crop&q=80',
+    mockImage: '/images/village-dong-ho.png',
+    previewUrl: '/images/village-dong-ho.png',
   },
 ];
 
@@ -74,7 +74,10 @@ export default function TemplatePicker({
               key={tpl.id}
               whileHover={{ y: -4 }}
               transition={{ duration: 0.3 }}
-              onClick={() => onSelect(tpl.id)}
+              onClick={() => {
+                onSelect(tpl.id);
+                setPreviewTemplate(tpl);
+              }}
               className={`bg-cream border rounded-sm overflow-hidden flex flex-col justify-between cursor-pointer transition-all duration-300 relative ${
                 isSelected
                   ? 'border-primary shadow-md ring-1 ring-primary/45'
@@ -93,13 +96,14 @@ export default function TemplatePicker({
                 <img
                   src={tpl.mockImage}
                   alt={tpl.name}
-                  className="w-full h-full object-cover transition-transform duration-[600ms] group-hover:scale-104"
+                  className="w-full h-full object-cover transition-transform duration-[600ms] group-hover:scale-[1.03]"
                 />
                 
                 {/* Floating Preview Icon */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    onSelect(tpl.id);
                     setPreviewTemplate(tpl);
                   }}
                   className="absolute bottom-3 right-3 p-2 bg-ink/75 hover:bg-ink text-cream hover:text-accent rounded-sm shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1.5 text-[9px] uppercase tracking-widest font-semibold"
@@ -187,48 +191,69 @@ export default function TemplatePicker({
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="bg-parchment rounded-md shadow-lg max-w-2xl w-full border border-stone overflow-hidden relative flex flex-col max-h-[85vh]"
+              className="bg-parchment rounded-md shadow-lg max-w-3xl w-full border border-stone overflow-hidden relative flex flex-col max-h-[90vh]"
             >
               {/* Close header button */}
               <button
                 onClick={() => setPreviewTemplate(null)}
-                className="absolute top-4 right-4 p-2 bg-cream hover:bg-stone/20 text-charcoal hover:text-primary rounded-full transition-colors z-25"
+                className="absolute top-4 right-4 p-2 bg-cream hover:bg-stone/20 text-charcoal hover:text-primary rounded-full transition-colors z-50 shadow-sm"
               >
                 <X className="w-4 h-4" />
               </button>
 
               {/* Modal Cover preview scrollable */}
-              <div className="overflow-y-auto p-8 text-center space-y-6">
-                <div>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-gold font-sans block mb-1.5">
+              <div className="p-6 md:p-8 flex flex-col overflow-hidden max-h-[90vh]">
+                <div className="text-center mb-5 shrink-0">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-gold font-sans block mb-1">
                     Bản Phác Thảo Giao Diện / Live Mockup
                   </span>
                   <h3 className="font-heading text-2xl font-semibold text-charcoal italic">
                     {previewTemplate.name}
                   </h3>
-                  <p className="font-sans text-xs text-ash max-w-md mx-auto mt-2 leading-relaxed">
+                  <p className="font-sans text-xs text-ash max-w-md mx-auto mt-1 leading-relaxed">
                     {previewTemplate.description}
                   </p>
                 </div>
 
-                <div className="relative aspect-[16/10] rounded-sm overflow-hidden border border-stone shadow-sm shrink-0">
-                  <img
-                    src={previewTemplate.previewUrl}
-                    alt="Visual template screenshot"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent pointer-events-none" />
+                {/* Desktop Browser Mock Frame */}
+                <div className="border border-stone rounded-sm shadow-md overflow-hidden bg-cream flex flex-col flex-grow min-h-[300px]">
+                  {/* Browser Bar */}
+                  <div className="bg-stone/15 px-4 py-2 border-b border-stone/30 flex items-center gap-3 shrink-0">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-primary/30" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-primary/30" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-primary/30" />
+                    </div>
+                    <div className="bg-cream/80 text-[10px] text-ash font-mono py-0.5 px-3 rounded-xs border border-stone/20 flex-grow text-center max-w-md mx-auto select-all">
+                      https://{previewTemplate.id.replace('-template', '')}.hoalang.site
+                    </div>
+                  </div>
+                  
+                  {/* Scrollable screenshot container */}
+                  <div className="overflow-y-auto max-h-[45vh] bg-stone/5 select-none relative scrollbar-thin">
+                    <img
+                      src={previewTemplate.previewUrl}
+                      alt="Visual template screenshot"
+                      className="w-full h-auto object-contain block"
+                    />
+                  </div>
                 </div>
 
-                <div className="flex justify-center gap-3 pt-2 select-none">
+                <div className="flex justify-center gap-3 pt-6 shrink-0 select-none">
                   <button
                     onClick={() => {
                       onSelect(previewTemplate.id);
                       setPreviewTemplate(null);
                     }}
-                    className="bg-primary text-primary-foreground font-sans font-semibold uppercase tracking-wider text-[11px] px-8 py-3 rounded-sm hover:brightness-110 shadow-sm transition-all"
+                    className="bg-primary text-primary-foreground font-sans font-semibold uppercase tracking-wider text-[11px] px-8 py-3.5 rounded-sm hover:brightness-110 shadow-sm transition-all animate-ease-out"
                   >
                     Lựa chọn bản này / Apply Template
+                  </button>
+                  <button
+                    onClick={() => setPreviewTemplate(null)}
+                    className="bg-transparent border border-stone text-charcoal font-sans font-semibold uppercase tracking-wider text-[11px] px-8 py-3.5 rounded-sm hover:bg-stone/10 transition-all"
+                  >
+                    Đóng / Close
                   </button>
                 </div>
               </div>

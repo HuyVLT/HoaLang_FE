@@ -29,6 +29,24 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ## 2. Nhật ký Thay đổi chi tiết (Changelog)
 
+### [2026-06-03] Starter Design Template Previews Enhancement
+
+#### Tác vụ hoàn thành
+- Khắc phục các ảnh demo Unsplash mang tính minh họa chung chung: thay bằng các ảnh chụp màn hình/bản phác thảo giao diện (Live Mockups) thực tế của các Làng nghề.
+- Hỗ trợ xem trước (Preview) tự động: khi nhấn vào thẻ bất kỳ của Bản thiết kế Starter sẽ đồng thời tự động kích hoạt hộp thoại xem trước.
+- Nâng cấp trải nghiệm xem trước cao cấp: mô phỏng màn hình trình duyệt (Desktop Browser Mockup) kèm theo thanh cuộn dọc (scrollable viewport) cho phép chủ làng nghề cuộn xem chi tiết bố cục, phần đầu/chân trang, font chữ và màu sắc của toàn bộ Landing Page trước khi quyết định áp dụng.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Template Selection Options**:
+   - Sửa đổi trong [TemplatePicker.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/onboarding/TemplatePicker.tsx).
+   - Đổi các thuộc tính `mockImage` và `previewUrl` của Bát Tràng, Vạn Phúc và Đông Hồ sang đường dẫn ảnh thực tế tại local `/images/village-bat-trang.png`, `/images/village-van-phuc.png`, và `/images/village-dong-ho.png`.
+2. **Interactive Preview Logic**:
+   - Thay đổi hàm `onClick` của `motion.div` thẻ card để kích hoạt đồng thời `onSelect(tpl.id)` và `setPreviewTemplate(tpl)`.
+3. **Browser Frame Preview & Scrollable Viewport**:
+   - Nâng cấp cấu trúc JSX của hộp thoại xem trước (Modal) sử dụng giao diện trình duyệt bao gồm Mock Address Bar (`https://*.hoalang.site`) và một khung chứa ảnh cuộn tự do (`max-h-[45vh] overflow-y-auto`) mang lại cảm giác trải nghiệm thực tế sinh động.
+
+---
+
 ### [2026-06-03] Update Domain Suffix from .vn to .site in Pages and Footer
 
 #### Tác vụ hoàn thành
