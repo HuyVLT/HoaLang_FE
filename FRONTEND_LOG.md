@@ -27,6 +27,20 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
+### [2026-06-03] OpenStreetMap Address Geocoding Attribution Update
+
+#### Tác vụ hoàn thành
+- Khắc phục nhầm lẫn về nguồn cấp dữ liệu geocoding: thay đổi toàn bộ nhãn hiển thị và thương hiệu trong footer của dropdown từ "Google Places API" thành "OpenStreetMap" để phản ánh chính xác API Nominatim (OSM) đang hoạt động ngầm.
+- Loại bỏ logo Google Maps giả lập, thay thế bằng nhãn OpenStreetMap tinh tế.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Attribution Strings & Brand Elements Update**:
+   - Sửa đổi trong [AddressAutocomplete.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/AddressAutocomplete.tsx).
+   - Đổi khóa `poweredByGoogle` thành `poweredByOSM` với nội dung tiếng Việt `"Dữ liệu địa chỉ OpenStreetMap"` và tiếng Anh `"OpenStreetMap Address Data"`.
+   - Cập nhật JSX footer để render chữ "OpenStreetMap" trang nhã theo tông màu thiết kế `ash/60` của HoaLang thay cho các ký tự màu của thương hiệu Google.
+
+---
+
 ### [2026-06-03] Onboarding Slug Dynamic Synchronization Bug Fix
 
 #### Tác vụ hoàn thành

@@ -302,8 +302,8 @@ export default function AddressAutocomplete({
 
   const t = {
     searchPlaceholder: locale === 'vi' ? 'Nhập địa chỉ lò/xưởng hoặc địa điểm...' : 'Enter workshop address or location...',
-    poweredByGoogle: locale === 'vi' ? 'Sử dụng Google Places API' : 'Powered by Google Places API',
-    searching: locale === 'vi' ? 'Đang truy vấn địa chỉ...' : 'Querying Places API index...',
+    poweredByOSM: locale === 'vi' ? 'Dữ liệu địa chỉ OpenStreetMap' : 'OpenStreetMap Address Data',
+    searching: locale === 'vi' ? 'Đang truy vấn địa chỉ...' : 'Querying OpenStreetMap...',
     noResults: locale === 'vi' ? 'Không tìm thấy địa chỉ khớp' : 'No matching address found',
     provinceLabel: locale === 'vi' ? 'ĐỊA CHỈ THỰC ĐỊA / WORKSHOP ADDRESS' : 'CULTURAL WORKSHOP ADDRESS',
   };
@@ -406,16 +406,11 @@ export default function AddressAutocomplete({
               )}
             </div>
 
-            {/* Custom Google Maps branding banner at the bottom */}
+            {/* Custom OpenStreetMap branding banner at the bottom */}
             <div className="relative z-10 bg-parchment border-t border-stone/40 px-3 py-2 flex items-center justify-between text-[8px] uppercase tracking-wider font-semibold text-ash/80 select-none">
-              <span>{t.poweredByGoogle}</span>
-              <div className="flex gap-0.5 font-sans font-black text-slate-500">
-                <span className="text-blue-500">G</span>
-                <span className="text-red-500">o</span>
-                <span className="text-yellow-500">o</span>
-                <span className="text-blue-500">g</span>
-                <span className="text-green-500">l</span>
-                <span className="text-red-500">e</span>
+              <span>{t.poweredByOSM}</span>
+              <div className="flex gap-1 items-center font-sans font-bold text-ash/60">
+                <span>OpenStreetMap</span>
               </div>
             </div>
           </motion.div>
