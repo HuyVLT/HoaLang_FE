@@ -812,3 +812,18 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 4. **Vouchers Page Layout**:
    - Thêm mới [profile/vouchers/page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/profile/vouchers/page.tsx): Triển khai trang hiển thị danh sách ưu đãi. Thiết kế coupon card có răng cưa lượn sóng bên rìa, nền `cream` border `stone` cực mỏng, hover chuyển động `translateY(-5px)` + bóng đổ mịn `shadow-hover`, font display Cormorant Garamond và body Be Vietnam Pro. Hỗ trợ nút sao chép thông minh, Suspense & Route Guard bảo mật (tự động đẩy khách chưa đăng nhập về trang login).
 
+### [2026-06-03] Merchant Settings Sub-navigation Tabs Implementation
+
+#### Tác vụ hoàn thành
+- Tích hợp thanh chọn chuyển hướng phân vùng cấu hình (Settings Sub-navigation Tabs) vào trang Thiết lập cổng thanh toán PayOS (`settings/payment/page.tsx`), đồng bộ hoàn toàn với giao diện trang Thiết lập thông tin cơ bản (`settings/page.tsx`).
+- Cho phép chủ làng nghề (VILLAGE_OWNER) di chuyển qua lại dễ dàng giữa việc cập nhật thông tin làng nghề và cấu hình khóa kết nối PayOS.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Settings Navigation Synchronicity**:
+   - Sửa đổi [payment/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/dashboard/settings/payment/page.tsx).
+   - Thiết lập thêm trạng thái local `tenantSlug` cùng hook `useEffect` để giải mã và đồng bộ slug hiện tại từ `sessionStorage` tương tự trang thông tin cơ bản.
+   - Thêm phần kết xuất HTML/JSX đại diện cho sub-navigation tabs bên dưới phần tiêu đề chính, sử dụng đúng cấu trúc màu chữ và trạng thái hoạt ảnh chuyển hướng của cẩm nang giao diện.
+2. **Build Verification**:
+   - Thực hiện build kiểm thử frontend (`pnpm build`) hoàn thành thành công và không ghi nhận bất cứ lỗi biên dịch hay cảnh báo kiểu dữ liệu nào.
+
+
