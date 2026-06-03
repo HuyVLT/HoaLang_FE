@@ -11,6 +11,8 @@ interface PlaceSuggestion {
   secondaryText: string;
   province: string;
   districtWard?: string;
+  lat?: number;
+  lng?: number;
 }
 
 // Realistic heritage-focused autocomplete addresses map for simulated Google Places API
@@ -21,6 +23,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Gia Lâm, Hà Nội, Việt Nam',
     province: 'Hà Nội',
     districtWard: 'Gia Lâm',
+    lng: 105.9327,
+    lat: 20.9733,
   },
   {
     description: 'Phố Lụa, Làng Lụa Vạn Phúc, Hà Đông, Hà Nội, Việt Nam',
@@ -28,6 +32,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Hà Đông, Hà Nội, Việt Nam',
     province: 'Hà Nội',
     districtWard: 'Hà Đông',
+    lng: 105.7766,
+    lat: 20.9781,
   },
   {
     description: 'Xã Song Hồ, Làng Tranh Đông Hồ, Thuận Thành, Bắc Ninh, Việt Nam',
@@ -35,6 +41,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Thuận Thành, Bắc Ninh, Việt Nam',
     province: 'Bắc Ninh',
     districtWard: 'Thuận Thành',
+    lng: 106.0717,
+    lat: 21.0583,
   },
   {
     description: 'Đường Huyền Trân Công Chúa, Làng Đá Non Nước, Ngũ Hành Sơn, Đà Nẵng, Việt Nam',
@@ -42,6 +50,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Ngũ Hành Sơn, Đà Nẵng, Việt Nam',
     province: 'Đà Nẵng',
     districtWard: 'Ngũ Hành Sơn',
+    lng: 108.2612,
+    lat: 16.0125,
   },
   {
     description: 'Khối phố Thanh Chiếm, Làng Gốm Thanh Hà, Hội An, Quảng Nam, Việt Nam',
@@ -49,6 +59,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Hội An, Quảng Nam, Việt Nam',
     province: 'Quảng Nam',
     districtWard: 'Hội An',
+    lng: 108.3079,
+    lat: 15.8824,
   },
   {
     description: 'Thôn Phước Kiều, Xã Điện Phương, Điện Bàn, Quảng Nam, Việt Nam',
@@ -56,6 +68,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Điện Bàn, Quảng Nam, Việt Nam',
     province: 'Quảng Nam',
     districtWard: 'Điện Bàn',
+    lng: 108.2435,
+    lat: 15.8906,
   },
   {
     description: 'Chùa Hương, Mỹ Đức, Hà Nội, Việt Nam',
@@ -63,6 +77,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Mỹ Đức, Hà Nội, Việt Nam',
     province: 'Hà Nội',
     districtWard: 'Mỹ Đức',
+    lng: 105.7486,
+    lat: 20.6179,
   },
   {
     description: 'Xã Gia Thủy, Làng Gốm Gia Thủy, Nho Quan, Ninh Bình, Việt Nam',
@@ -70,6 +86,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Nho Quan, Ninh Bình, Việt Nam',
     province: 'Ninh Bình',
     districtWard: 'Nho Quan',
+    lng: 105.7917,
+    lat: 20.2583,
   },
   {
     description: 'Phố Sơn Mài Tương Bình Hiệp, Thủ Dầu Một, Bình Dương, Việt Nam',
@@ -77,6 +95,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Thủ Dầu Một, Bình Dương, Việt Nam',
     province: 'Bình Dương',
     districtWard: 'Thủ Dầu Một',
+    lng: 106.6547,
+    lat: 11.0028,
   }
 ];
 
@@ -85,6 +105,7 @@ interface AddressAutocompleteProps {
   onChange: (address: string) => void;
   onProvinceSelect: (province: string) => void;
   onDistrictWardSelect?: (districtWard: string) => void;
+  onCoordinatesSelect?: (lat: number, lng: number) => void;
   placeholder?: string;
 }
 
@@ -107,6 +128,8 @@ interface NominatimResult {
   name?: string;
   display_name: string;
   address: NominatimAddress;
+  lat?: string;
+  lon?: string;
 }
 
 function formatSuggestion(item: NominatimResult): string {
@@ -158,6 +181,7 @@ export default function AddressAutocomplete({
   onChange,
   onProvinceSelect,
   onDistrictWardSelect,
+  onCoordinatesSelect,
   placeholder,
 }: AddressAutocompleteProps) {
   const locale = useLocale() as 'vi' | 'en';
@@ -250,6 +274,8 @@ export default function AddressAutocomplete({
             secondaryText: secondaryText,
             province: province,
             districtWard: districtWard,
+            lat: item.lat ? Number(item.lat) : undefined,
+            lng: item.lon ? Number(item.lon) : undefined,
           };
         });
 
@@ -296,6 +322,9 @@ export default function AddressAutocomplete({
     onProvinceSelect(item.province);
     if (onDistrictWardSelect && item.districtWard) {
       onDistrictWardSelect(item.districtWard);
+    }
+    if (onCoordinatesSelect && item.lat !== undefined && item.lng !== undefined) {
+      onCoordinatesSelect(item.lat, item.lng);
     }
     setIsOpen(false);
   };

@@ -282,5 +282,30 @@
     "checking": "Verifying transaction details...",
     "verified": "Verified",
     "cancelled": "Cancelled"
+  },
+  "dashboardSettings": {
+    "title": "Heritage Space Configuration",
+    "sectionLabel": "System Configuration / Config",
+    "tabInfo": "Basic Information",
+    "tabPayment": "Payment Gateway (PayOS)",
+    "formTitle": "Basic Village Details",
+    "nameLabel": "Tên làng nghề / Village Name",
+    "subdomainLabel": "Địa chỉ Website phụ / Subdomain",
+    "subdomainHelp": "* Subdomain is locked after onboarding. Contact Super Admin to request custom DNS setup.",
+    "hotlineLabel": "Điện thoại Hotline / Tel",
+    "emailLabel": "Email liên hệ / Contact Email",
+    "addressTitle": "Địa chỉ thực tế & Tọa độ di sản / Location & Map Coordinates",
+    "addressLabel": "Địa chỉ làng nghề / Street Address",
+    "latLabel": "Vĩ độ (Latitude)",
+    "lngLabel": "Kinh độ (Longitude)",
+    "btnSave": "Lưu cấu hình / Save Settings",
+    "saveSuccess": "Configuration settings saved successfully!",
+    "saveSuccessDesc": "Craft village contact details have been synchronized.",
+    "mapTitle": "Bản đồ vị trí lò/xưởng / Interactive Heritage Map",
+    "mapHelp": "* You can click on the map or drag the red pin to fine-tune the exact coordinates. If map fails to load, please manually enter latitude/longitude above.",
+    "accuracyLabel": "Độ chính xác tọa độ / Coordinates Accuracy",
+    "accuracyAuto": "Tự động / Automatic (OSM Geocoded)",
+    "accuracyManual": "Thủ công / Manual (Map Pinned)",
+    "invalidCoords": "Invalid coordinates. Please verify latitude is between -90 and 90, and longitude is between -180 and 180."
   }
 }

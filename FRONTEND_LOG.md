@@ -27,6 +27,34 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
+### [2026-06-03] Map Pin Drag-and-Drop Coordinates Selector
+
+#### Tác vụ hoàn thành
+- Bổ sung chức năng tự động lấy tọa độ vĩ độ/kinh độ từ kết quả geocoding của gợi ý địa chỉ khi chọn trong `AddressAutocomplete` để đồng bộ tọa độ của lò/xưởng di sản.
+- Phát triển giao diện bản đồ di sản tương tác trong trang Thiết Lập Cấu Hình Làng Nghề (`dashboard/settings/page.tsx`) với một Mapbox Map và một ghim màu đỏ (draggable marker).
+- Hỗ trợ cơ chế Kéo thả ghim (Drag-and-Drop) hoặc Click trực tiếp trên bản đồ để vi chỉnh tọa độ hiển thị một cách trực quan (Phương án B nâng cấp).
+- Liên kết đồng bộ hai chiều (bi-directional sync) giữa ô nhập liệu vĩ độ/kinh độ bằng số và ghim trên bản đồ. Thay đổi ô số sẽ di chuyển ghim và ngược lại.
+- Bổ sung Huy hiệu trạng thái độ chính xác (Accuracy Status Badge): hiển thị "Tự động / Automatic" (OSM Geocoded) khi dùng địa chỉ chuẩn, và chuyển sang "Thủ công / Manual" (Map Pinned) khi người dùng tự kéo ghim/sửa tọa độ.
+- Tích hợp đa ngôn ngữ (i18n) hoàn toàn cho phân hệ cấu hình qua namespace `dashboardSettings` trong `messages/vi.json` và `messages/en.json`.
+- Thiết kế giao diện fallback ngoại tuyến (offline fallback banner) thân thiện nếu biến `NEXT_PUBLIC_MAPBOX_TOKEN` chưa được thiết lập, đảm bảo trang thiết lập hoạt động bình thường, các trường nhập liệu số vẫn chỉnh sửa được.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Autocomplete Coordinates Integration**:
+   - Sửa đổi trong [AddressAutocomplete.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/AddressAutocomplete.tsx).
+   - Mở rộng kiểu dữ liệu `PlaceSuggestion` hỗ trợ thêm vĩ độ `lat` và kinh độ `lng`.
+   - Bổ sung sự kiện callback `onCoordinatesSelect` trong props của component.
+   - Trả ra tọa độ lấy từ Nominatim API và preset tọa độ thực cho các gợi ý làng nghề mặc định trong hệ thống.
+2. **Dashboard Settings Map Selector**:
+   - Thay đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/dashboard/settings/page.tsx).
+   - Xây dựng component `SettingsPanel` quản lý trạng thái địa chỉ đầy đủ bao gồm `address`, `province`, `districtWard`, `latitude`, `longitude` và `isCoordinatesManual`.
+   - Khởi tạo Mapbox GL Map trên đối tượng DOM container, hiển thị `mapboxgl.Marker` draggable với animation hiệu ứng ping sơn mài đỏ.
+   - Đồng bộ vị trí ghim và tâm bản đồ khi các state coordinates thay đổi hoặc khi người dùng thao tác trực tiếp trên bản đồ.
+   - Thêm nút chuyển đổi kiểu bản đồ hiển thị (Địa hình, Vệ tinh, Cổ điển).
+3. **Multi-language Translations**:
+   - Thêm dịch thuật namespace `dashboardSettings` trong [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json) và [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json).
+
+---
+
 ### [2026-06-03] Geocoding Autocomplete Mapper Crash Fix
 
 #### Tác vụ hoàn thành

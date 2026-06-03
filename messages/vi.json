@@ -282,5 +282,30 @@
     "checking": "Đang xác thực thông tin giao dịch...",
     "verified": "Đã xác thực",
     "cancelled": "Đã hủy"
+  },
+  "dashboardSettings": {
+    "title": "Thiết Lập Không Gian Di Sản",
+    "sectionLabel": "Cấu hình hệ thống / Config",
+    "tabInfo": "Thông tin cơ bản",
+    "tabPayment": "Cổng thanh toán (PayOS)",
+    "formTitle": "Thông tin cơ bản của Làng",
+    "nameLabel": "Tên làng nghề / Village Name",
+    "subdomainLabel": "Địa chỉ Website phụ / Subdomain",
+    "subdomainHelp": "* Địa chỉ subdomain được khóa cứng sau khi hoàn tất onboarding. Liên hệ Super Admin để yêu cầu tùy chỉnh DNS tên miền riêng.",
+    "hotlineLabel": "Điện thoại Hotline / Tel",
+    "emailLabel": "Email liên hệ / Contact Email",
+    "addressTitle": "Địa chỉ thực tế & Tọa độ di sản / Location & Map Coordinates",
+    "addressLabel": "Địa chỉ làng nghề / Street Address",
+    "latLabel": "Vĩ độ (Latitude)",
+    "lngLabel": "Kinh độ (Longitude)",
+    "btnSave": "Lưu cấu hình / Save Settings",
+    "saveSuccess": "Đã lưu cấu hình thiết lập thành công!",
+    "saveSuccessDesc": "Thông tin liên hệ của làng nghề đã được đồng bộ.",
+    "mapTitle": "Bản đồ vị trí lò/xưởng / Interactive Heritage Map",
+    "mapHelp": "* Bạn có thể click chọn trên bản đồ hoặc kéo thả ghim màu đỏ để vi chỉnh tọa độ hiển thị chính xác nhất. Nếu không thể tải bản đồ, vui lòng tự nhập vĩ độ/kinh độ ở trên.",
+    "accuracyLabel": "Độ chính xác tọa độ / Coordinates Accuracy",
+    "accuracyAuto": "Tự động / Automatic (OSM Geocoded)",
+    "accuracyManual": "Thủ công / Manual (Map Pinned)",
+    "invalidCoords": "Tọa độ không hợp lệ. Vui lòng kiểm tra lại vĩ độ (-90 đến 90) và kinh độ (-180 đến 180)."
   }
 }
