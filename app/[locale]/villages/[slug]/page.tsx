@@ -52,9 +52,9 @@ const DETAILED_METADATA_MAP: Record<string, {
       en: "Over 600 family kilns & master artisans"
     },
     gallery: [
-      "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&auto=format&fit=crop&q=80"
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780500279/langgom1_s4ab7a.jpg",
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780500738/gom1_fvl68m.jpg",
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780501470/gom3_pnxabe.jpg"
     ],
     visitUrl: "bat-trang"
   },
@@ -77,9 +77,9 @@ const DETAILED_METADATA_MAP: Record<string, {
       en: "Over 150 active weaving looms & master weavers"
     },
     gallery: [
-      "https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80"
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780502590/langlua2_fupxng.jpg",
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780502548/langlua_jgljhj.jpg",
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780502216/langlua_osd4hr.jpg"
     ],
     visitUrl: "van-phuc"
   },
@@ -102,9 +102,9 @@ const DETAILED_METADATA_MAP: Record<string, {
       en: "Over 500 studios & master stone carvers"
     },
     gallery: [
-      "https://images.unsplash.com/photo-1580136579312-94651dfd596d?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1576016770956-debb63d90029?w=800&auto=format&fit=crop&q=80"
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780539289/langDa3_xhez5r.jpg",
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780539289/tuong-da-lang-my-nghe-non-nuoc_v1mvme.jpg",
+      "https://res.cloudinary.com/dpppe3usv/image/upload/v1780539289/lang-da-2_ymucno.jpg"
     ],
     visitUrl: "non-nuoc"
   },
