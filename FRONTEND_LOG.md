@@ -418,6 +418,24 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 
 ---
 
+### [2026-06-03] Fix Broken Image Links in Heritage Villages Curation Gallery
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi hiển thị ảnh bị hỏng (broken image 404) trên trang chi tiết Làng nghề Bát Tràng (`/villages/bat-trang`).
+- Khắc phục lỗi hiển thị ảnh bìa bị hỏng (broken cover image 404) trên trang chi tiết Làng đá Non Nước (`/villages/non-nuoc`).
+- Cập nhật và làm đẹp thư viện trưng bày của Làng Tranh Đông Hồ với các ảnh chủ đề hội họa/in ấn thực tế thay vì dùng ảnh gốm sứ tạm thời.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Heritage Villages Detail Page**:
+   - Sửa đổi trong [page.tsx](file:///d:/HoaLang/HoaLang_FE/app/[locale]/villages/[slug]/page.tsx).
+   - Thay thế liên kết ảnh hỏng `photo-1525974160448-038cbe672e7d` tại thư viện ảnh Bát Tràng bằng ảnh bàn tay nặn gốm xoay chất lượng cao `photo-1578749556568-bc2c40e68b61`.
+   - Thay thế liên kết ảnh `photo-1605721911519-3dfeb3be25e7` tại thư viện ảnh Bát Tràng bằng ảnh sản phẩm cốc gốm mỹ nghệ sắc nét `photo-1565193566173-7a0ee3dbe261`.
+   - Thay thế liên kết ảnh bìa hỏng `photo-1599809275671-b5941cabc7a5` tại Làng đá Non Nước bằng ảnh tượng điêu khắc cẩm thạch trắng trong triển lãm nghệ thuật sang trọng `photo-1580136579312-94651dfd596d`.
+   - Thay thế liên kết ảnh phong cảnh và ảnh placeholder cũ trong thư viện ảnh Làng đá Non Nước bằng các hình ảnh điêu khắc đá nghệ thuật tinh xảo (`photo-1542856391-010fb87dcfed` và `photo-1576016770956-debb63d90029`).
+   - Cập nhật thư viện ảnh Đông Hồ bằng ba hình ảnh hội họa/tác phẩm in ấn nghệ thuật khác nhau (`photo-1579783902614-a3fb3927b6a5`, `photo-1513364776144-60967b0f800f`, `photo-1579783900882-c0d3dad7b119`).
+
+---
+
 ### [2026-06-03] Order & Booking History Feature Implementation
 
 #### Tác vụ hoàn thành
