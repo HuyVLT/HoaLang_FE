@@ -99,7 +99,7 @@ function VerifyAccountContent() {
                 <Loader2 className="w-12 h-12 text-lacquer animate-spin" />
               </div>
               <div className="space-y-1">
-                <SectionLabel label="Hệ thống xác thực / Security Gateway" />
+                <SectionLabel label={t('securityGateway')} />
                 <h2 className="font-heading text-2xl font-light italic text-charcoal">
                   {t('activating')}
                 </h2>
@@ -127,7 +127,7 @@ function VerifyAccountContent() {
               </div>
 
               <div className="space-y-2">
-                <SectionLabel label="Kích hoạt thành công / Account Activated" />
+                <SectionLabel label={t('accountActivated')} />
                 <h2 className="font-heading text-3xl font-light italic text-charcoal leading-tight">
                   {t('activationSuccess')}
                 </h2>
@@ -139,7 +139,7 @@ function VerifyAccountContent() {
               <div className="bg-parchment border border-stone rounded-xs p-4 flex items-center justify-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-gold" />
                 <span className="font-sans text-[11px] font-medium tracking-wide text-charcoal uppercase">
-                  Tài khoản khả dụng • Chuyển hướng sau {countdown}s
+                  {t('redirectingIn', { count: countdown })}
                 </span>
               </div>
 
@@ -147,7 +147,7 @@ function VerifyAccountContent() {
                 onClick={() => router.push('/auth/login')}
                 className="w-full bg-lacquer text-cream font-sans text-xs font-semibold uppercase tracking-widest py-3.5 rounded-xs hover:brightness-110 shadow-sm transition-all flex items-center justify-center gap-2"
               >
-                <span>Đăng Nhập Ngay</span>
+                <span>{t('loginNow')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </motion.div>
@@ -173,7 +173,7 @@ function VerifyAccountContent() {
               </div>
 
               <div className="space-y-2">
-                <SectionLabel label="Kích hoạt thất bại / Verification Failed" />
+                <SectionLabel label={t('verificationFailed')} />
                 <h2 className="font-heading text-3xl font-light italic text-charcoal leading-tight">
                   {t('activationFailed')}
                 </h2>
@@ -200,7 +200,7 @@ function VerifyAccountContent() {
         <div className="flex items-center justify-center gap-2 text-[10px] text-ash tracking-wider uppercase">
           <span>HoaLang Platform</span>
           <span>•</span>
-          <span>Artisanal Heritage</span>
+          <span>{t('artisanalHeritage')}</span>
         </div>
       </motion.div>
     </div>

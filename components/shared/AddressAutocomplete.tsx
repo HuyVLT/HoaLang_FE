@@ -11,6 +11,8 @@ interface PlaceSuggestion {
   secondaryText: string;
   province: string;
   districtWard?: string;
+  lat?: number;
+  lng?: number;
 }
 
 // Realistic heritage-focused autocomplete addresses map for simulated Google Places API
@@ -21,6 +23,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Gia Lâm, Hà Nội, Việt Nam',
     province: 'Hà Nội',
     districtWard: 'Gia Lâm',
+    lng: 105.9327,
+    lat: 20.9733,
   },
   {
     description: 'Phố Lụa, Làng Lụa Vạn Phúc, Hà Đông, Hà Nội, Việt Nam',
@@ -28,6 +32,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Hà Đông, Hà Nội, Việt Nam',
     province: 'Hà Nội',
     districtWard: 'Hà Đông',
+    lng: 105.7766,
+    lat: 20.9781,
   },
   {
     description: 'Xã Song Hồ, Làng Tranh Đông Hồ, Thuận Thành, Bắc Ninh, Việt Nam',
@@ -35,6 +41,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Thuận Thành, Bắc Ninh, Việt Nam',
     province: 'Bắc Ninh',
     districtWard: 'Thuận Thành',
+    lng: 106.0717,
+    lat: 21.0583,
   },
   {
     description: 'Đường Huyền Trân Công Chúa, Làng Đá Non Nước, Ngũ Hành Sơn, Đà Nẵng, Việt Nam',
@@ -42,6 +50,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Ngũ Hành Sơn, Đà Nẵng, Việt Nam',
     province: 'Đà Nẵng',
     districtWard: 'Ngũ Hành Sơn',
+    lng: 108.2612,
+    lat: 16.0125,
   },
   {
     description: 'Khối phố Thanh Chiếm, Làng Gốm Thanh Hà, Hội An, Quảng Nam, Việt Nam',
@@ -49,6 +59,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Hội An, Quảng Nam, Việt Nam',
     province: 'Quảng Nam',
     districtWard: 'Hội An',
+    lng: 108.3079,
+    lat: 15.8824,
   },
   {
     description: 'Thôn Phước Kiều, Xã Điện Phương, Điện Bàn, Quảng Nam, Việt Nam',
@@ -56,6 +68,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Điện Bàn, Quảng Nam, Việt Nam',
     province: 'Quảng Nam',
     districtWard: 'Điện Bàn',
+    lng: 108.2435,
+    lat: 15.8906,
   },
   {
     description: 'Chùa Hương, Mỹ Đức, Hà Nội, Việt Nam',
@@ -63,6 +77,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Mỹ Đức, Hà Nội, Việt Nam',
     province: 'Hà Nội',
     districtWard: 'Mỹ Đức',
+    lng: 105.7486,
+    lat: 20.6179,
   },
   {
     description: 'Xã Gia Thủy, Làng Gốm Gia Thủy, Nho Quan, Ninh Bình, Việt Nam',
@@ -70,6 +86,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Nho Quan, Ninh Bình, Việt Nam',
     province: 'Ninh Bình',
     districtWard: 'Nho Quan',
+    lng: 105.7917,
+    lat: 20.2583,
   },
   {
     description: 'Phố Sơn Mài Tương Bình Hiệp, Thủ Dầu Một, Bình Dương, Việt Nam',
@@ -77,6 +95,8 @@ const SUGGESTIONS: PlaceSuggestion[] = [
     secondaryText: 'Thủ Dầu Một, Bình Dương, Việt Nam',
     province: 'Bình Dương',
     districtWard: 'Thủ Dầu Một',
+    lng: 106.6547,
+    lat: 11.0028,
   }
 ];
 
@@ -85,6 +105,7 @@ interface AddressAutocompleteProps {
   onChange: (address: string) => void;
   onProvinceSelect: (province: string) => void;
   onDistrictWardSelect?: (districtWard: string) => void;
+  onCoordinatesSelect?: (lat: number, lng: number) => void;
   placeholder?: string;
 }
 
@@ -95,12 +116,20 @@ interface NominatimAddress {
   city_district?: string;
   city?: string;
   state?: string;
+  county?: string;
+  district?: string;
+  town?: string;
+  village?: string;
+  quarter?: string;
+  province?: string;
 }
 
 interface NominatimResult {
   name?: string;
   display_name: string;
   address: NominatimAddress;
+  lat?: string;
+  lon?: string;
 }
 
 function formatSuggestion(item: NominatimResult): string {
@@ -152,10 +181,13 @@ export default function AddressAutocomplete({
   onChange,
   onProvinceSelect,
   onDistrictWardSelect,
+  onCoordinatesSelect,
   placeholder,
 }: AddressAutocompleteProps) {
   const locale = useLocale() as 'vi' | 'en';
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isSelectingRef = useRef(false);
   const [query, setQuery] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -180,6 +212,17 @@ export default function AddressAutocomplete({
 
   // Live real-time debounced query fetch reacting to search query updates!
   useEffect(() => {
+    // If the change was initiated by selecting a suggestion, ignore and reset flag
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
+
+    // Only fetch suggestions if input is active/focused (prevents triggering on external value sync)
+    if (typeof document !== 'undefined' && document.activeElement !== inputRef.current) {
+      return;
+    }
+
     if (query.trim().length < 3) {
       setResults([]);
       setIsOpen(false);
@@ -210,23 +253,33 @@ export default function AddressAutocomplete({
           {
             signal: ctrl.signal,
             headers: {
-              'Accept-Language': 'vi',
-              'User-Agent': 'HoaLang-Heritage-SaaS-Portal'
+              'Accept-Language': 'vi'
             }
           }
         );
+
+        if (!response.ok) {
+          throw new Error(`Nominatim HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
 
-        const liveMatches = data.map((item: NominatimResult) => {
+        const liveMatches = (Array.isArray(data) ? data : []).map((item: NominatimResult) => {
           const rawMain = item.name || item.display_name.split(',')[0];
           const prefix = getPrependPrefix(query, rawMain);
           const mainText = prefix + rawMain;
           const cleanAddress = prefix + formatSuggestion(item);
           const secondaryText = item.display_name.split(',').slice(1).join(',').trim();
           
-          // Map predicted provinces for onboarding SaaS setups
-          const province = item.address.state || item.address.city || 'Hà Nội';
-          const districtWard = item.address.suburb || item.address.city_district || '';
+          // Map predicted provinces for onboarding SaaS setups with robust fallbacks
+          const province = item.address?.state || item.address?.city || item.address?.province || item.address?.county || 'Hà Nội';
+          const districtWard = item.address?.suburb || 
+                               item.address?.city_district || 
+                               item.address?.district || 
+                               item.address?.town || 
+                               item.address?.village || 
+                               item.address?.quarter || 
+                               '';
 
           return {
             description: cleanAddress,
@@ -234,6 +287,8 @@ export default function AddressAutocomplete({
             secondaryText: secondaryText,
             province: province,
             districtWard: districtWard,
+            lat: item.lat ? Number(item.lat) : undefined,
+            lng: item.lon ? Number(item.lon) : undefined,
           };
         });
 
@@ -247,7 +302,10 @@ export default function AddressAutocomplete({
 
         setResults(unique);
       } catch (err) {
-        console.warn('[AddressAutocomplete] Live API failed or offline, resolving fallback predictions:', err);
+        const error = err as Error;
+        if (error.name !== 'AbortError') {
+          console.warn('[AddressAutocomplete] Live API failed or offline, resolving fallback predictions:', err);
+        }
         
         // Standalone offline fallback
         const localOnly = SUGGESTIONS.filter(
@@ -270,25 +328,30 @@ export default function AddressAutocomplete({
   // Keystroke typing update handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
+    isSelectingRef.current = false;
     setQuery(val);
     onChange(val);
   };
 
   const handleSelect = (item: PlaceSuggestion) => {
+    isSelectingRef.current = true;
     setQuery(item.description);
     onChange(item.description);
     onProvinceSelect(item.province);
     if (onDistrictWardSelect && item.districtWard) {
       onDistrictWardSelect(item.districtWard);
     }
+    if (onCoordinatesSelect && item.lat !== undefined && item.lng !== undefined) {
+      onCoordinatesSelect(item.lat, item.lng);
+    }
     setIsOpen(false);
   };
 
   const t = {
     searchPlaceholder: locale === 'vi' ? 'Nhập địa chỉ lò/xưởng hoặc địa điểm...' : 'Enter workshop address or location...',
-    poweredByGoogle: locale === 'vi' ? 'Sử dụng Google Places API' : 'Powered by Google Places API',
-    searching: locale === 'vi' ? 'Đang truy vấn địa chỉ...' : 'Querying Places API index...',
-    noResults: locale === 'vi' ? 'Không tìm thấy địa điểm di sản khớp' : 'No matching heritage place found',
+    poweredByOSM: locale === 'vi' ? 'Dữ liệu địa chỉ OpenStreetMap' : 'OpenStreetMap Address Data',
+    searching: locale === 'vi' ? 'Đang truy vấn địa chỉ...' : 'Querying OpenStreetMap...',
+    noResults: locale === 'vi' ? 'Không tìm thấy địa chỉ khớp' : 'No matching address found',
     provinceLabel: locale === 'vi' ? 'ĐỊA CHỈ THỰC ĐỊA / WORKSHOP ADDRESS' : 'CULTURAL WORKSHOP ADDRESS',
   };
 
@@ -296,13 +359,14 @@ export default function AddressAutocomplete({
     <div ref={containerRef} className="space-y-1.5 text-left font-sans select-none w-full relative">
       <label className="text-xs font-semibold uppercase tracking-wider text-ash flex items-center gap-1.5">
         <MapPin className="w-3.5 h-3.5 text-accent" />
-        <span>{t.provinceLabel}</span>
+        <span>{t.provinceLabel} <span className="text-lacquer">*</span></span>
       </label>
 
       {/* Primary input box styling to match standard onboarding fields */}
       <div className="flex items-center gap-2 border-b border-stone py-2 relative">
         <Search className="w-4 h-4 text-ash/60 shrink-0" />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={handleInputChange}
@@ -334,44 +398,68 @@ export default function AddressAutocomplete({
                   <Compass className="w-4 h-4 text-gold animate-spin" />
                   <span>{t.searching}</span>
                 </div>
-              ) : results.length > 0 ? (
-                /* Search prediction list */
-                results.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleSelect(item)}
-                    className="w-full p-3 flex gap-3 text-left hover:bg-parchment/80 transition-colors border-b border-stone/20 last:border-b-0"
-                  >
-                    <MapPin className="w-4 h-4 text-lacquer shrink-0 mt-0.5" />
-                    <div className="space-y-0.5">
-                      <span className="text-xs font-bold text-charcoal block leading-none">
-                        {item.mainText}
-                      </span>
-                      <span className="text-[10px] text-ash block leading-relaxed">
-                        {item.secondaryText}
-                      </span>
-                    </div>
-                  </button>
-                ))
               ) : (
-                /* Fallback if no matching standard coordinates found */
-                <div className="p-4 text-center text-xs text-ash font-light italic">
-                  {t.noResults}
-                </div>
+                <>
+                  {/* Option to use the typed text directly */}
+                  {query.trim().length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        isSelectingRef.current = true;
+                        onChange(query);
+                        setIsOpen(false);
+                      }}
+                      className="w-full p-3 flex gap-3 text-left hover:bg-parchment/80 transition-colors border-b border-stone/20"
+                    >
+                      <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <span className="text-xs font-bold text-charcoal block leading-none">
+                          {locale === 'vi' ? 'Sử dụng địa chỉ đã nhập' : 'Use entered address'}
+                        </span>
+                        <span className="text-[10px] text-ash block leading-relaxed italic">
+                          &quot;{query}&quot;
+                        </span>
+                      </div>
+                    </button>
+                  )}
+
+                  {results.length > 0 ? (
+                    /* Search prediction list */
+                    results.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelect(item)}
+                        className="w-full p-3 flex gap-3 text-left hover:bg-parchment/80 transition-colors border-b border-stone/20 last:border-b-0"
+                      >
+                        <MapPin className="w-4 h-4 text-lacquer shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <span className="text-xs font-bold text-charcoal block leading-none">
+                            {item.mainText}
+                          </span>
+                          <span className="text-[10px] text-ash block leading-relaxed">
+                            {item.secondaryText}
+                          </span>
+                        </div>
+                      </button>
+                    ))
+                  ) : (
+                    /* If no suggestions found, show a small notice below the "use entered address" button */
+                    query.trim().length >= 3 && (
+                      <div className="p-4 text-center text-[10px] text-ash font-light italic border-t border-stone/20">
+                        {t.noResults}
+                      </div>
+                    )
+                  )}
+                </>
               )}
             </div>
 
-            {/* Custom Google Maps branding banner at the bottom */}
+            {/* Custom OpenStreetMap branding banner at the bottom */}
             <div className="relative z-10 bg-parchment border-t border-stone/40 px-3 py-2 flex items-center justify-between text-[8px] uppercase tracking-wider font-semibold text-ash/80 select-none">
-              <span>{t.poweredByGoogle}</span>
-              <div className="flex gap-0.5 font-sans font-black text-slate-500">
-                <span className="text-blue-500">G</span>
-                <span className="text-red-500">o</span>
-                <span className="text-yellow-500">o</span>
-                <span className="text-blue-500">g</span>
-                <span className="text-green-500">l</span>
-                <span className="text-red-500">e</span>
+              <span>{t.poweredByOSM}</span>
+              <div className="flex gap-1 items-center font-sans font-bold text-ash/60">
+                <span>OpenStreetMap</span>
               </div>
             </div>
           </motion.div>

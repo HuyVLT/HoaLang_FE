@@ -29,14 +29,14 @@ export default function ForgotPasswordPage() {
       const response = await api.post('/auth/forgot-password', { email });
 
       if (response.data && response.data.success) {
-        toast.success(response.data.message || 'Yêu cầu khôi phục mật khẩu đã được gửi!');
+        toast.success(response.data.message || t('forgotPasswordSuccess'));
         setSuccess(true);
       } else {
-        toast.error(response.data?.message || 'Yêu cầu khôi phục thất bại.');
+        toast.error(response.data?.message || t('forgotPasswordFailed'));
       }
     } catch (err: unknown) {
       console.error('Forgot password error:', err);
-      let errorMessage = 'Gửi yêu cầu khôi phục thất bại. Vui lòng thử lại sau.';
+      let errorMessage = t('forgotPasswordFailed');
       
       const errorWithResponse = err as {
         response?: {
@@ -100,14 +100,13 @@ export default function ForgotPasswordPage() {
         {/* Centerpiece Quote block */}
         <div className="space-y-6 relative z-10 my-auto text-left max-w-lg mx-auto">
           <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-            Di sản truyền thống / Vietnamese Craft Heritage
+            {t('forgotPasswordQuoteTitle')}
           </span>
-          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight">
-            Khôi phục lối vào,<br />
-            tiếp tục dệt ước mơ.
+          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight whitespace-pre-line">
+            {t('forgotPasswordQuoteHeader')}
           </h1>
           <p className="font-sans text-xs text-cream/70 leading-relaxed font-light">
-            Đừng lo lắng nếu bạn tạm thời quên lối vào không gian di sản của mình. HoaLang luôn sẵn sàng hỗ trợ bạn thiết lập một chìa khóa mới để tiếp tục hành trình bảo tồn văn hóa Việt.
+            {t('forgotPasswordQuoteDesc')}
           </p>
 
           <OrnamentDivider className="text-gold/30 !justify-start" />
@@ -116,7 +115,7 @@ export default function ForgotPasswordPage() {
         {/* Footer brand info */}
         <div className="flex items-center justify-between text-[10px] text-cream/45 relative z-10 font-sans tracking-wide">
           <span>&copy; {new Date().getFullYear()} HoaLang Platform</span>
-          <span>Tinh hoa Làng nghề Việt / Artisanal Heritage</span>
+          <span>{t('artisanalHeritage')}</span>
         </div>
       </div>
 
@@ -148,7 +147,7 @@ export default function ForgotPasswordPage() {
               >
                 {/* Form Header */}
                 <div className="space-y-2 text-left">
-                  <SectionLabel label="Quên mật khẩu / Password recovery" />
+                  <SectionLabel label={t('forgotPasswordTitle')} />
                   <h2 className="font-heading text-3xl font-bold italic text-charcoal leading-none">
                     {t('forgotPasswordTitle')}
                   </h2>
@@ -167,7 +166,7 @@ export default function ForgotPasswordPage() {
                     
                     <input
                       type="email"
-                      placeholder="Nhập địa chỉ email của bạn..."
+                      placeholder={t('emailPlaceholder')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -185,7 +184,7 @@ export default function ForgotPasswordPage() {
                       {loading ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Đang gửi / Sending...</span>
+                          <span>{t('common.loading')}</span>
                         </>
                       ) : (
                         <>
@@ -217,7 +216,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="space-y-2">
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-                    Gửi thư thành công / Email Sent
+                    {t('forgotPasswordSuccessTitle')}
                   </span>
                   <h3 className="font-heading text-3xl font-light italic text-charcoal">
                     {t('forgotPasswordSuccess')}

@@ -41,16 +41,16 @@ export default function RegisterPage() {
 
       if (response.data && response.data.success) {
         toast.success(
-          response.data.message || 'Đăng ký thành công! Hãy kiểm tra email để kích hoạt tài khoản.'
+          response.data.message || t('auth.registerSuccess')
         );
         router.push('/auth/login');
       } else {
-        toast.error(response.data?.message || 'Đăng ký tài khoản thất bại.');
+        toast.error(response.data?.message || t('auth.registerFailed'));
       }
     } catch (err: unknown) {
       console.error('Registration error:', err);
       
-      let errorMessage = 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.';
+      let errorMessage = t('auth.registerFailed');
       const axiosError = err as {
         response?: {
           data?: {
@@ -70,29 +70,29 @@ export default function RegisterPage() {
             const fields = rawMsg.replace('Input validation failed: ', '').split('; ');
             const translatedFields = fields.map((f: string) => {
               if (f.toLowerCase().includes('phone')) {
-                return 'Số điện thoại phải chứa chính xác 10 chữ số.';
+                return t('auth.validationPhone');
               }
               if (f.toLowerCase().includes('password')) {
-                return 'Mật khẩu tối thiểu 6 ký tự, gồm ít nhất 1 chữ hoa, 1 chữ số và 1 ký tự đặc biệt.';
+                return t('auth.validationPassword');
               }
               if (f.toLowerCase().includes('fullname')) {
-                return 'Họ và tên phải có độ dài từ 2 ký tự trở lên.';
+                return t('auth.validationName');
               }
               return f;
             });
-            errorMessage = `Thông tin nhập liệu không hợp lệ:\n• ${translatedFields.join('\n• ')}`;
+            errorMessage = `${t('auth.validationTitle')}\n• ${translatedFields.join('\n• ')}`;
           } else if (
             rawMsg.includes('duplicate value for key: email') || 
             rawMsg.includes('already in use') || 
             rawMsg.includes('Unique restriction')
           ) {
-            errorMessage = 'Địa chỉ Email này đã được sử dụng trên hệ thống.';
+            errorMessage = t('auth.duplicateEmail');
           } else {
             errorMessage = rawMsg;
           }
         } else if (typeof axiosError.response.data === 'string') {
           if (axiosError.response.data.includes('<!DOCTYPE html>') || axiosError.response.data.includes('<html')) {
-            errorMessage = 'Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found).';
+            errorMessage = t('auth.connectionError');
           } else {
             errorMessage = axiosError.response.data;
           }
@@ -157,14 +157,13 @@ export default function RegisterPage() {
         {/* Centerpiece Quote block */}
         <div className="space-y-6 relative z-10 my-auto text-left max-w-lg mx-auto">
           <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-            Giao diện tinh hoa / Premium Experience
+            {t('auth.registerQuoteTitle')}
           </span>
-          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight">
-            Dệt nên sợi chỉ thời gian,<br />
-            gìn giữ tinh hoa bản sắc.
+          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight whitespace-pre-line">
+            {t('auth.registerQuoteHeader')}
           </h1>
           <p className="font-sans text-xs text-cream/70 leading-relaxed font-light">
-            Nhập cuộc vào hành trình số hóa di sản Việt Nam. Khởi tạo một website độc bản riêng cho làng nghề của bạn, kết nối giao thương trực tuyến các mặt hàng thủ công mỹ nghệ chân thực và đón tiếp khách du lịch trải nghiệm văn hóa.
+            {t('auth.registerQuoteDesc')}
           </p>
 
           <OrnamentDivider className="text-gold/30 !justify-start" />
@@ -172,12 +171,12 @@ export default function RegisterPage() {
           {/* Core analytical attributes */}
           <div className="grid grid-cols-2 gap-6 pt-4">
             <div className="space-y-1">
-              <span className="text-xl font-heading font-bold italic text-gold block">120+</span>
-              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">Hợp tác Làng nghề / Partner Villages</span>
+              <span className="text-xl font-heading font-bold italic text-gold block">{t('auth.registerStat1Val')}</span>
+              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">{t('auth.registerStat1Lbl')}</span>
             </div>
             <div className="space-y-1">
-              <span className="text-xl font-heading font-bold italic text-gold block">Templates</span>
-              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">Độc quyền văn hóa / Custom Fine Arts</span>
+              <span className="text-xl font-heading font-bold italic text-gold block">{t('auth.registerStat2Val')}</span>
+              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">{t('auth.registerStat2Lbl')}</span>
             </div>
           </div>
         </div>
@@ -185,7 +184,7 @@ export default function RegisterPage() {
         {/* Footer brand info */}
         <div className="flex items-center justify-between text-[10px] text-cream/45 relative z-10 font-sans tracking-wide">
           <span>&copy; {new Date().getFullYear()} HoaLang Platform</span>
-          <span>Tinh hoa Làng nghề Việt / Artisanal Heritage</span>
+          <span>{t('auth.artisanalHeritage')}</span>
         </div>
       </div>
 
@@ -208,12 +207,12 @@ export default function RegisterPage() {
         >
           {/* Form Header */}
           <div className="space-y-2 text-left mb-6">
-            <SectionLabel label="Khởi tạo tài khoản / Join the platform" />
+            <SectionLabel label={t('auth.registerTitle')} />
             <h2 className="font-heading text-3xl font-bold italic text-charcoal leading-none">
               {t('auth.registerTitle')}
             </h2>
             <p className="font-sans text-xs text-ash font-light leading-relaxed">
-              Tạo tài khoản du khách để khám phá bản đồ di sản Việt Nam và trải nghiệm văn hóa truyền thống.
+              {t('auth.registerSubtitle')}
             </p>
           </div>
 
@@ -224,12 +223,12 @@ export default function RegisterPage() {
             <div className="space-y-1.5 text-left">
               <label className="text-[10px] font-semibold uppercase tracking-wider text-ash flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-accent" />
-                <span>Họ và tên của bạn / Full Name</span>
+                <span>{t('auth.fullNameLabel')}</span>
               </label>
               
               <input
                 type="text"
-                placeholder="Ví dụ: Nguyễn Văn A"
+                placeholder={t('auth.fullNamePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -246,7 +245,7 @@ export default function RegisterPage() {
               
               <input
                 type="email"
-                placeholder="Ví dụ: nva@gmail.com"
+                placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -258,12 +257,12 @@ export default function RegisterPage() {
             <div className="space-y-1.5 text-left">
               <label className="text-[10px] font-semibold uppercase tracking-wider text-ash flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-accent" />
-                <span>Số điện thoại / Phone Number</span>
+                <span>{t('auth.phoneLabel')}</span>
               </label>
               
               <input
                 type="text"
-                placeholder="Ví dụ: 0987654321"
+                placeholder={t('auth.phonePlaceholder')}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
@@ -280,7 +279,7 @@ export default function RegisterPage() {
               
               <input
                 type="password"
-                placeholder="Nhập mật khẩu..."
+                placeholder={t('auth.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -292,12 +291,12 @@ export default function RegisterPage() {
             <div className="bg-parchment border border-stone rounded-xs p-3.5 text-left space-y-1.5">
               <span className="text-[9px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Quyền lợi tài khoản du khách</span>
+                <span>{t('auth.visitorBenefitsTitle')}</span>
               </span>
               <ul className="text-[10px] text-ash space-y-1 list-none font-sans font-light leading-normal">
-                <li>• Khám phá bản đồ nghệ thuật tương tác 3D.</li>
-                <li>• Lên lộ trình trải nghiệm và đặt trước khóa học.</li>
-                <li>• Trực tiếp mua sắm sản phẩm thủ công chính gốc.</li>
+                <li>• {t('auth.visitorBenefits1')}</li>
+                <li>• {t('auth.visitorBenefits2')}</li>
+                <li>• {t('auth.visitorBenefits3')}</li>
               </ul>
             </div>
 
@@ -315,7 +314,7 @@ export default function RegisterPage() {
                   </>
                 ) : (
                   <>
-                    <span>Đăng Ký Tài Khoản</span>
+                    <span>{t('auth.submitRegister')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}

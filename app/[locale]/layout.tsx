@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Be_Vietnam_Pro, Playfair_Display } from 'next/font/google';
+import { Cormorant_Garamond, Be_Vietnam_Pro, Playfair_Display, Noto_Serif, Noto_Sans } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { getMessages } from 'next-intl/server';
@@ -10,8 +10,10 @@ import { Toaster } from '@/components/ui/sonner';
 import CheckoutDrawer from '@/components/shared/CheckoutDrawer';
 import CartDrawer from '@/components/shared/CartDrawer';
 import SSOHandler from '@/components/shared/SSOHandler';
+import OnboardingStatusCheck from '@/components/shared/OnboardingStatusCheck';
 import { Suspense } from 'react';
-import '../globals.css';
+
+import '@/app/globals.css';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin', 'vietnamese'],
@@ -30,6 +32,19 @@ const playfair = Playfair_Display({
 const beVietnam = Be_Vietnam_Pro({
   subsets: ['latin', 'vietnamese'],
   variable: '--font-sans',
+  weight: ['300', '400', '500', '600', '700', '800'],
+});
+
+const notoSerif = Noto_Serif({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-noto-serif',
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+});
+
+const notoSans = Noto_Sans({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-noto-sans',
   weight: ['300', '400', '500', '600', '700', '800'],
 });
 
@@ -60,7 +75,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${beVietnam.variable} ${cormorant.variable} ${playfair.variable} scroll-smooth`}>
+    <html lang={locale} suppressHydrationWarning className={`${beVietnam.variable} ${cormorant.variable} ${playfair.variable} ${notoSerif.variable} ${notoSans.variable} scroll-smooth`}>
       <body className="bg-background text-foreground antialiased min-h-screen relative font-sans">
         
         {/* Subtle background organic grain layer */}
@@ -69,7 +84,9 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Suspense fallback={null}>
             <SSOHandler />
+            <OnboardingStatusCheck />
           </Suspense>
+
           <div className="relative z-10 flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow">

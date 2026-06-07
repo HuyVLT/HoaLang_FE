@@ -7,7 +7,7 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { Link } from '@/navigation';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Compass, Mail, Lock, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Compass, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { SectionLabel, OrnamentDivider } from '@/components/shared';
 import api from '@/lib/api';
 
@@ -24,6 +24,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const emailParam = params.get('email');
+      if (emailParam) {
+        setEmail(emailParam);
+      }
+    }
   }, []);
 
   // If already logged in, redirect to home
@@ -62,7 +69,7 @@ export default function LoginPage() {
         }
 
         login(mappedUser, accessToken, refreshToken);
-        toast.success('Đăng nhập hệ thống thành công!');
+        toast.success(t('auth.loginSuccess'));
 
         // Dynamic redirect based on role
         if (user.role === 'ADMIN') {
@@ -73,19 +80,19 @@ export default function LoginPage() {
           router.push('/');
         }
       } else {
-        toast.error(response.data?.message || 'Đăng nhập thất bại.');
+        toast.error(response.data?.message || t('auth.loginFailed'));
       }
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       console.error('Login error:', err);
       
-      let errorMessage = 'Email hoặc mật khẩu không chính xác.';
+      let errorMessage = t('auth.errorAuth');
       
       if (err.response?.data) {
         if (err.response.data.message) {
           errorMessage = err.response.data.message;
         } else if (typeof err.response.data === 'string') {
           if (err.response.data.includes('<!DOCTYPE html>') || err.response.data.includes('<html')) {
-            errorMessage = 'Lỗi kết nối: Không thể kết nối tới máy chủ Back-End (404 Not Found).';
+            errorMessage = t('auth.connectionError');
           } else {
             errorMessage = err.response.data;
           }
@@ -144,14 +151,13 @@ export default function LoginPage() {
         {/* Centerpiece Quote block */}
         <div className="space-y-6 relative z-10 my-auto text-left max-w-lg mx-auto">
           <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-            Di sản truyền thống / Vietnamese Craft Heritage
+            {t('auth.loginQuoteTitle')}
           </span>
-          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight">
-            Giữ gìn hồn cốt,<br />
-            nâng niu bàn tay Việt.
+          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight whitespace-pre-line">
+            {t('auth.loginQuoteHeader')}
           </h1>
           <p className="font-sans text-xs text-cream/70 leading-relaxed font-light">
-            Mỗi sợi tơ tằm Hàng Kênh, mỗi bình gốm đỏ Bát Tràng là tinh hoa trầm tích ngàn năm của giọt nước sông Hồng và phù sa đất mẹ. Đăng nhập để kiến thiết và giới thiệu di sản của bạn tới thế giới.
+            {t('auth.loginQuoteDesc')}
           </p>
 
           <OrnamentDivider className="text-gold/30 !justify-start" />
@@ -159,12 +165,12 @@ export default function LoginPage() {
           {/* Core analytical attributes */}
           <div className="grid grid-cols-2 gap-6 pt-4">
             <div className="space-y-1">
-              <span className="text-xl font-heading font-bold italic text-gold block">100%</span>
-              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">Sản phẩm chính gốc / Heritage Origin</span>
+              <span className="text-xl font-heading font-bold italic text-gold block">{t('auth.loginStat1Val')}</span>
+              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">{t('auth.loginStat1Lbl')}</span>
             </div>
             <div className="space-y-1">
-              <span className="text-xl font-heading font-bold italic text-gold block">SaaS M-T</span>
-              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">Cơ sở dữ liệu biệt lập / Isolated Tenant DB</span>
+              <span className="text-xl font-heading font-bold italic text-gold block">{t('auth.loginStat2Val')}</span>
+              <span className="text-[9px] uppercase tracking-wider text-cream/60 block">{t('auth.loginStat2Lbl')}</span>
             </div>
           </div>
         </div>
@@ -172,7 +178,7 @@ export default function LoginPage() {
         {/* Footer brand info */}
         <div className="flex items-center justify-between text-[10px] text-cream/45 relative z-10 font-sans tracking-wide">
           <span>&copy; {new Date().getFullYear()} HoaLang Platform</span>
-          <span>Tinh hoa Làng nghề Việt / Artisanal Heritage</span>
+          <span>{t('auth.artisanalHeritage')}</span>
         </div>
       </div>
 
@@ -195,12 +201,12 @@ export default function LoginPage() {
         >
           {/* Form Header */}
           <div className="space-y-2 text-left mb-8">
-            <SectionLabel label="Cửa ngõ quản trị / Credentials Gateway" />
+            <SectionLabel label={t('auth.credentialsGateway')} />
             <h2 className="font-heading text-3xl font-bold italic text-charcoal leading-none">
               {t('auth.loginTitle')}
             </h2>
             <p className="font-sans text-xs text-ash font-light leading-relaxed">
-              Truy cập bảng điều khiển vận hành Làng nghề hoặc cổng Quản lý Hệ thống.
+              {t('auth.loginSubtitle')}
             </p>
           </div>
 
@@ -216,7 +222,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   type="email"
-                  placeholder="admin@hoalang.vn hoặc email của bạn"
+                  placeholder={t('auth.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -233,14 +239,14 @@ export default function LoginPage() {
                   <span>{t('auth.passwordLabel')}</span>
                 </label>
                 <Link href="/auth/forgot-password" className="text-[10px] font-semibold uppercase tracking-wider text-bronze hover:text-lacquer transition-colors">
-                  Quên mật khẩu?
+                  {t('auth.forgotPasswordLink')}
                 </Link>
               </div>
               
               <div className="relative">
                 <input
                   type="password"
-                  placeholder="Nhập mật khẩu..."
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -249,25 +255,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Default credentials alert box */}
-            <div className="bg-parchment border border-stone rounded-xs p-4 text-left space-y-2.5">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Tài khoản thử nghiệm hệ thống</span>
-              </span>
-              
-              <div className="font-mono text-[10px] text-ash space-y-1 leading-normal">
-                <div>
-                  • Super Admin: <span className="font-semibold text-charcoal">admin@hoalang.vn</span> / <span className="font-semibold text-charcoal">Admin@123</span>
-                </div>
-                <div>
-                  • Bát Tràng Owner: <span className="font-semibold text-charcoal">owner@battrang.vn</span> / <span className="font-semibold text-charcoal">TruongHuy888!</span>
-                </div>
-                <div>
-                  • Traveler Demo: <span className="font-semibold text-charcoal">traveler@gmail.com</span> / <span className="font-semibold text-charcoal">TruongHuy888!</span>
-                </div>
-              </div>
-            </div>
+
 
             {/* Form action submission */}
             <div className="space-y-4">
@@ -283,7 +271,7 @@ export default function LoginPage() {
                   </>
                 ) : (
                   <>
-                    <span>Đăng Nhập Hệ Thống</span>
+                    <span>{t('auth.submitLoginBtn')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
@@ -295,7 +283,7 @@ export default function LoginPage() {
                   <div className="w-full border-t border-stone/50"></div>
                 </div>
                 <span className="relative px-3 bg-cream font-heading text-xs italic text-ash">
-                  hoặc / or
+                  {t('auth.orText')}
                 </span>
               </div>
 
@@ -314,7 +302,7 @@ export default function LoginPage() {
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
-                <span>Đăng Nhập Bằng Google</span>
+                <span>{t('auth.googleLoginBtn')}</span>
               </button>
 
               <div className="text-center text-xs text-ash leading-relaxed font-light">

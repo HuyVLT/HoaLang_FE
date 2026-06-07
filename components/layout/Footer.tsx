@@ -133,7 +133,7 @@ export default function Footer() {
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 text-accent shrink-0" />
                 <span className="text-sm text-secondary-foreground/80">
-                  contact@hoalang.vn
+                  contact@hoalang.site
                 </span>
               </li>
             </ul>

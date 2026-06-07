@@ -8,7 +8,6 @@ const handleI18nRouting = createMiddleware({
   localePrefix: 'always'
 });
 
-const TENANT_SLUGS = ['bat-trang', 'van-phuc', 'non-nuoc'];
 const MAIN_DOMAINS = ['hoalang.site', 'www.hoalang.site', 'localhost'];
 
 function convertSubdomainToSlug(subdomain: string): string {
@@ -66,40 +65,37 @@ export function middleware(request: NextRequest) {
   if (subdomain && !isMainDomain) {
     const slug = convertSubdomainToSlug(subdomain);
 
-    if (TENANT_SLUGS.includes(slug)) {
-      // Find which locale prefix is in the current pathname
-      // Since next-intl already ran, pathname should start with a locale (e.g. /vi/products or /vi)
-      const pathnameParts = pathname.split('/');
-      const firstSegment = pathnameParts[1];
-      
-      const isLocale = locales.includes(firstSegment as typeof locales[number]);
-      const locale = isLocale ? firstSegment : defaultLocale;
-      const pathAfterLocale = isLocale 
-        ? '/' + pathnameParts.slice(2).join('/') 
-        : pathname;
+    // Find which locale prefix is in the current pathname
+    // Since next-intl already ran, pathname should start with a locale (e.g. /vi/products or /vi)
+    const pathnameParts = pathname.split('/');
+    const firstSegment = pathnameParts[1];
+    
+    const isLocale = locales.includes(firstSegment as typeof locales[number]);
+    const locale = isLocale ? firstSegment : defaultLocale;
+    const pathAfterLocale = isLocale 
+      ? '/' + pathnameParts.slice(2).join('/') 
+      : pathname;
 
-      // Rewrite URL internally to /[locale]/tenant/[slug]/[path]
-      const newPathname = `/${locale}/tenant/${slug}${pathAfterLocale === '/' ? '' : pathAfterLocale}`;
-      url.pathname = newPathname;
-
-      console.log(`[Middleware Rewrite] ${hostname}${pathname} -> ${newPathname}`);
-
-      // Create a rewrite response and propagate headers/cookies from the next-intl response
-      const rewriteResponse = NextResponse.rewrite(url);
-      
-      // Copy cookies and headers set by next-intl to preserve locale state
-      response.headers.forEach((value, key) => {
-        rewriteResponse.headers.set(key, value);
-      });
-
-      return rewriteResponse;
+    // If the path already starts with /tenant/[slug], don't rewrite it again!
+    if (pathAfterLocale.startsWith(`/tenant/${slug}`)) {
+      return response;
     }
 
-    // Invalid subdomain -> 404 rewrite
-    const isLocale = locales.includes(pathname.split('/')[1] as typeof locales[number]);
-    const locale = isLocale ? pathname.split('/')[1] : defaultLocale;
-    url.pathname = `/${locale}/not-found`;
-    return NextResponse.rewrite(url);
+    // Rewrite URL internally to /[locale]/tenant/[slug]/[path]
+    const newPathname = `/${locale}/tenant/${slug}${pathAfterLocale === '/' ? '' : pathAfterLocale}`;
+    url.pathname = newPathname;
+
+    console.log(`[Middleware Rewrite] ${hostname}${pathname} -> ${newPathname}`);
+
+    // Create a rewrite response and propagate headers/cookies from the next-intl response
+    const rewriteResponse = NextResponse.rewrite(url);
+    
+    // Copy cookies and headers set by next-intl to preserve locale state
+    response.headers.forEach((value, key) => {
+      rewriteResponse.headers.set(key, value);
+    });
+
+    return rewriteResponse;
   }
 
   // 6. Main domain -> run normally with i18n headers

@@ -57,32 +57,88 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
 
   useEffect(() => {
     setMounted(true);
-    
-    // Read session storage values from onboarding completed state if present
-    let savedSlug = sessionStorage.getItem('hoalang_tenant_slug');
-    let savedName = sessionStorage.getItem('hoalang_tenant_name');
-
-    // Fallback: If not in sessionStorage but user has tenants populated in authStore
-    if (!savedSlug && user && user.tenants && user.tenants.length > 0) {
-      savedSlug = user.tenants[0].slug;
-      savedName = user.tenants[0].name;
-      if (savedSlug) sessionStorage.setItem('hoalang_tenant_slug', savedSlug);
-      if (savedName) sessionStorage.setItem('hoalang_tenant_name', savedName || '');
-    }
-
-    if (savedSlug) setTenantSlug(savedSlug);
-    if (savedName) setTenantName(savedName);
-  }, [user]);
+  }, []);
 
   useEffect(() => {
-    if (mounted) {
-      if (!isAuthenticated || !user) {
-        toast.error('Vui lòng đăng nhập để truy cập Bảng quản trị.');
-        router.replace('/auth/login');
-      } else if (user.role !== 'village_owner') {
-        toast.error('Tài khoản của bạn không có quyền truy cập Bảng quản trị.');
-        router.replace('/');
+    if (!mounted) return;
+
+    // 1. Authentication and basic role check
+    if (!isAuthenticated || !user) {
+      toast.error('Vui lòng đăng nhập để truy cập Bảng quản trị.');
+      router.replace('/auth/login');
+      return;
+    }
+
+    if (user.role !== 'village_owner') {
+      toast.error('Tài khoản của bạn không có quyền truy cập Bảng quản trị.');
+      router.replace('/');
+      return;
+    }
+
+    // 2. Resolve current subdomain slug
+    const host = window.location.hostname;
+    let subdomain = '';
+    if (host.includes('localhost')) {
+      const parts = host.split('.localhost');
+      if (parts[0] !== 'localhost') {
+        subdomain = parts[0];
+      }
+    } else {
+      const parts = host.split('.');
+      if (parts.length > 2) {
+        subdomain = parts[0];
+        if (subdomain === 'www') subdomain = '';
+      }
+    }
+
+    const convertSubdomainToSlug = (sub: string): string => {
+      const map: Record<string, string> = {
+        'battrang': 'bat-trang',
+        'vanphuc': 'van-phuc',
+        'nonnuoc': 'non-nuoc',
+      };
+      return map[sub] || sub;
+    };
+
+    const currentSlug = convertSubdomainToSlug(subdomain);
+    const userTenants = user.tenants || [];
+
+    // 3. Subdomain and Authorization matching
+    if (!currentSlug) {
+      // Main domain check: redirect them to their specific subdomain
+      if (userTenants.length > 0) {
+        const userSlug = userTenants[0].slug;
+        const userTenantName = userTenants[0].name;
+        sessionStorage.setItem('hoalang_tenant_slug', userSlug);
+        sessionStorage.setItem('hoalang_tenant_name', userTenantName || '');
+        
+        console.log(`[DashboardAuth] Main domain accessed, redirecting to tenant: ${userSlug}`);
+        window.location.href = getTenantUrl(userSlug, 'vi/dashboard');
       } else {
+        toast.error('Tài khoản của bạn chưa liên kết với làng nghề nào.');
+        router.replace('/');
+      }
+    } else {
+      // Subdomain check: verify user owns this subdomain slug
+      const isOwnerOfCurrentTenant = userTenants.some(t => t.slug === currentSlug);
+
+      if (!isOwnerOfCurrentTenant) {
+        if (userTenants.length > 0) {
+          toast.error('Bạn không có quyền quản lý cửa hàng này. Đang chuyển hướng về cửa hàng của bạn...');
+          window.location.href = getTenantUrl(userTenants[0].slug, 'vi/dashboard');
+        } else {
+          toast.error('Tài khoản của bạn không có quyền truy cập cửa hàng này.');
+          router.replace('/');
+        }
+      } else {
+        // Owner matches: set current tenant slug and name state
+        const matchingTenant = userTenants.find(t => t.slug === currentSlug);
+        if (matchingTenant) {
+          setTenantSlug(matchingTenant.slug);
+          setTenantName(matchingTenant.name);
+          sessionStorage.setItem('hoalang_tenant_slug', matchingTenant.slug);
+          sessionStorage.setItem('hoalang_tenant_name', matchingTenant.name || '');
+        }
         setIsAuthorized(true);
       }
     }

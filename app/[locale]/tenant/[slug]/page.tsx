@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Compass, Sparkles, AlertCircle, ShoppingBag, LogOut } from 'lucide-react';
 import { useLocale } from 'next-intl';
+import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageConfig } from '@/types/tenant';
 import { getMockTenantConfig } from '@/lib/mockTenants';
@@ -36,6 +37,7 @@ function TenantHeader() {
   const { theme } = useTenantTheme();
   const [scrolled, setScrolled] = useState(false);
   const locale = useLocale();
+  const { slug } = useParams() as { slug: string };
 
   const { user, isAuthenticated, logout } = useAuthStore();
   const cartItems = useCartStore((state) => state.items);
@@ -102,7 +104,7 @@ function TenantHeader() {
         <div className="flex items-center gap-4">
           {/* Visual Builder Shortcut */}
           <a
-            href={`./${theme.logo?.includes('van-phuc') || theme.primaryColor === '#8B1A1A' ? 'van-phuc' : 'bat-trang'}/builder`}
+            href={`/${locale}/tenant/${slug}/builder`}
             className="hidden sm:inline-flex items-center gap-1.5 bg-primary text-primary-foreground font-sans font-semibold uppercase tracking-wider text-[10px] px-4 py-2 rounded-sm border border-primary hover:brightness-110 shadow-sm transition-all animate-ease-out"
           >
             <Sparkles className="w-3.5 h-3.5 text-accent" />
