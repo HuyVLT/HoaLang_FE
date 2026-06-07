@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Compass,
@@ -21,23 +21,26 @@ import {
 } from 'lucide-react';
 import { SectionLabel, ImageUploader, AddressAutocomplete, VnAddressSelect } from '@/components/shared';
 import TemplatePicker from '@/components/onboarding/TemplatePicker';
+import { useTranslations } from 'next-intl';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const CATEGORIES = [
-  { id: 'pottery', label: 'Gốm sứ / Pottery', icon: Flame },
-  { id: 'silk', label: 'Dệt lụa / Silk', icon: Scissors },
-  { id: 'painting', label: 'Tranh điệp / Painting', icon: ImageIcon },
-  { id: 'lacquer', label: 'Sơn mài / Lacquer', icon: Paintbrush },
-  { id: 'stone carving', label: 'Đá khắc / Stone', icon: Gem },
-  { id: 'bamboo', label: 'Mây tre / Bamboo', icon: Trees },
-  { id: 'embroidery', label: 'Thêu ren / Embroidery', icon: Grid },
-];
-
 export default function OnboardingWizard() {
+  const t = useTranslations('onboarding');
+  
+  const CATEGORIES = [
+    { id: 'pottery', label: t('categoryPottery'), icon: Flame },
+    { id: 'silk', label: t('categorySilk'), icon: Scissors },
+    { id: 'painting', label: t('categoryPainting'), icon: ImageIcon },
+    { id: 'lacquer', label: t('categoryLacquer'), icon: Paintbrush },
+    { id: 'stone carving', label: t('categoryStone'), icon: Gem },
+    { id: 'bamboo', label: t('categoryBamboo'), icon: Trees },
+    { id: 'embroidery', label: t('categoryEmbroidery'), icon: Grid },
+  ];
+
   const [step, setStep] = useState(1);
   
   // Step 1: Basic Info States
@@ -50,6 +53,10 @@ export default function OnboardingWizard() {
   const [logo, setLogo] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [address, setAddress] = useState('');
+  const [email, setEmail] = useState('');
+  const [artisanName, setArtisanName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [description, setDescription] = useState('');
   
   // Custom High-Fidelity Notification Toast state
   const [notification, setNotification] = useState<{
@@ -97,8 +104,27 @@ export default function OnboardingWizard() {
 
   const handleNextStep = () => {
     if (step === 1) {
-      if (!name || !slug) {
-        toastAlert('Vui lòng điền Tên làng nghề và Đường dẫn rút gọn.');
+      if (
+        !name.trim() ||
+        !slug.trim() ||
+        !email.trim() ||
+        !category ||
+        !artisanName.trim() ||
+        !phone.trim() ||
+        !address.trim() ||
+        !province.trim() ||
+        !districtWard.trim()
+      ) {
+        toastAlert(t('validationFieldsError'));
+        return;
+      }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        toastAlert(t('validationEmailError'));
+        return;
+      }
+      const cleanPhone = phone.replace(/[\s.-]/g, '');
+      if (!/^[0-9]{9,11}$/.test(cleanPhone)) {
+        toastAlert(t('validationPhoneError'));
         return;
       }
       setStep(2);
@@ -115,67 +141,83 @@ export default function OnboardingWizard() {
   // Triggers the real backend provisioning or simulates gracefully if offline
   const triggerProvisioning = async () => {
     setProvisioningStatus('database');
-    setStatusMessage('Đang khởi tạo cơ sở dữ liệu di sản (Core Mongoose)...');
-
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+    setStatusMessage(t('statusConnecting'));
 
     try {
       // Step 1: Simulating DB spin up delay
       await new Promise((r) => setTimeout(r, 1200));
       
       setProvisioningStatus('collections');
-      setStatusMessage('Đang thiết lập hệ quản trị dữ liệu (Sản phẩm & Khóa học)...');
+      setStatusMessage(t('statusCreatingRequest'));
       await new Promise((r) => setTimeout(r, 1200));
 
       setProvisioningStatus('template');
-      setStatusMessage('Đang dệt phác thảo giao diện starter template...');
+      setStatusMessage(t('statusSubmitting'));
 
-      // Make actual POST request to onboarding API
-      const response = await axios.post(`${backendUrl}/tenant/onboarding`, {
+      // Make actual POST request to onboarding API using custom api client to pass auth token
+      const response = await api.post('/tenant/onboarding', {
         name,
         slug,
+        email,
         category,
         province,
         logo: logo || undefined,
         coverImage: coverImage || undefined,
         templateId,
+        artisanName,
+        phone,
+        description,
       });
 
       if (response.data && response.data.success) {
         await new Promise((r) => setTimeout(r, 1000));
         setProvisioningStatus('success');
-        setStatusMessage('Khởi tạo không gian di sản thành công!');
+        setStatusMessage(t('successMessage', { email }));
         setNotification({
-          message: 'Khởi tạo không gian di sản thành công!',
+          message: t('successToast'),
           type: 'success',
         });
         
-        // Save tenant info to session storage for easy dashboard lookups
-        sessionStorage.setItem('hoalang_tenant_slug', slug);
-        sessionStorage.setItem('hoalang_tenant_name', name);
+        // Save to localStorage for revisit status check
+        localStorage.setItem('hoalang_onboarding_email', email);
+        localStorage.setItem('hoalang_onboarding_slug', slug);
+        localStorage.setItem('hoalang_onboarding_name', name);
       } else {
         throw new Error('Onboarding API failed');
       }
     } catch (error) {
-      console.warn('[OnboardingProvision] Backend connection failed, resolving online simulation:', error);
-      
-      // Standalone simulation fallback for local demo offline robustness
+      console.warn('[OnboardingProvision] Onboarding submit failed:', error);
+      const err = error as { response?: { data?: { message?: string } } };
+      if (err.response) {
+        // Backend actually responded with an error (e.g. 409 Conflict, 400 Bad Request, etc.)
+        setProvisioningStatus('error');
+        const errorMsg = err.response.data?.message || 'Có lỗi xảy ra khi nộp hồ sơ.';
+        setStatusMessage(errorMsg);
+        setNotification({
+          message: errorMsg,
+          type: 'error',
+        });
+        return;
+      }
+
+      // Standalone simulation fallback for local demo offline robustness (network down / no response)
       await new Promise((r) => setTimeout(r, 1000));
       setProvisioningStatus('success');
-      setStatusMessage('Khởi tạo không gian mô phỏng thành công!');
+      setStatusMessage(t('offlineSuccessMessage'));
       setNotification({
-        message: 'Khởi tạo không gian mô phỏng thành công!',
+        message: t('offlineSuccessToast'),
         type: 'success',
       });
       
-      sessionStorage.setItem('hoalang_tenant_slug', slug);
-      sessionStorage.setItem('hoalang_tenant_name', name);
+      localStorage.setItem('hoalang_onboarding_email', email || 'demo@hoalang.site');
+      localStorage.setItem('hoalang_onboarding_slug', slug);
+      localStorage.setItem('hoalang_onboarding_name', name);
     }
   };
 
   const handleGoToDashboard = () => {
-    // Redirect to dashboard website editor scoped to their newly created slug
-    window.location.href = `/vi/dashboard/website?slug=${slug}`;
+    // Redirect to home page instead of dashboard
+    window.location.href = '/';
   };
 
   return (
@@ -189,11 +231,11 @@ export default function OnboardingWizard() {
           <div className="border-b border-stone/30 pb-6 mb-8 text-left">
             <div className="flex items-center justify-between">
               <div>
-                <SectionLabel label={`BƯỚC ${step} TRÊN 3 / STEP ${step} OF 3`} className="mb-2" />
+                <SectionLabel label={t('stepLabel', { step })} className="mb-2" />
                 <h2 className="font-heading text-3xl font-semibold text-charcoal italic">
-                  {step === 1 && 'Khởi Tạo Không Gian Làng Nghề'}
-                  {step === 2 && 'Lựa Chọn Bản Thiết Kế Starter'}
-                  {step === 3 && 'Thiết Lập Môi Trường Điện Toán'}
+                  {step === 1 && t('titleStep1')}
+                  {step === 2 && t('titleStep2')}
+                  {step === 3 && t('titleStep3')}
                 </h2>
               </div>
               <Compass className="w-8 h-8 text-accent animate-spin duration-3000 shrink-0 hidden sm:block" />
@@ -230,14 +272,14 @@ export default function OnboardingWizard() {
                     {/* Village Name */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
-                        Tên làng nghề / Village Name
+                        {t('nameLabel')} <span className="text-lacquer">*</span>
                       </label>
                       <input
                         type="text"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Ví dụ: Làng Gốm Bát Tràng"
+                        placeholder={t('namePlaceholder')}
                         className="w-full bg-transparent border-b border-stone text-ink py-2 focus:outline-none focus:border-primary text-sm font-medium"
                       />
                     </div>
@@ -245,7 +287,7 @@ export default function OnboardingWizard() {
                     {/* Slug & domain preview */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
-                        Đường dẫn rút gọn / Slug Domain
+                        {t('slugLabel')} <span className="text-lacquer">*</span>
                       </label>
                       <div className="flex items-center gap-1 border-b border-stone py-2">
                         <input
@@ -256,22 +298,40 @@ export default function OnboardingWizard() {
                             setSlug(e.target.value);
                             setIsSlugManual(true);
                           }}
-                          placeholder="bat-trang"
+                          placeholder={t('slugPlaceholder')}
                           className="bg-transparent text-ink focus:outline-none text-sm font-semibold flex-grow max-w-[150px]"
                         />
                         <span className="text-xs text-ash/80 font-medium">.hoalang.site</span>
                       </div>
                       <p className="text-[10px] text-ash italic tracking-wide">
-                        * Địa chỉ truy cập website độc bản của làng nghề.
+                        {t('slugHelp')}
+                      </p>
+                    </div>
+
+                    {/* Email Input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
+                        {t('emailLabel')} <span className="text-lacquer">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder={t('emailPlaceholder')}
+                        className="w-full bg-transparent border-b border-stone text-ink py-2 focus:outline-none focus:border-primary text-sm font-medium"
+                      />
+                      <p className="text-[10px] text-ash italic tracking-wide">
+                        {t('emailHelp')}
                       </p>
                     </div>
 
                     {/* Category Selection Carousel/Grid */}
                     <div className="space-y-2">
                       <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
-                        Lĩnh vực nghệ thuật / Craft Category
+                        {t('categoryLabel')} <span className="text-lacquer">*</span>
                       </label>
-                      <div className="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto pr-1">
+                      <div className="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto pr-1">
                         {CATEGORIES.map((cat) => (
                           <button
                             key={cat.id}
@@ -295,6 +355,48 @@ export default function OnboardingWizard() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Artisan Name */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
+                        {t('artisanNameLabel')} <span className="text-lacquer">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={artisanName}
+                        onChange={(e) => setArtisanName(e.target.value)}
+                        placeholder={t('artisanNamePlaceholder')}
+                        className="w-full bg-transparent border-b border-stone text-ink py-2 focus:outline-none focus:border-primary text-sm font-medium"
+                      />
+                    </div>
+
+                    {/* Phone Number */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
+                        {t('phoneLabel')} <span className="text-lacquer">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder={t('phonePlaceholder')}
+                        className="w-full bg-transparent border-b border-stone text-ink py-2 focus:outline-none focus:border-primary text-sm font-medium"
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-ash block">
+                        {t('descriptionLabel')}
+                      </label>
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder={t('descriptionPlaceholder')}
+                        rows={2}
+                        className="w-full bg-transparent border-b border-stone text-ink py-2 focus:outline-none focus:border-primary text-sm font-medium resize-none"
+                      />
+                    </div>
                   </div>
 
                   {/* Right Column details (Province, Logo, Cover uploads) */}
@@ -317,20 +419,20 @@ export default function OnboardingWizard() {
 
                     {/* Logo upload */}
                     <ImageUploader
-                      label="Ảnh biểu trưng / Logo Image"
+                      label={t('logoLabel')}
                       value={logo}
                       onChange={setLogo}
                       aspectRatio="square"
-                      placeholder="Tải lên ảnh biểu trưng tròn/vuông của làng nghề"
+                      placeholder={t('logoPlaceholder')}
                     />
 
                     {/* Cover Photo upload */}
                     <ImageUploader
-                      label="Ảnh bìa đại diện / Cover Photo"
+                      label={t('coverLabel')}
                       value={coverImage}
                       onChange={setCoverImage}
                       aspectRatio="video"
-                      placeholder="Tải lên bức ảnh đại diện làng nghề đẹp nhất"
+                      placeholder={t('coverPlaceholder')}
                     />
                   </div>
                 </motion.div>
@@ -380,15 +482,23 @@ export default function OnboardingWizard() {
 
                   <div className="space-y-3">
                     <h3 className="font-heading text-2xl italic font-semibold text-charcoal">
-                      {provisioningStatus === 'database' && 'Khởi Tạo Cơ Sở Dữ Liệu...'}
-                      {provisioningStatus === 'collections' && 'Cấu Hình Phân Phối...'}
-                      {provisioningStatus === 'template' && 'Áp Dụng Thiết Kế...'}
-                      {provisioningStatus === 'success' && 'Không Gian Đã Sẵn Sàng!'}
-                      {provisioningStatus === 'error' && 'Khởi Tạo Thất Bại'}
+                      {provisioningStatus === 'database' && t('loadingDatabase')}
+                      {provisioningStatus === 'collections' && t('loadingCollections')}
+                      {provisioningStatus === 'template' && t('loadingTemplate')}
+                      {provisioningStatus === 'success' && t('loadingSuccess')}
+                      {provisioningStatus === 'error' && t('loadingError')}
                     </h3>
                     <p className="font-sans text-sm text-ash font-light max-w-xs mx-auto leading-relaxed">
                       {statusMessage}
                     </p>
+                    {provisioningStatus === 'success' && (
+                      <div className="mt-4 mx-auto max-w-sm bg-cream border border-stone/50 rounded-sm px-4 py-3 text-left">
+                        <p className="font-sans text-[11px] text-charcoal leading-relaxed">
+                          <span className="text-gold font-semibold">✉</span>{' '}
+                          {t('emailConfirmationNotice', { email })}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -398,14 +508,30 @@ export default function OnboardingWizard() {
           {/* Onboarding Wizard Footer */}
           <div className="border-t border-stone/30 pt-6 mt-8 flex items-center justify-between shrink-0 select-none">
             {/* Backward step button */}
-            {step > 1 && step < 3 ? (
+            {step === 1 ? (
               <button
                 type="button"
-                onClick={() => setStep(step - 1)}
+                onClick={() => window.location.href = '/'}
                 className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-ash hover:text-primary transition-colors font-sans"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Quay lại / Back</span>
+                <span>{t('backToHome')}</span>
+              </button>
+            ) : (step === 3 && provisioningStatus === 'error') || (step > 1 && step < 3) ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (step === 3) {
+                    setStep(1); // Go back to Basic Info to let user edit fields (e.g. duplicate slug/email)
+                    setProvisioningStatus('idle');
+                  } else {
+                    setStep(step - 1);
+                  }
+                }}
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-ash hover:text-primary transition-colors font-sans"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>{t('backBtn')}</span>
               </button>
             ) : (
               <div />
@@ -418,7 +544,7 @@ export default function OnboardingWizard() {
                 onClick={handleNextStep}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-sans font-semibold uppercase tracking-[0.12em] text-[10px] px-8 py-3.5 rounded-sm hover:brightness-110 shadow-sm active:scale-[0.98] transition-all"
               >
-                <span>Tiếp tục / Continue</span>
+                <span>{t('continueBtn')}</span>
                 <ArrowRight className="w-4 h-4 text-accent" />
               </button>
             ) : provisioningStatus === 'success' ? (
@@ -428,7 +554,7 @@ export default function OnboardingWizard() {
                 className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground font-sans font-semibold uppercase tracking-[0.12em] text-[11px] px-8 py-4 rounded-sm hover:brightness-110 shadow-sm animate-pulse active:scale-[0.98] transition-all"
               >
                 <Sparkles className="w-4 h-4 text-accent" />
-                <span>Khám phá Dashboard / Go to Dashboard</span>
+                <span>{t('backToHome')}</span>
               </button>
             ) : (
               <div />
@@ -457,7 +583,7 @@ export default function OnboardingWizard() {
             )}
             <div className="space-y-1 relative z-10">
               <h4 className="text-xs font-bold uppercase tracking-wider text-charcoal">
-                {notification.type === 'success' ? 'Thành Công / Success' : 'Thông Báo / Notice'}
+                {notification.type === 'success' ? t('toastTitleSuccess') : t('toastTitleNotice')}
               </h4>
               <p className="text-xs text-ash font-light leading-relaxed">
                 {notification.message}

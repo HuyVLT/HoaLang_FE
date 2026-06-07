@@ -43,12 +43,12 @@ function ResetPasswordContent() {
     e.preventDefault();
 
     if (!token) {
-      toast.error('Không tìm thấy mã Token khôi phục mật khẩu hợp lệ.');
+      toast.error(t('resetPasswordInvalidTokenTitle'));
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error('Mật khẩu xác nhận không trùng khớp.');
+      toast.error(t('resetPasswordMismatch'));
       return;
     }
 
@@ -61,14 +61,14 @@ function ResetPasswordContent() {
       });
 
       if (response.data && response.data.success) {
-        toast.success(response.data.message || 'Đặt lại mật khẩu thành công!');
+        toast.success(response.data.message || t('resetPasswordSuccess'));
         setSuccess(true);
       } else {
-        toast.error(response.data?.message || 'Đặt lại mật khẩu thất bại.');
+        toast.error(response.data?.message || t('resetPasswordError'));
       }
     } catch (err: unknown) {
       console.error('Reset password error:', err);
-      let errorMessage = 'Đặt lại mật khẩu thất bại. Token có thể đã hết hạn hoặc không hợp lệ.';
+      let errorMessage = t('resetPasswordError');
       
       const errorWithResponse = err as {
         response?: {
@@ -82,7 +82,7 @@ function ResetPasswordContent() {
       if (errorWithResponse.response?.data?.message) {
         const rawMsg = errorWithResponse.response.data.message;
         if (rawMsg.includes('password') && rawMsg.includes('Validation failed')) {
-          errorMessage = 'Mật khẩu tối thiểu 6 ký tự, gồm ít nhất 1 chữ hoa, 1 chữ số và 1 ký tự đặc biệt.';
+          errorMessage = t('validationPassword');
         } else {
           errorMessage = rawMsg;
         }
@@ -138,14 +138,13 @@ function ResetPasswordContent() {
         {/* Centerpiece Quote block */}
         <div className="space-y-6 relative z-10 my-auto text-left max-w-lg mx-auto">
           <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-            Di sản truyền thống / Vietnamese Craft Heritage
+            {t('loginQuoteTitle')}
           </span>
-          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight">
-            Chìa khóa mở lối,<br />
-            khởi đầu trang mới.
+          <h1 className="font-heading text-4xl lg:text-5xl font-light italic text-cream leading-tight whitespace-pre-line">
+            {t('resetPasswordQuoteHeader')}
           </h1>
           <p className="font-sans text-xs text-cream/70 leading-relaxed font-light">
-            Nhập mật khẩu mới bảo mật của bạn. Chúng tôi khuyến nghị sử dụng mật khẩu mạnh để bảo vệ tuyệt đối dữ liệu di sản và thông tin tài khoản làng nghề của bạn.
+            {t('resetPasswordQuoteDesc')}
           </p>
 
           <OrnamentDivider className="text-gold/30 !justify-start" />
@@ -154,7 +153,7 @@ function ResetPasswordContent() {
         {/* Footer brand info */}
         <div className="flex items-center justify-between text-[10px] text-cream/45 relative z-10 font-sans tracking-wide">
           <span>&copy; {new Date().getFullYear()} HoaLang Platform</span>
-          <span>Tinh hoa Làng nghề Việt / Artisanal Heritage</span>
+          <span>{t('artisanalHeritage')}</span>
         </div>
       </div>
 
@@ -190,13 +189,13 @@ function ResetPasswordContent() {
 
                 <div className="space-y-2">
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-                    Lỗi xác thực / Validation Error
+                    {t('resetPasswordErrorTitle')}
                   </span>
                   <h3 className="font-heading text-3xl font-light italic text-charcoal">
-                    {t('resetPasswordError').split('.')[0]}
+                    {t('resetPasswordErrorTitle')}
                   </h3>
                   <p className="font-sans text-xs text-ash leading-relaxed font-light px-2">
-                    Không thể tìm thấy mã khôi phục hợp lệ. Đường dẫn có thể đã bị thay đổi hoặc không đầy đủ. Vui lòng kiểm tra lại.
+                    {t('resetPasswordErrorDesc')}
                   </p>
                 </div>
 
@@ -204,7 +203,7 @@ function ResetPasswordContent() {
 
                 <div className="pt-2">
                   <Link href="/auth/forgot-password" className="inline-flex items-center gap-2 bg-lacquer text-cream font-sans text-xs font-semibold uppercase tracking-widest px-8 py-3.5 rounded-xs hover:brightness-110 shadow-sm transition-all">
-                    <span>Khôi phục lại / Retry</span>
+                    <span>{t('retry')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -219,7 +218,7 @@ function ResetPasswordContent() {
               >
                 {/* Form Header */}
                 <div className="space-y-2 text-left">
-                  <SectionLabel label="Thiết lập mật khẩu / New credentials" />
+                  <SectionLabel label={t('resetPasswordTitle')} />
                   <h2 className="font-heading text-3xl font-bold italic text-charcoal leading-none">
                     {t('resetPasswordTitle')}
                   </h2>
@@ -238,7 +237,7 @@ function ResetPasswordContent() {
                     
                     <input
                       type="password"
-                      placeholder="Tối thiểu 6 ký tự, 1 chữ hoa, 1 chữ số, 1 ký tự đặc biệt..."
+                      placeholder={t('newPasswordPlaceholder')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -255,7 +254,7 @@ function ResetPasswordContent() {
                     
                     <input
                       type="password"
-                      placeholder="Xác nhận lại mật khẩu mới..."
+                      placeholder={t('confirmPasswordPlaceholder')}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
@@ -299,13 +298,13 @@ function ResetPasswordContent() {
 
                 <div className="space-y-2">
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-gold block">
-                    Thành công / Password Updated
+                    {t('resetPasswordSuccess')}
                   </span>
                   <h3 className="font-heading text-3xl font-light italic text-charcoal">
                     {t('resetPasswordSuccess')}
                   </h3>
                   <p className="font-sans text-xs text-ash leading-relaxed font-light px-2">
-                    {t('resetPasswordSuccessDesc').replace('5 giây', `${countdown} giây`)}
+                    {t('resetPasswordSuccessDesc', { count: countdown })}
                   </p>
                 </div>
 

@@ -25,6 +25,221 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
 * **`messages/`**: Nơi lưu giữ các tệp JSON dịch thuật song ngữ (`vi.json` và `en.json`).
 * **`tailwind.config.ts`**: Khai báo bảng màu sơn mài/giấy dó tiêu chuẩn và font chữ Cormorant Garamond / Be Vietnam Pro.
 
+### [2026-06-04] Restricted Merchant Dashboard to Authorized Subdomain URLs
+
+#### Tác vụ hoàn thành
+- **Cô lập và bảo vệ Bảng quản trị (Merchant Dashboard) theo Subdomain**:
+  - Cập nhật cơ chế phân quyền truy cập tại thành phần [DashboardSidebar.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/dashboard/DashboardSidebar.tsx) bao quanh toàn bộ các trang con của phân hệ `/dashboard`.
+  - Phân tích cú pháp (parse) tên miền phụ (subdomain) hiện tại từ trình duyệt (`window.location.hostname`).
+  - Nếu người dùng truy cập Bảng quản trị thông qua tên miền gốc chính thức (ví dụ: `localhost:3000/vi/dashboard` hoặc `hoalang.site/vi/dashboard` mà không có subdomain), hệ thống sẽ nhận diện và tự động chuyển hướng họ sang tên miền phụ tương ứng của cửa hàng mà họ quản lý (ví dụ: `http://vuive.localhost:3000/vi/dashboard`).
+  - Thiết lập kiểm tra bảo mật chéo (Cross-Tenant Security Validation): Nếu một chủ cửa hàng đang truy cập vào URL Bảng quản trị của một tên miền phụ khác mà họ không sở hữu (ví dụ: chủ làng `bat-trang` cố tình truy cập `vuive.localhost:3000/vi/dashboard`), hệ thống sẽ từ chối quyền truy cập ngay lập tức, đưa ra thông báo cảnh báo và tự động điều hướng họ trở về đúng subdomain của cửa hàng mình.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Dashboard Sidebar Guard**:
+   - Chỉnh sửa logic trong [DashboardSidebar.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/dashboard/DashboardSidebar.tsx) để thực hiện nhận diện subdomain, xác thực chéo quyền quản lý của user đối với slug hiện tại và tự động chuyển hướng sử dụng token SSO qua `getTenantUrl`.
+
+---
+
+### [2026-06-04] CSS Global Path Reference Normalization & ts(2882) Resolution
+
+#### Tác vụ hoàn thành
+- **Chuẩn hóa đường dẫn Import CSS toàn cục (globals.css) & Giải quyết cảnh báo kiểu dữ liệu**:
+  - Cải tiến import từ đường dẫn tương đối `import '../globals.css';` sang đường dẫn tuyệt đối dạng alias `import '@/app/globals.css';` trong tệp [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/layout.tsx).
+  - Khai báo kiểu tệp CSS wildcard (`declare module '*.css';`) tại tệp [global.d.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/global.d.ts) ở thư mục gốc của frontend.
+  - Sự kết hợp này giải quyết triệt để cảnh báo/lỗi biên dịch nghiêm trọng của TypeScript Compiler hoặc IDE Linter: `"Cannot find module or type declarations for side-effect import of '@/app/globals.css'.ts(2882)"`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Root Layout Config**:
+   - Sửa đổi [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/layout.tsx): Thay đổi đường dẫn globals.css sang `@/app/globals.css`.
+2. **Type Declarations**:
+   - Tạo mới [global.d.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/global.d.ts): Wildcard module declaration cho CSS.
+
+---
+
+### [2026-06-04] Fixed Dynamic Tenant Subdomain Resolution & Login Redirection
+
+#### Tác vụ hoàn thành
+- **Hỗ trợ phân giải tên miền phụ Tenant động & Chống trùng lặp định tuyến (Double-Rewrite Guard)**:
+  - Loại bỏ danh sách whitelisted cứng `TENANT_SLUGS = ['bat-trang', 'van-phuc', 'non-nuoc']` trong [middleware.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/middleware.ts). Giờ đây, middleware sẽ thực hiện định tuyến ngầm (URL rewrite) cho **mọi tên miền phụ hợp lệ** (như `vuive.localhost:3000` của các tenant mới đăng ký) tới `/tenant/[slug]`.
+  - Khai thác tối đa luồng xử lý động: nếu tên miền phụ không tồn tại trong MongoDB, hàm tải cấu hình ở Client Page (`page.tsx`) sẽ tự động trả về `null` và hiển thị trang lỗi 404 `"Không tìm thấy làng nghề"` vô cùng thân thiện.
+  - Tích hợp bộ bảo vệ chống ghi đè trùng lặp URL (Double-Rewrite Guard): phát hiện các request trên subdomain đã có tiền tố `/tenant/[slug]` (ví dụ khi click nút Visual Builder dẫn tới `/vi/tenant/vuive/builder`) để bỏ qua việc viết lại URL lần thứ 2. Điều này khắc phục lỗi crash giao diện Next.js `"Missing required html tags. The following tags are missing in the Root Layout: <html>, <body>"`.
+- **Sửa lỗi định tuyến đăng nhập (Login Redirection Bug) trong Onboarding Guard**:
+  - Khắc phục lỗi khi Super Admin phê duyệt tenant, nút đăng nhập trong cửa sổ thông báo tự động kiểm tra trạng thái (`OnboardingStatusCheck.tsx`) dẫn người dùng tới địa chỉ lỗi `http://vuive.localhost:3000/vi/auth/login`. Lý do là phân hệ frontend quy định toàn bộ quy trình xác thực (Auth/Login/Register) và Bảng quản trị (Dashboard) đều được xử lý tập trung trên **Tên miền chính (Main Domain)** (`localhost:3000` hoặc `hoalang.site`).
+  - Sửa đổi hàm `handleLogin` trong [OnboardingStatusCheck.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/OnboardingStatusCheck.tsx) để chuyển hướng đúng về trang đăng nhập của tên miền chính kèm tham số email của tenant mới (`http://localhost:3000/vi/auth/login?email=...`). Sau khi đăng nhập thành công, hệ thống sẽ đưa họ vào Bảng quản trị `/vi/dashboard` để quản trị website làng nghề của mình.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Routing Middleware**:
+   - Sửa đổi [middleware.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/middleware.ts): Xóa whitelist cứng `TENANT_SLUGS`, bổ sung kiểm tra `pathAfterLocale.startsWith('/tenant/' + slug)`.
+2. **Onboarding Status Watcher**:
+   - Sửa đổi [OnboardingStatusCheck.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/OnboardingStatusCheck.tsx): Import `useLocale` và viết lại hàm điều hướng đăng nhập trỏ về main domain.
+
+---
+
+### [2026-06-04] Tenant Approval Action Loading State & i18n Updates
+
+#### Tác vụ hoàn thành
+- **Thêm trạng thái tải (Loading State) và vô hiệu hóa nút (Disabled State) khi phê duyệt tenant**:
+  - Tích hợp trạng thái `loadingAction` vào nút **Phê duyệt** (btnApprove) tại bảng điều khiển Super Admin `/admin`. Khi Super Admin nhấn duyệt một hồ sơ đăng ký, nút sẽ hiển thị biểu tượng quay tròn `RefreshCw` cùng hiệu ứng xoay `animate-spin` thay thế cho biểu tượng `ShieldCheck` mặc định.
+  - Văn bản trên nút chuyển đổi sang chuỗi dịch thuật `btnApproveLoading` (ví dụ: "Đang Phê Duyệt & Khởi Tạo..." ở Tiếng Việt).
+  - Vô hiệu hóa cả hai nút **Phê Duyệt** và **Từ Chối** của hồ sơ đăng ký khi có tiến trình phê duyệt/khởi tạo đang chạy ngầm, tránh việc click đúp hoặc gửi yêu cầu đồng thời (concurrency issues) làm quá tải tiến trình provision ở server.
+- **Cập nhật i18n đa ngôn ngữ cho loading state**:
+  - Khai báo thêm khóa dịch thuật mới `"btnApproveLoading"` vào 5 tệp JSON localization: `vi.json`, `en.json`, `ja.json`, `ko.json`, và `zh.json` trong thư mục `messages/`.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Admin Dashboard Controller UI**:
+   - Sửa đổi [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx) để bind logic trạng thái `loadingAction` và các class Tailwind CSS tương ứng.
+2. **Translation Dictionaries**:
+   - Cập nhật [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json)
+   - Cập nhật [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json)
+   - Cập nhật [ja.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ja.json)
+   - Cập nhật [ko.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ko.json)
+   - Cập nhật [zh.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/zh.json)
+
+---
+
+### [2026-06-04] CJK Font Fallbacks Integration & Complete i18n Refactoring for Auth & Onboarding
+
+#### Tác vụ hoàn thành
+- **Tích hợp Fallback CJK nâng cao**: Cấu hình bổ sung danh sách font hệ thống và font CJK (PingFang SC, Hiragino Sans, Microsoft YaHei, Malgun Gothic, Noto Sans/Serif CJK, v.v.) vào tailwind.config.ts nhằm đảm bảo nét chữ tiếng Trung, Nhật, Hàn hiển thị thanh lịch, sang trọng và chuẩn xác, không bị lỗi font hoặc sử dụng font serif mặc định xấu của hệ điều hành.
+- **Hoàn thiện i18n đa ngôn ngữ cho toàn bộ phân hệ Auth và Onboarding**:
+  - Dịch hóa 100% các trang đăng nhập (`auth/login`), đăng ký (`auth/register`), quên mật khẩu (`auth/forgot-password`), thiết lập lại mật khẩu (`auth/reset-password`), và xác thực tài khoản (`auth/verify-account`).
+  - Dịch hóa hoàn chỉnh trang đăng ký mở chi nhánh làng nghề (`onboarding`).
+  - Đưa toàn bộ các chuỗi văn bản, tiêu đề, mô tả, nút bấm, thông báo toast, danh sách stats, quote văn học và placeholder vào 5 tệp JSON localization: `vi.json`, `en.json`, `ja.json`, `ko.json`, và `zh.json`.
+- **Sửa đổi TypeScript & ESLint Lints**:
+  - Loại bỏ các import không sử dụng và các annotation `@ts-ignore` thừa.
+  - Sửa lỗi ép kiểu an toàn trong admin/page.tsx và các block catch error mà không dùng `any`.
+  - Biên dịch thành công dự án Next.js (production build) với zero errors/warnings.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Config & Localization Files**:
+   - Sửa đổi [tailwind.config.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/tailwind.config.ts)
+   - Cập nhật [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json), [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json), [ja.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ja.json), [ko.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ko.json), và [zh.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/zh.json)
+2. **Refactored Pages**:
+   - [onboarding/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/onboarding/page.tsx)
+   - [auth/login/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/auth/login/page.tsx)
+   - [auth/register/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/auth/register/page.tsx)
+   - [auth/forgot-password/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/auth/forgot-password/page.tsx)
+   - [auth/reset-password/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/auth/reset-password/page.tsx)
+   - [auth/verify-account/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/auth/verify-account/page.tsx)
+
+---
+
+### [2026-06-04] Moved Super Admin Navigation to Desktop Sidebar & Restructured UX
+
+#### Tác vụ hoàn thành
+- Tái cấu trúc giao diện quản trị Super Admin Portal (`/admin`): di chuyển toàn bộ hệ thống chuyển đổi tab điều khiển (Quản lý đối tác, Doanh thu hệ thống, Bản thiết kế mẫu, Nhật ký vận hành) từ thanh ngang ở màn hình nội dung chính sang thành **Thành điều hướng dọc ở Sidebar bên trái (Desktop Sidebar Navigation)**. Điều này giúp tối ưu hóa không gian hiển thị, tránh việc Sidebar bị trống trải và nâng tầm thẩm mỹ chuyên nghiệp (editorial SaaS portal).
+- Tích hợp các bộ đếm số lượng thời gian thực trực quan (badges) cho từng nút chuyển tab tại Sidebar (ví dụ: Tổng số đối tác + đăng ký mới hiển thị trực tiếp bên cạnh nút Quản lý đối tác; Tổng doanh thu commission VNĐ hiển thị cạnh nút Doanh thu hệ thống).
+- Tối ưu hóa tính năng thích ứng (Mobile Responsiveness):
+  - Ẩn Sidebar điều hướng dọc trên thiết bị di động (`hidden md:flex`) để bảo toàn không gian.
+  - Tự động hiển thị thanh tab cuộn ngang nguyên bản trên màn hình nhỏ (`md:hidden`) để người dùng di động vẫn thao tác chuyển đổi phân hệ quản lý dễ dàng.
+- Loại bỏ Sidebar tĩnh, dư thừa trong [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/layout.tsx), biến tệp này thành bộ bao bọc xác thực và kích thước màn hình sạch sẽ.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Layout Simplification**:
+   - Sửa đổi [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/layout.tsx).
+2. **Interactive Sidebar Navigation**:
+   - Sửa đổi [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx).
+
+---
+
+### [2026-06-04] Removed Testing Accounts List from Login Page
+
+#### Tác vụ hoàn thành
+- Loại bỏ hoàn toàn khối hộp cảnh báo tài khoản thử nghiệm ("Tài khoản thử nghiệm hệ thống") trên trang đăng nhập hệ thống (`/auth/login`) để chuẩn bị môi trường chạy thật.
+- Dọn dẹp các import không sử dụng (`Sparkles` từ `lucide-react`) trong tệp giao diện đăng nhập để đảm bảo mã nguồn tuân thủ nguyên tắc không cảnh báo.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Login Interface**:
+   - Sửa đổi [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/auth/login/page.tsx) để xóa giao diện hộp tài khoản mẫu và dọn dẹp import.
+
+---
+
+### [2026-06-04] Super Admin Dashboard Real-Data Integration & Form Submissions
+
+#### Tác vụ hoàn thành
+- Loại bỏ hoàn toàn danh sách giả lập (mock data) cho `transactions` và `logs` trong Trang Quản Trị Hệ thống `/admin` của Super Admin.
+- Tích hợp hàm gọi API `/tenant/admin-dashboard-data` để tải dữ liệu đơn hàng và lịch đặt thực tế từ các database chi nhánh biệt lập, đồng thời tải nhật ký vận hành thực từ backend.
+- Cấu hình tự động tổng hợp chỉ số tài chính (Doanh số GMV toàn sàn, Phí trích 5% hệ thống thu về) dựa trên dữ liệu giao dịch thực tế lấy được từ API.
+- Liên kết lại tính năng thanh trượt thay đổi tỷ lệ phí hệ thống và nút "Cưỡng chế làm mới" nhật ký để cập nhật dữ liệu trực quan thời gian thực.
+- Cải tiến popup "Đăng ký Làng Nghề Mới" (trong dashboard admin) để gửi biểu mẫu trực tiếp tới endpoint backend `POST /tenant/onboarding`:
+  - Khai báo thêm trường nhập **"Email liên hệ"** bắt buộc để tự sinh tài khoản Village Owner.
+  - Ánh xạ chuẩn thiết kế mẫu UI sang template ID tương thích với backend.
+  - Tự động tải lại yêu cầu đăng ký và nhật ký sau khi tạo đơn thành công.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Admin Portal UI Integration**:
+   - Sửa đổi [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx) để thay thế mock data, thêm các hook tải dữ liệu, trường email và xử lý biểu mẫu đăng ký thật qua Axios API layer.
+
+---
+
+### [2026-06-04] Onboarding Form Fields Enforced Validation & Asterisks
+
+#### Tác vụ hoàn thành
+- Cập nhật hàm kiểm tra bước 1 `handleNextStep` trong `onboarding/page.tsx` để bắt buộc nhập đầy đủ tất cả các trường thông tin chính (bao gồm Tên nghệ nhân, Số điện thoại, Địa chỉ chi tiết, Tỉnh/thành phố và Phường/xã). Các trường ảnh biểu trưng, ảnh bìa và trường Giới thiệu ngắn (description) vẫn được phép bỏ qua (optional).
+- Tích hợp dấu chỉ thị bắt buộc màu đỏ sơn mài `*` vào giao diện nhãn của tất cả các input bắt buộc, bao gồm Tên làng nghề, Tên miền phụ, Email, Lĩnh vực, Tên nghệ nhân, Số điện thoại, Địa chỉ thực địa, Tỉnh/Thành phố và Phường/Xã/Quận/Huyện. Trường Mô tả (description) được tháo bỏ chỉ thị bắt buộc.
+- Cấu hình lại giao diện bộ chọn khu vực hành chính `VnAddressSelect.tsx` chuyển từ dạng hàng ngang (2 cột) sang dạng xếp chồng dọc (1 cột) để tránh hiện tượng tràn chữ, làm nhãn Phường/Xã/Quận/Huyện bị rớt dòng và vỡ bố cục trên màn hình nhỏ.
+- Điều chỉnh tiêu đề kết quả thành công ở bước 3 từ `"Không Gian Đã Sẵn Sàng!"` thành `"Gửi Đơn Thành Công!"` để phản ánh đúng thực tế hồ sơ đang nằm ở danh sách chờ duyệt chứ chưa khởi tạo xong.
+- Tích hợp cơ chế **truy vấn trạng thái thời gian thực (Real-time Polling)** vào component `OnboardingStatusCheck`: tự động kiểm tra lại trạng thái hồ sơ mỗi 5 giây bằng `setInterval` khi người dùng đang lướt web. Ngay khi Super Admin phê duyệt (hoặc từ chối), thông báo sẽ tự động bật mở tức thì mà không yêu cầu người dùng phải reload trang thủ công. Dọn dẹp bộ nhớ (cleanup interval) an toàn khi unmount hoặc khi trạng thái đã được giải quyết.
+- Thêm nút **"Trở về Trang chủ / Back to Home"** ở bên trái chân trang ở Bước 1 của Onboarding wizard, giúp người dùng dễ dàng thoát ra và quay lại trang chính khi không muốn tiếp tục gửi đơn đăng ký.
+- Bổ sung kiểm tra định dạng số điện thoại liên hệ (9-11 chữ số) trước khi chuyển sang bước tiếp theo để tránh nhập thông tin sai lệch.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Onboarding Form Validation**:
+   - Sửa đổi [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/onboarding/page.tsx) tích hợp kiểm tra dữ liệu đầu vào đầy đủ ở client-side và thêm các thẻ `span className="text-lacquer">*` vào nhãn form.
+2. **Shared Input Indicators**:
+   - Sửa đổi [AddressAutocomplete.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/AddressAutocomplete.tsx) và [VnAddressSelect.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/VnAddressSelect.tsx) bổ sung dấu chỉ thị bắt buộc.
+
+---
+
+### [2026-06-04] Tenant Approval Revisit Notification Modal & i18n Translations
+
+#### Tác vụ hoàn thành
+- Phát triển component kiểm tra trạng thái toàn cục `OnboardingStatusCheck.tsx` tự động chạy ngầm khi tải trang để truy vấn API trạng thái yêu cầu của tenant qua email lưu trữ trong `localStorage`.
+- Thiết kế giao diện hộp thoại thông báo duyệt/từ chối độc bản (Congratulations/Rejection Modal) theo đúng tiêu chuẩn **HoaLang UI Rule v1.0** (nền `bg-parchment`, font `font-heading` Cormorant Garamond, font `font-sans` Be Vietnam Pro, viền `border-stone`, nút primary `bg-lacquer`).
+- Tích hợp điều hướng trực tiếp tới trang đăng nhập tên miền phụ tương ứng sử dụng helper `getTenantUrl`.
+- Đồng bộ hóa các chuỗi văn bản UI đa ngôn ngữ bằng cách bổ sung namespace `"onboardingCheck"` trong tệp ngôn ngữ quốc tế `messages/vi.json` và `messages/en.json`, tránh tuyệt đối việc hardcode ký tự hiển thị.
+- Đăng ký và kết nối component `OnboardingStatusCheck` vào tệp giao diện chung `layout.tsx` lồng trong thẻ `<Suspense>` để đảm bảo hoạt động liền mạch trên toàn hệ thống.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Status Watcher Component**:
+   - Tạo mới [OnboardingStatusCheck.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/OnboardingStatusCheck.tsx).
+   - Tải trạng thái và cấu hình từ API `GET /api/v1/tenant/requests/check?email=...`, kết xuất dữ liệu và xóa khóa khỏi `localStorage` khi người dùng nhấn "Đóng" hoặc "Đăng nhập".
+2. **Global Component Export**:
+   - Cập nhật [index.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/index.ts) để export `OnboardingStatusCheck`.
+3. **Layout Rendering**:
+   - Sửa đổi [layout.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/layout.tsx) để import và đặt `<OnboardingStatusCheck />` bên trong `<Suspense>` của Next.js layout.
+4. **Bilingual Translations Addition**:
+   - Cập nhật [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json) và [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json) để khai báo namespace `"onboardingCheck"`.
+
+---
+
+### [2026-06-04] Template Selection Matching & Visual Builder Navigation Redirect Fix
+
+#### Tác vụ hoàn thành
+- Khắc phục lỗi điều hướng và liên kết trong Visual Builder Shortcut ở Header của Landing Page. Lấy trực tiếp tham số `slug` từ `useParams()` thay vì dùng lô-gíc phỏng đoán màu hoặc logo.
+- Đồng bộ Visual Builder link hướng tới đúng thư mục builder tương ứng với chi nhánh hiện tại (`/[locale]/tenant/[slug]/builder`).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Header Navigation & Visual Builder Route Fix**:
+   - Sửa đổi trong [page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/tenant/[slug]/page.tsx).
+   - Sử dụng hook `useParams` từ `next/navigation` để lấy thông tin slug chính xác của Tenant hiện hành.
+   - Sửa URL thuộc tính `href` của nút Visual Builder thành `/${locale}/tenant/${slug}/builder`.
+
+---
+
+### [2026-06-04] GeekBrain Chatbot UI Optimization & Bilingual Preset hints
+
+#### Tác vụ hoàn thành
+- Tối ưu hóa giao diện Thư viện Câu hỏi và Khung tương tác chat để giảm bớt số lượng câu hỏi mẫu (từ 12 nút xuống còn 8 nút), trình bày gọn gàng dưới dạng song ngữ (Tiếng Anh 🇬🇧 & Tiếng Việt 🇻🇳).
+- Thêm hộp thông tin hướng dẫn chi tiết ngay phía trên danh sách gợi ý để nhấn mạnh tính năng nhập tay thủ công bằng cả hai ngôn ngữ của hệ thống.
+- Cải thiện trải nghiệm gõ phím trực tiếp bằng cách làm nổi bật trường nhập liệu và bổ sung mô tả gợi ý trong khung chat.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Bilingual Hint UI & Clutter Reduction**:
+   - Sửa đổi trong [index.html](file:///C:/Project%20Web/xbrain-learners/w4-geekbrain/index.html).
+   - Thiết kế lại container cuộn `flex-1 overflow-y-auto` của Presets, bổ sung một hộp card `bg-parchment/40 p-3 border border-stone/50 rounded-sm mb-2` chứa hướng dẫn Tiếng Việt.
+   - Giảm tải các câu hỏi RAG/SQL trùng lặp và cung cấp các câu hỏi tương đương dịch nghĩa bằng Tiếng Việt cho từng Cấp độ kiểm thử (Level 1, Level 2, Level 3, Level 4).
+
 ---
 
 ### [2026-06-03] Starter Design Template Themed Galleries & Font Normalization
@@ -1060,5 +1275,82 @@ Dự án Frontend được xây dựng trên nền tảng **Next.js 14 (App Rout
    - Sửa đổi [api.ts](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/lib/api.ts): Cập nhật hàm `getInitialBaseUrl()` để ở môi trường production phía client-side, Axios client sẽ trả về trực tiếp giá trị của `process.env.NEXT_PUBLIC_API_URL` (nạp từ Vercel Dashboard) thay vì rơi về đường dẫn tương đối `/api/v1`. Giải quyết triệt để lỗi gọi API bị Next.js / Vercel chặn trả về trang 404 HTML.
 2. **Lockfiles Clean Up**:
    - Xóa bỏ tệp `package-lock.json` khỏi Git tracking và thêm vào [.gitignore](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/.gitignore).
+
+---
+
+### [2026-06-04] Onboarding Email Notifications System, Idempotent Approval Retry, and Rejection Reason Modal Integration
+
+#### Tác vụ hoàn thành
+- **Thông báo Email Xác Nhận ở Onboarding Success**: Bổ dung thông điệp đa ngôn ngữ vào bước 3 (thành công) thông báo rằng hệ thống đã gửi thư xác nhận đến địa chỉ email đăng ký để tiện theo dõi trạng thái.
+- **Tích Hợp Dialog Lý Do Từ Chối Ở Super Admin**:
+  - Tích hợp thêm dialog nhập lý do từ chối khi Super Admin click vào nút "Từ Chối" trong danh sách đơn đăng ký chờ phê duyệt.
+  - Lý do từ chối là bắt buộc nhập, được truyền dưới dạng thuộc tính `reason` trong payload POST `/tenant/requests/:id/reject`.
+  - Toàn bộ chuỗi hiển thị, nhãn, gợi ý trong modal từ chối và nút xác nhận đã được localize đầy đủ qua 5 file locale (vi, en, ja, ko, zh).
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Pages & Components**:
+   - Sửa đổi [onboarding/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/onboarding/page.tsx)
+   - Sửa đổi [admin/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx)
+2. **Localization Files**:
+   - Cập nhật [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json), [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json), [ja.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ja.json), [ko.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ko.json), và [zh.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/zh.json)
+
+---
+
+### [2026-06-04] Secure Onboarding Approvals & Active DNS Domain Verification
+
+#### Tác vụ hoàn thành
+- **Ẩn thông tin Mật khẩu khởi tạo của Tenant**: Loại bỏ trường mật khẩu khỏi Credentials Modal hiển thị cho Super Admin sau khi phê duyệt thành công. Super Admin chỉ nhìn thấy Tên người sở hữu, Email đăng nhập và Subdomain. Thay đổi nhãn "Mật khẩu ngẫu nhiên" thành "Mật khẩu" trên tất cả các ngôn ngữ, và cập nhật chân trang để ghi rõ mật khẩu được gửi tự động qua email và ẩn khỏi admin để bảo mật.
+- **Thêm Xác thực Định dạng Email của Tenant**:
+  - Tích hợp kiểm tra định dạng email bằng regex (/^[^\s@]+@[^\s@]+\.[^\s@]+$/) cho ô nhập email khi Super Admin đăng ký làng nghề thủ công mới trong dashboard.
+  - Cấu hình thông báo lỗi phù hợp bằng i18n cho cả 5 ngôn ngữ.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Pages & Components**:
+   - Sửa đổi [admin/page.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/app/[locale]/admin/page.tsx)
+2. **Localization Files**:
+   - Cập nhật [vi.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/vi.json), [en.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/en.json), [ja.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ja.json), [ko.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/ko.json), và [zh.json](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/messages/zh.json)
+
+---
+
+### [2026-06-04] Secure Onboarding Status Matching (Session vs LocalStorage)
+
+#### Tác vụ hoàn thành
+- **Ngăn chặn thông báo sai người dùng**: Cập nhật `OnboardingStatusCheck.tsx` để tích hợp với `useAuthStore`. Nếu người dùng đã đăng nhập, hệ thống sẽ kiểm tra xem email của tài khoản đang hoạt động (`user.email`) có khớp với email lưu trong `localStorage` của đơn đăng ký hay không. Nếu không khớp (ví dụ: đang đăng nhập bằng tài khoản du khách khác), tiến trình kiểm tra trạng thái sẽ tự động bỏ qua để tránh hiển thị nhầm thông báo phê duyệt.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Pages & Components**:
+   - Sửa đổi [OnboardingStatusCheck.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/OnboardingStatusCheck.tsx) để so sánh tài khoản trước khi poll.
+
+---
+
+### [2026-06-04] Bugfix: Tự động dừng Polling & Dọn dẹp localStorage khi Check Status Onboarding Báo Lỗi 404
+
+#### Tác vụ hoàn thành
+- **Triệt tiêu lỗi console spam 404 liên tục:** Khắc phục lỗi trình duyệt gửi request `/api/v1/tenant/requests/check` liên tục mỗi 5 giây và nhận về lỗi 404 Not Found (khiến console đầy log đỏ) khi backend database bị xóa/reset trong quá trình thử nghiệm làm biến mất đơn đăng ký cũ của email được ghi nhớ ở local.
+- **Giải pháp:** Cập nhật khối `catch` trong component `OnboardingStatusCheck` để kiểm tra mã trạng thái Axios response. Nếu nhận về HTTP status 404, lập tức xóa sạch các khóa `localStorage` liên quan đến onboarding của email đó (`hoalang_onboarding_email`, `hoalang_onboarding_slug`, `hoalang_onboarding_name`) và xóa interval chạy ngầm (`clearInterval`) để dừng polling ngay lập tức.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Pages & Components**:
+   - Sửa đổi [OnboardingStatusCheck.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/OnboardingStatusCheck.tsx) bổ sung check `axiosError.response?.status === 404`.
+
+---
+
+### [2026-06-04] Resilience: Vietnam Provinces API Offline Fallback & Address Autocomplete Console Cleanup
+
+#### Tác vụ hoàn thành
+- **Resilience - Local Fallback cho danh sách Tỉnh/Thành/Phường/Xã:** Khắc phục lỗi CORS hoặc lỗi mạng từ bên thứ ba `https://provinces.open-api.vn/` khiến dropdown chọn Tỉnh/Thành và Phường/Xã của Việt Nam bị trống rỗng khi đăng ký làng nghề (Onboarding). 
+  - Triển khai bộ dữ liệu tĩnh cục bộ chuẩn hóa mã GSO gồm 63 Tỉnh/Thành phố của Việt Nam (`FALLBACK_PROVINCES`).
+  - Triển khai danh mục Quận/Huyện/Xã mẫu cho các vùng di sản trọng điểm (`FALLBACK_WARDS`) và hàm sinh danh sách trung tâm dự phòng (`getGenericWards`) để đảm bảo form đăng ký hoạt động 100% trơn tru ngay cả khi API bên thứ ba bị sập hoặc chặn CORS.
+- **Dọn dẹp Console Warning do Abort Controller:** Loại bỏ việc in cảnh báo `AbortError: signal is aborted without reason` trong component `AddressAutocomplete` khi người dùng gõ phím nhanh. Đây là hành vi hủy request cũ (debounce) bình thường của ứng dụng.
+
+#### Chi tiết kỹ thuật & File thay đổi
+1. **Pages & Components**:
+   - Sửa đổi [VnAddressSelect.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/VnAddressSelect.tsx) bổ sung data offline và logic load fallback.
+   - Sửa đổi [AddressAutocomplete.tsx](file:///c:/Project%20Web/Multi-Tenant/HoaLang/hoalang-fe/components/shared/AddressAutocomplete.tsx) bỏ qua cảnh báo khi `err.name === 'AbortError'`.
+
+
+
+
+
 
 

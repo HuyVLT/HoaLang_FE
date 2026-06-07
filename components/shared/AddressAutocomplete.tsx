@@ -302,7 +302,10 @@ export default function AddressAutocomplete({
 
         setResults(unique);
       } catch (err) {
-        console.warn('[AddressAutocomplete] Live API failed or offline, resolving fallback predictions:', err);
+        const error = err as Error;
+        if (error.name !== 'AbortError') {
+          console.warn('[AddressAutocomplete] Live API failed or offline, resolving fallback predictions:', err);
+        }
         
         // Standalone offline fallback
         const localOnly = SUGGESTIONS.filter(
@@ -356,7 +359,7 @@ export default function AddressAutocomplete({
     <div ref={containerRef} className="space-y-1.5 text-left font-sans select-none w-full relative">
       <label className="text-xs font-semibold uppercase tracking-wider text-ash flex items-center gap-1.5">
         <MapPin className="w-3.5 h-3.5 text-accent" />
-        <span>{t.provinceLabel}</span>
+        <span>{t.provinceLabel} <span className="text-lacquer">*</span></span>
       </label>
 
       {/* Primary input box styling to match standard onboarding fields */}
